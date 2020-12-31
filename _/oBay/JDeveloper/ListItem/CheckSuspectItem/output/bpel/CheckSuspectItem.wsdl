@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions name="CheckSuspectItem"
+             targetNamespace="http://xmlns.packtpub.com/CheckSuspectItem"
+             xmlns="http://schemas.xmlsoap.org/wsdl/"
+             xmlns:tns="http://xmlns.packtpub.com/CheckSuspectItem"
+             xmlns:lst="http://schemas.packtpub.com/obay/lst"
+             xmlns:flt="http://schemas.packtpub.com/obay/flt"
+             xmlns:plnk="http://schemas.xmlsoap.org/ws/2003/05/partner-link/">
+
+	<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	TYPE DEFINITION - List of services participating in this BPEL process
+	The default output of the BPEL designer uses strings as input and 
+	output to the BPEL Process. But you can define or import any XML 
+	Schema type and use them as part of the message types.
+	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->   
+	<types>
+            <schema xmlns="http://www.w3.org/2001/XMLSchema">
+                <import namespace="http://xmlns.packtpub.com/CheckSuspectItem" schemaLocation="CheckSuspectItem.xsd" />
+            </schema>
+	</types>
+
+	<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	MESSAGE TYPE DEFINITION - Definition of the message types used as 
+	part of the port type defintions
+	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->      
+	<message name="checkSuspectItem">
+		<part name="payload" element="tns:checkSuspectItem" />
+	</message>
+
+	<message name="checkSuspectItemResponse">
+		<part name="payload" element="tns:checkSuspectItemResponse" />
+	</message>
+
+	<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	PORT TYPE DEFINITION - A port type groups a set of operations into
+	a logical service unit.
+	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+	<!-- portType implemented by the CheckSuspectItem BPEL process -->
+	<portType name="CheckSuspectItem">
+		<operation name="checkSuspectItem">
+			<input message="tns:checkSuspectItem"/>
+		</operation>
+	</portType>
+
+	<!-- portType implemented by the requester of CheckSuspectItem BPEL process
+	for asynchronous callback purposes
+	-->
+	<portType name="CheckSuspectItemCallback">
+		<operation name="checkSuspectItemResponse">
+			<input message="tns:checkSuspectItemResponse"/>
+		</operation>
+	</portType>
+
+	<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	PARTNER LINK TYPE DEFINITION
+	the CheckSuspectItem partnerLinkType binds the provider and
+	requester portType into an asynchronous conversation.
+	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+	<plnk:partnerLinkType name="CheckSuspectItem">
+		<plnk:role name="CheckSuspectItemProvider">
+			<plnk:portType name="tns:CheckSuspectItem"/>
+		</plnk:role>
+		<plnk:role name="CheckSuspectItemRequester">
+			<plnk:portType name="tns:CheckSuspectItemCallback"/>
+		</plnk:role>
+	</plnk:partnerLinkType>
+</definitions>

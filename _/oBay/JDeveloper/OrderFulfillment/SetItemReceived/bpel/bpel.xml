@@ -1,0 +1,16 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<BPELSuitcase>
+   <BPELProcess id="SetItemReceived" src="SetItemReceived.bpel">
+      <partnerLinkBindings>
+         <partnerLinkBinding name="client">
+            <property name="wsdlLocation">SetItemReceived.wsdl</property>
+         </partnerLinkBinding>
+         <partnerLinkBinding name="TaskQueryService">
+            <property name="wsdlLocation">TaskQueryServiceRef.wsdl</property>
+         </partnerLinkBinding>
+         <partnerLinkBinding name="TaskService">
+            <property name="wsdlLocation">TaskServiceWSIF.wsdl</property>
+         </partnerLinkBinding>
+      </partnerLinkBindings>
+   </BPELProcess>
+</BPELSuitcase>

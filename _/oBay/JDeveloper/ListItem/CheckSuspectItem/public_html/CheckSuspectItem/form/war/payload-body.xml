@@ -1,0 +1,43 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<form targetnamespace="http://xmlns.oracle.com/bpel/worklist/payload/xpathmap" xmlns:ns0="http://xmlns.oracle.com/bpel/workflow/task" showXmlView="false" xmlEditable="true" xmlns:ns1="http://xmlns.packtpub.com/CheckSuspectItem" xmlns:ns2="http://schemas.packtpub.com/obay/lst">
+   <field>
+      <xpath>/ns0:task/ns0:payload/ns1:checkSuspectItem/ns2:item</xpath>
+      <editable>false</editable>
+      <resourceKey>_sl_ns0_cl_task_sl_ns0_cl_payload_sl_ns1_cl_checkSuspectItem_sl_ns2_cl_item</resourceKey>
+   </field>
+   <field>
+      <xpath>/ns0:task/ns0:payload/ns1:checkSuspectItem/ns2:item/ns2:categoryCode</xpath>
+      <editable>false</editable>
+      <resourceKey>_sl_ns0_cl_task_sl_ns0_cl_payload_sl_ns1_cl_checkSuspectItem_sl_ns2_cl_item_sl_ns2_cl_categoryCode</resourceKey>
+   </field>
+   <field>
+      <xpath>/ns0:task/ns0:payload/ns1:checkSuspectItem/ns2:item/ns2:title</xpath>
+      <editable>false</editable>
+      <resourceKey>_sl_ns0_cl_task_sl_ns0_cl_payload_sl_ns1_cl_checkSuspectItem_sl_ns2_cl_item_sl_ns2_cl_title</resourceKey>
+   </field>
+   <field>
+      <xpath>/ns0:task/ns0:payload/ns1:checkSuspectItem/ns2:item/ns2:description</xpath>
+      <editable>false</editable>
+      <resourceKey>_sl_ns0_cl_task_sl_ns0_cl_payload_sl_ns1_cl_checkSuspectItem_sl_ns2_cl_item_sl_ns2_cl_description</resourceKey>
+   </field>
+   <field>
+      <xpath>/ns0:task/ns0:payload/ns1:checkSuspectItem/ns2:item/ns2:condition</xpath>
+      <editable>false</editable>
+      <resourceKey>_sl_ns0_cl_task_sl_ns0_cl_payload_sl_ns1_cl_checkSuspectItem_sl_ns2_cl_item_sl_ns2_cl_condition</resourceKey>
+   </field>
+   <field>
+      <xpath>/ns0:task/ns0:payload/ns1:checkSuspectItem</xpath>
+      <editable>false</editable>
+      <resourceKey>_sl_ns0_cl_task_sl_ns0_cl_payload_sl_ns1_cl_checkSuspectItem</resourceKey>
+   </field>
+   <field>
+      <xpath>/ns0:task/ns0:payload/ns1:checkSuspectItem/reasonCode</xpath>
+      <editable>false</editable>
+      <resourceKey>_sl_ns0_cl_task_sl_ns0_cl_payload_sl_ns1_cl_checkSuspectItem_sl_reasonCode</resourceKey>
+   </field>
+   <field>
+      <xpath>/ns0:task/ns0:payload/ns1:checkSuspectItem/reasonDescription</xpath>
+      <editable>false</editable>
+      <resourceKey>_sl_ns0_cl_task_sl_ns0_cl_payload_sl_ns1_cl_checkSuspectItem_sl_reasonDescription</resourceKey>
+   </field>
+</form>

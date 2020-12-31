@@ -1,0 +1,62 @@
+<definitions
+     name="PayrollInputFileService"
+     targetNamespace="http://xmlns.oracle.com/pcbpel/adapter/file/PayrollInputFileService/"
+     xmlns="http://schemas.xmlsoap.org/wsdl/"
+     xmlns:tns="http://xmlns.oracle.com/pcbpel/adapter/file/PayrollInputFileService/"
+     xmlns:plt="http://schemas.xmlsoap.org/ws/2003/05/partner-link/"
+     xmlns:jca="http://xmlns.oracle.com/pcbpel/wsdl/jca/"
+     xmlns:pc="http://xmlns.oracle.com/pcbpel/"
+     xmlns:imp1="http://packt.com/PayrollInputFileService"
+     xmlns:hdr="http://xmlns.oracle.com/pcbpel/adapter/file/"
+    >
+    <import namespace="http://xmlns.oracle.com/pcbpel/adapter/file/" location="fileAdapterInboundHeader.wsdl"/>
+    <types>
+      <schema xmlns="http://www.w3.org/2001/XMLSchema" >
+        <import namespace="http://packt.com/PayrollInputFileService" schemaLocation="FilePayroll.xsd" />
+      </schema>
+    </types>
+    <message name="PayrollList_msg">
+        <part name="PayrollList" element="imp1:PayrollList"/>
+    </message>
+    <message name="Dummy_msg">
+        <part xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+              name="Dummy" type="xsd:string"/>
+    </message>
+    <portType name="Read_ptt">
+        <operation name="Read">
+            <input message="tns:PayrollList_msg"/>
+            <output message="tns:Dummy_msg"/>
+        </operation>
+    </portType>
+    <binding name="Read_binding" type="tns:Read_ptt">
+    <pc:inbound_binding  />
+        <operation name="Read">
+      <jca:operation
+          PhysicalDirectory="C:\FileTransfer\Inbound"
+          ActivationSpec="oracle.tip.adapter.file.inbound.FileActivationSpec"
+          PhysicalArchiveDirectory="C:\FileTransfer\Processed"
+          DeleteFile="true"
+          IncludeFiles="PR.*\.txt"
+          PublishSize="50"
+          PollingFrequency="1800"
+          MinimumAge="600"
+          OpaqueSchema="false" >
+      </jca:operation>
+      <input>
+        <jca:header message="hdr:InboundHeader_msg" part="inboundHeader"/>
+      </input>
+      <output/>
+        </operation>
+    </binding>
+    <service name="PayrollInputFileService">
+        <Documentation>Reads a payroll file</Documentation>
+        <port name="Read_pt" binding="tns:Read_binding">
+      <jca:address location="eis/FileAdapter" UIincludeWildcard="PR*.txt" />
+        </port>
+    </service>
+  <plt:partnerLinkType name="Read_plt" >
+    <plt:role name="Read_role" >
+      <plt:portType name="tns:Read_ptt" />
+    </plt:role>
+  </plt:partnerLinkType>
+</definitions>

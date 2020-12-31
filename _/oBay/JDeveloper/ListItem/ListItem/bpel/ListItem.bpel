@@ -1,0 +1,685 @@
+<?xml version = "1.0" encoding = "UTF-8" ?>
+<!--
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  Oracle JDeveloper BPEL Designer 
+  
+  Created: Sat Jan 24 11:00:50 EST 2009
+  Author:  mswright
+  Purpose: Synchronous BPEL Process
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+-->
+<process name="ListItem" targetNamespace="http://xmlns.packtpub.com/ListItem"
+         xmlns="http://schemas.xmlsoap.org/ws/2003/03/business-process/"
+         xmlns:xp20="http://www.oracle.com/XSL/Transform/java/oracle.tip.pc.services.functions.Xpath20"
+         xmlns:val="http://xmlns.oracle.com/pcbpel/validationservice"
+         xmlns:ns4="http://www.oracle.com/XSL/Transform/java/oracle.tip.xref.xpath.XRefXPathFunctions"
+         xmlns:acc="http://schemas.packtpub.com/obay/acc"
+         xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+         xmlns:ns5="http://xmlns.packtpub.com/CheckSuspectItem"
+         xmlns:ora="http://schemas.oracle.com/xpath/extension"
+         xmlns:ns9="http://xmlns.packtpub.com/ListItem/correlationset"
+         xmlns:ns1="http://xmlns.oracle.com/bpel/workflow/xpath"
+         xmlns:itm="http://schemas.packtpub.com/obay/itm"
+         xmlns:ns2="http://xmlns.oracle.com/bpel/services/IdentityService/xpath"
+         xmlns:auc="http://schemas.packtpub.com/obay/auc"
+         xmlns:orcl="http://www.oracle.com/XSL/Transform/java/oracle.tip.pc.services.functions.ExtFunc"
+         xmlns:ns10="http://xmlns.packtpub.com/obay/bs/UserManagement"
+         xmlns:flt="http://schemas.packtpub.com/obay/flt"
+         xmlns:bpws="http://schemas.xmlsoap.org/ws/2003/03/business-process/"
+         xmlns:ns13="http://xmlns.packtpub.com/obay/bp/AuctionItem"
+         xmlns:ns7="http://xmlns.packtpub.com/obay/ivs/Listing"
+         xmlns:ldap="http://schemas.oracle.com/xpath/extension/ldap"
+         xmlns:sch="http://www.ascc.net/xml/schematron"
+         xmlns:usr="http://schemas.packtpub.com/obay/usr"
+         xmlns:ns12="http://xmlns.packtpub.com/obay/bs/AuctionProxy"
+         xmlns:client="http://xmlns.packtpub.com/ListItem"
+         xmlns:ns6="http://xmlns.packtpub.com/obay/Account"
+         xmlns:lst="http://schemas.packtpub.com/obay/lst"
+         xmlns:ns3="http://www.oracle.com/XSL/Transform/java/oracle.tip.esb.server.headers.ESBHeaderFunctions"
+         xmlns:bpelx="http://schemas.oracle.com/bpel/extension"
+         xmlns:ns8="http://xmlns.packtpub.com/obay/ivs/Category">
+  <!-- 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      PARTNERLINKS                                                      
+      List of services participating in this BPEL process               
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  -->
+  <partnerLinks>
+    <!-- 
+      The 'client' role represents the requester of this service. It is 
+      used for callback. The location and correlation information associated
+      with the client role are automatically set using WS-Addressing.
+    -->
+    <partnerLink name="client" partnerLinkType="client:ListItem"
+                 myRole="ListItemProvider"/>
+    <partnerLink name="Schematron" partnerRole="service"
+                 partnerLinkType="val:ValidationSLT"/>
+    <partnerLink name="CheckSuspectItem" partnerLinkType="ns5:CheckSuspectItem"
+                 myRole="CheckSuspectItemRequester"
+                 partnerRole="CheckSuspectItemProvider"/>
+    <partnerLink name="Listing" partnerRole="Listing_Role"
+                 partnerLinkType="ns7:Listing_PL"/>
+    <partnerLink name="UserManagement" partnerRole="userManagement_Role"
+                 partnerLinkType="ns10:userManagement_PL"/>
+    <partnerLink myRole="AuctionItemRequester" name="AuctionItem"
+                 partnerRole="AuctionItemProvider"
+                 partnerLinkType="ns13:AuctionItem"/>
+    <partnerLink name="Category" partnerRole="Category_Role"
+                 partnerLinkType="ns8:Category_PL"/>
+  </partnerLinks>
+  <!-- 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      VARIABLES                                                        
+      List of messages and XML documents used within this BPEL process 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  -->
+  <variables>
+    <!-- Reference to the message passed as input during initiation -->
+    <!-- Reference to the message that will be returned to the requester-->
+    <variable name="submitItemListing" messageType="client:submitItemListing"/>
+    <variable name="submitItemListingResponse"
+              messageType="client:submitItemListingResponse"/>
+    <variable name="invalidListingFault"
+              messageType="client:invalidListingFault"/>
+    <variable name="listing" element="lst:listing"/>
+    <variable name="checkSuspectItemInput" messageType="ns5:checkSuspectItem"/>
+    <variable name="checkSuspectItemResponse"
+              messageType="ns5:checkSuspectItemResponse"/>
+    <variable name="Variable_1" type="xsd:string"/>
+  </variables>
+  <correlationSets>
+    <correlationSet name="ListingIdCS" properties="ns9:listingId"/>
+  </correlationSets>
+  <faultHandlers>
+    <catch faultName="client:invalidListing"
+           faultVariable="invalidListingFault">
+      <reply name="returnInvalidListing" partnerLink="client"
+             portType="client:ListItem" operation="submitItemListing"
+             variable="invalidListingFault" faultName="client:invalidListing"/>
+    </catch>
+  </faultHandlers>
+  <!-- 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+     ORCHESTRATION LOGIC                                               
+     Set of activities coordinating the flow of messages across the    
+     services integrated within this business process                  
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  -->
+  <sequence name="main">
+    <!-- Receive input from requestor. (Note: This maps to operation defined in ListItem.wsdl) -->
+    <receive name="submitItemListing" partnerLink="client"
+             portType="client:ListItem" operation="submitItemListing"
+             variable="submitItemListing" createInstance="yes"/>
+    <!-- Generate reply to synchronous request -->
+    <assign name="Assign_1">
+      <copy>
+        <from variable="submitItemListing" part="payload"
+              query="/client:submitItemListing/lst:item/lst:title"/>
+        <to variable="Variable_1"/>
+      </copy>
+      <copy>
+        <from expression="xp20:lower-case(bpws:getVariableData('Variable_1'))"/>
+        <to variable="Variable_1"/>
+      </copy>
+      <copy>
+        <from expression="contains(bpws:getVariableData('Variable_1'), 'sex')"/>
+        <to variable="Variable_1"/>
+      </copy>
+    </assign>
+    <assign name="createListing">
+      <copy>
+        <from variable="submitItemListing" part="payload"
+              query="/client:submitItemListing/usr:userId"/>
+        <to variable="listing"
+            query="/lst:listing/lst:listingDetail/lst:sellerId"/>
+      </copy>
+      <copy>
+        <from variable="submitItemListing" part="payload"
+              query="/client:submitItemListing/lst:item"/>
+        <to variable="listing" query="/lst:listing/lst:listingDetail/lst:item"/>
+      </copy>
+      <copy>
+        <from variable="submitItemListing" part="payload"
+              query="/client:submitItemListing/lst:paymentMethod"/>
+        <to variable="listing"
+            query="/lst:listing/lst:listingDetail/lst:paymentMethod"/>
+      </copy>
+      <copy>
+        <from variable="submitItemListing" part="payload"
+              query="/client:submitItemListing/lst:listingFormat"/>
+        <to variable="listing"
+            query="/lst:listing/lst:listingDetail/lst:listingFormat"/>
+      </copy>
+      <copy>
+        <from variable="submitItemListing"
+              query="/client:submitItemListing/lst:startTime" part="payload"/>
+        <to variable="listing"
+            query="/lst:listing/lst:listingDetail/lst:startTime"/>
+      </copy>
+      <copy>
+        <from variable="submitItemListing"
+              query="/client:submitItemListing/lst:duration" part="payload"/>
+        <to variable="listing"
+            query="/lst:listing/lst:listingDetail/lst:duration"/>
+      </copy>
+      <copy>
+        <from variable="submitItemListing" part="payload"
+              query="/client:submitItemListing/lst:listingFormat/lst:stdAuctionFormat/auc:startingPrice"/>
+        <to variable="listing"
+            query="/lst:listing/lst:listingDetail/lst:currentPrice"/>
+      </copy>
+      <copy>
+        <from expression="'NEW'"/>
+        <to variable="listing"
+            query="/lst:listing/lst:listingDetail/lst:listingStatus"/>
+      </copy>
+    </assign>
+    <scope name="ValidateItemDetails">
+      <variables>
+        <variable name="validateItemDetailsInput"
+                  messageType="val:ValidationInput"/>
+        <variable name="validateItemDetailsOutput"
+                  messageType="val:ValidationErrors"/>
+        <variable name="FaultVar" messageType="val:ValidationErrors"/>
+      </variables>
+      <faultHandlers>
+        <catch faultName="val:ValidationException" faultVariable="FaultVar">
+          <sequence name="Sequence_9">
+            <assign name="setinvalidListingFault">
+              <copy>
+                <from expression="'CODE'"/>
+                <to variable="invalidListingFault" part="payload"
+                    query="/flt:fault/flt:code"/>
+              </copy>
+              <copy>
+                <from expression="'Invalid Item Details'"/>
+                <to variable="invalidListingFault" part="payload"
+                    query="/flt:fault/flt:summary"/>
+              </copy>
+              <copy>
+                <from variable="FaultVar" part="result"
+                      query="/val:ValidationErrors"/>
+                <to variable="invalidListingFault" part="payload"
+                    query="/flt:fault/flt:detail"/>
+              </copy>
+            </assign>
+            <throw name="invalidListingFault" faultName="client:invalidListing"
+                   faultVariable="invalidListingFault"/>
+          </sequence>
+        </catch>
+      </faultHandlers>
+      <sequence name="Sequence_3">
+        <assign name="setValidationInput">
+          <copy>
+            <from variable="listing" query="/lst:listing"/>
+            <to variable="validateItemDetailsInput" part="instanceFile"
+                query="/val:validation"/>
+          </copy>
+          <bpelx:remove>
+            <bpelx:target variable="validateItemDetailsInput"
+                          part="instanceFile"
+                          query="/val:validation/lst:listingId"/>
+          </bpelx:remove>
+          <copy>
+            <from expression="ora:doc('http://localhost:80/orabpel/xmllib/obay/sch/valListingFormat.sch')"/>
+            <to variable="validateItemDetailsInput" part="ruleFile"
+                query="/sch:schema"/>
+          </copy>
+        </assign>
+        <invoke name="validateItemDetails" partnerLink="Schematron"
+                portType="val:ValidationPT" operation="validation"
+                inputVariable="validateItemDetailsInput"
+                outputVariable="validateItemDetailsOutput"/>
+      </sequence>
+    </scope>
+    <scope name="ValidateCategoryCode">
+      <variables>
+        <variable name="getCategoryInput" messageType="ns8:getCategory"/>
+        <variable name="getCategoryResponse"
+                  messageType="ns8:getCategoryResponse"/>
+        <variable name="invalidCategoryFault"
+                  messageType="ns8:invalidCategoryFault"/>
+      </variables>
+      <faultHandlers>
+        <catch faultName="ns8:invalidCategory"
+               faultVariable="invalidCategoryFault">
+          <sequence name="SequenceInvalidCategoryFault">
+            <assign name="setinvalidListingFault">
+              <copy>
+                <from expression="'CODE'"/>
+                <to variable="invalidListingFault" part="payload"
+                    query="/flt:fault/flt:code"/>
+              </copy>
+              <copy>
+                <from variable="invalidCategoryFault" part="payload"
+                      query="/flt:fault/flt:summary"/>
+                <to variable="invalidListingFault" part="payload"
+                    query="/flt:fault/flt:summary"/>
+              </copy>
+              <copy>
+                <from variable="invalidCategoryFault" part="payload"
+                      query="/flt:fault/flt:detail"/>
+                <to variable="invalidListingFault" part="payload"
+                    query="/flt:fault/flt:detail"/>
+              </copy>
+            </assign>
+            <throw name="invalidListingFault" faultName="client:invalidListing"
+                   faultVariable="invalidListingFault"/>
+          </sequence>
+        </catch>
+      </faultHandlers>
+      <sequence name="Sequence_27">
+        <assign name="setCategoryCode">
+          <copy>
+            <from variable="listing"
+                  query="/lst:listing/lst:listingDetail/lst:item/lst:categoryCode"/>
+            <to variable="getCategoryInput" part="payload"
+                query="/ns8:getCategory/lst:categoryCode"/>
+          </copy>
+        </assign>
+        <invoke name="getCategory" partnerLink="Category"
+                portType="ns8:Category" operation="getCategory"
+                inputVariable="getCategoryInput"
+                outputVariable="getCategoryResponse"/>
+      </sequence>
+    </scope>
+    <scope name="CalcListingFee">
+      <variables>
+        <variable name="listingFee" element="lst:listingFee"/>
+      </variables>
+      <sequence name="Sequence_25">
+        <assign name="calcListingFee">
+          <bpelx:annotation>
+            <bpelx:pattern>transformation</bpelx:pattern>
+          </bpelx:annotation>
+          <copy>
+            <from expression="ora:processXSLT('getListingFee.xsl',bpws:getVariableData('listing'))"/>
+            <to variable="listingFee"/>
+          </copy>
+        </assign>
+        <assign name="setListingFee">
+          <copy>
+            <from variable="listingFee" query="/lst:listingFee"/>
+            <to variable="listing"
+                query="/lst:listing/lst:listingDetail/lst:listingFee"/>
+          </copy>
+        </assign>
+      </sequence>
+    </scope>
+    <scope name="CheckForSuspectItem">
+      <variables>
+        <variable name="validateItemDetailsInput"
+                  messageType="val:ValidationInput"/>
+        <variable name="validateItemDetailsOutput"
+                  messageType="val:ValidationErrors"/>
+        <variable name="FaultVar" messageType="val:ValidationErrors"/>
+      </variables>
+      <faultHandlers>
+        <catch faultName="val:ValidationException" faultVariable="FaultVar">
+          <sequence name="Sequence_9">
+            <assign name="setSuspectItemDetails">
+              <copy>
+                <from expression="'SUSPECT'"/>
+                <to variable="listing"
+                    query="/lst:listing/lst:listingDetail/lst:listingStatus"/>
+              </copy>
+              <copy>
+                <from variable="FaultVar" part="result"
+                      query="/val:ValidationErrors/error[1]"/>
+                <to variable="checkSuspectItemInput" part="payload"
+                    query="/ns5:checkSuspectItem/reasonDescription"/>
+              </copy>
+              <copy>
+                <from expression="'Suspect Item'"/>
+                <to variable="checkSuspectItemInput" part="payload"
+                    query="/ns5:checkSuspectItem/reasonCode"/>
+              </copy>
+            </assign>
+          </sequence>
+        </catch>
+      </faultHandlers>
+      <sequence name="SequenceCheckSuspectItem">
+        <assign name="setValidationInput">
+          <copy>
+            <from variable="listing" query="/lst:listing"/>
+            <to variable="validateItemDetailsInput" part="instanceFile"
+                query="/val:validation"/>
+          </copy>
+          <bpelx:remove>
+            <bpelx:target variable="validateItemDetailsInput"
+                          part="instanceFile"
+                          query="/val:validation/lst:listingId"/>
+          </bpelx:remove>
+          <copy>
+            <from expression="ora:doc('http://localhost:80/orabpel/xmllib/obay/sch/chkSuspectItem.sch')"/>
+            <to variable="validateItemDetailsInput" part="ruleFile"
+                query="/sch:schema"/>
+          </copy>
+        </assign>
+        <invoke name="validateItemDetails" partnerLink="Schematron"
+                portType="val:ValidationPT" operation="validation"
+                inputVariable="validateItemDetailsInput"
+                outputVariable="validateItemDetailsOutput"/>
+        <assign name="setListingStatus">
+          <copy>
+            <from expression="'APPROVED'"/>
+            <to variable="listing"
+                query="/lst:listing/lst:listingDetail/lst:listingStatus"/>
+          </copy>
+        </assign>
+      </sequence>
+    </scope>
+    <scope name="CreateListing">
+      <variables>
+        <variable name="createListingInput" messageType="ns7:createListing"/>
+        <variable name="createListingResponse"
+                  messageType="ns7:createListingResponse"/>
+      </variables>
+      <sequence name="Sequence_10">
+        <assign name="setCreateListingInput">
+          <copy>
+            <from variable="listing" query="/lst:listing/lst:listingDetail"/>
+            <to variable="createListingInput" part="payload"
+                query="/ns7:createListing/lst:listingDetail"/>
+          </copy>
+        </assign>
+        <invoke name="createListing" partnerLink="Listing"
+                portType="ns7:Listing" operation="createListing"
+                inputVariable="createListingInput"
+                outputVariable="createListingResponse"/>
+        <assign name="setListingId">
+          <copy>
+            <from variable="createListingResponse" part="payload"
+                  query="/ns7:createListingResponse/lst:listingId"/>
+            <to variable="listing" query="/lst:listing/lst:listingId"/>
+          </copy>
+          <copy>
+            <from variable="listing" query="/lst:listing/lst:listingId"/>
+            <to variable="submitItemListingResponse" part="payload"
+                query="/client:submitItemListingResponse/lst:listingId"/>
+          </copy>
+          <copy>
+            <from variable="listing"
+                  query="/lst:listing/lst:listingDetail/lst:listingStatus"/>
+            <to variable="submitItemListingResponse" part="payload"
+                query="/client:submitItemListingResponse/lst:listingStatus"/>
+          </copy>
+          <copy>
+            <from variable="listing"
+                  query="/lst:listing/lst:listingDetail/lst:listingFee"/>
+            <to variable="submitItemListingResponse" part="payload"
+                query="/client:submitItemListingResponse/lst:listingFee"/>
+          </copy>
+        </assign>
+      </sequence>
+    </scope>
+    <assign name="SetSubmitItemListingResponse">
+      <copy>
+        <from variable="listing" query="/lst:listing/lst:listingId"/>
+        <to variable="submitItemListingResponse" part="payload"
+            query="/client:submitItemListingResponse/lst:listingId"/>
+      </copy>
+      <copy>
+        <from variable="listing"
+              query="/lst:listing/lst:listingDetail/lst:listingStatus"/>
+        <to variable="submitItemListingResponse" part="payload"
+            query="/client:submitItemListingResponse/lst:listingStatus"/>
+      </copy>
+      <copy>
+        <from variable="listing"
+              query="/lst:listing/lst:listingDetail/lst:listingFee"/>
+        <to variable="submitItemListingResponse" part="payload"
+            query="/client:submitItemListingResponse/lst:listingFee"/>
+      </copy>
+    </assign>
+    <reply name="submitItemListingResponse" partnerLink="client"
+           portType="client:ListItem" operation="submitItemListing"
+           variable="submitItemListingResponse">
+      <correlations>
+        <correlation initiate="yes" set="ListingIdCS"/>
+      </correlations>
+    </reply>
+    <switch name="VettingRequired">
+      <case condition="bpws:getVariableData('listing','/lst:listing/lst:listingDetail/lst:listingStatus') = 'SUSPECT'">
+        <sequence name="Sequence_18">
+          <scope name="VetSuspectItem">
+            <variables>
+              <variable name="updateListingStatusInput"
+                        messageType="ns7:updateListingStatus"/>
+              <variable name="updateListingStatusResponse"
+                        messageType="ns7:updateListingStatusResponse"/>
+            </variables>
+            <sequence name="Sequence_19">
+              <assign name="setCheckSuspectItemInput">
+                <copy>
+                  <from variable="listing"
+                        query="/lst:listing/lst:listingDetail/lst:item"/>
+                  <to variable="checkSuspectItemInput" part="payload"
+                      query="/ns5:checkSuspectItem/lst:item"/>
+                </copy>
+              </assign>
+              <invoke name="checkSuspectItem" partnerLink="CheckSuspectItem"
+                      portType="ns5:CheckSuspectItem"
+                      operation="checkSuspectItem"
+                      inputVariable="checkSuspectItemInput"/>
+              <receive name="CheckSuspectItemResponse"
+                       partnerLink="CheckSuspectItem"
+                       portType="ns5:CheckSuspectItemCallback"
+                       operation="checkSuspectItemResponse"
+                       variable="checkSuspectItemResponse" createInstance="no"/>
+              <scope name="UpdateListingStatus">
+                <sequence name="Sequence_21">
+                  <assign name="SetListingStatus">
+                    <copy>
+                      <from expression="'APPROVED'"/>
+                      <to variable="listing"
+                          query="/lst:listing/lst:listingDetail/lst:listingStatus"/>
+                    </copy>
+                    <copy>
+                      <from variable="listing"
+                            query="/lst:listing/lst:listingId"/>
+                      <to variable="updateListingStatusInput" part="payload"
+                          query="/ns7:updateListingStatus/lst:listingId"/>
+                    </copy>
+                    <copy>
+                      <from variable="listing"
+                            query="/lst:listing/lst:listingDetail/lst:listingStatus"/>
+                      <to variable="updateListingStatusInput" part="payload"
+                          query="/ns7:updateListingStatus/lst:listingStatus"/>
+                    </copy>
+                  </assign>
+                  <invoke name="updateListingStatus" partnerLink="Listing"
+                          portType="ns7:Listing" operation="updateListingStatus"
+                          inputVariable="updateListingStatusInput"
+                          outputVariable="updateListingStatusResponse"/>
+                </sequence>
+              </scope>
+              <switch name="Rejected">
+                <case condition="bpws:getVariableData('checkSuspectItemResponse','payload','/ns5:checkSuspectItemResponse/lst:itemStatus') = 'REJECTED'">
+                  <sequence name="Sequence_20">
+                    <terminate name="Terminate"/>
+                  </sequence>
+                </case>
+                <otherwise/>
+              </switch>
+            </sequence>
+          </scope>
+        </sequence>
+      </case>
+      <otherwise/>
+    </switch>
+    <scope name="ConfirmListing">
+      <variables>
+        <variable name="confirmItemListingInput"
+                  messageType="client:confirmItemListing"/>
+        <variable name="confirmItemListingResponse"
+                  messageType="client:confirmItemListingResponse"/>
+      </variables>
+      <sequence name="Sequence_13">
+        <receive name="confirmItemListing" partnerLink="client"
+                 portType="client:ListItem" operation="confirmItemListing"
+                 variable="confirmItemListingInput" createInstance="no">
+          <correlations>
+            <correlation initiate="no" set="ListingIdCS"/>
+          </correlations>
+        </receive>
+        <assign name="setConfirmItemListingResponse">
+          <copy>
+            <from variable="confirmItemListingInput" part="payload"
+                  query="/client:confirmItemListing/lst:listingId"/>
+            <to variable="confirmItemListingResponse" part="payload"
+                query="/client:confirmItemListingResponse/lst:listingId"/>
+          </copy>
+        </assign>
+        <reply name="confirmItemListingResponse" partnerLink="client"
+               portType="client:ListItem" operation="confirmItemListing"
+               variable="confirmItemListingResponse"/>
+        <switch name="ScheduleListing">
+          <case condition="string-length(bpws:getVariableData('listing','/lst:listing/lst:listingDetail/lst:startTime')) > 0 and bpws:getVariableData('listing','/lst:listing/lst:listingDetail/lst:startTime') > xp20:current-dateTime()">
+            <scope name="ScheduleListing">
+              <sequence name="Sequence_16">
+                <scope name="setStatusToScheduled">
+                  <variables>
+                    <variable name="updateListingStatusInput"
+                              messageType="ns7:updateListingStatus"/>
+                    <variable name="updateListingStatusResponse"
+                              messageType="ns7:updateListingStatusResponse"/>
+                  </variables>
+                  <sequence name="Sequence_22">
+                    <assign name="setUpdateListingStatus">
+                      <copy>
+                        <from expression="'SCHEDULED'"/>
+                        <to variable="listing"
+                            query="/lst:listing/lst:listingDetail/lst:listingStatus"/>
+                      </copy>
+                      <copy>
+                        <from variable="listing"
+                              query="/lst:listing/lst:listingId"/>
+                        <to variable="updateListingStatusInput" part="payload"
+                            query="/ns7:updateListingStatus/lst:listingId"/>
+                      </copy>
+                      <copy>
+                        <from variable="listing"
+                              query="/lst:listing/lst:listingDetail/lst:listingStatus"/>
+                        <to variable="updateListingStatusInput" part="payload"
+                            query="/ns7:updateListingStatus/lst:listingStatus"/>
+                      </copy>
+                    </assign>
+                    <invoke name="updateListingStatusInput"
+                            partnerLink="Listing" portType="ns7:Listing"
+                            operation="updateListingStatus"
+                            inputVariable="updateListingStatusInput"
+                            outputVariable="updateListingStatusResponse"/>
+                  </sequence>
+                </scope>
+                <wait name="WaitTilStartTime"
+                      until="bpws:getVariableData('listing','/lst:listing/lst:listingDetail/lst:startTime')"/>
+              </sequence>
+            </scope>
+          </case>
+          <otherwise>
+            <assign name="setStartTime">
+              <copy>
+                <from expression="xp20:current-dateTime()"/>
+                <to variable="listing"
+                    query="/lst:listing/lst:listingDetail/lst:startTime"/>
+              </copy>
+            </assign>
+          </otherwise>
+        </switch>
+      </sequence>
+    </scope>
+    <scope name="PublishListing">
+      <sequence name="Sequence_17">
+        <scope name="SetLisitingStatus">
+          <variables>
+            <variable name="updateListingStatusInput"
+                      messageType="ns7:updateListingStatus"/>
+            <variable name="updateListingStatusResponse"
+                      messageType="ns7:updateListingStatusResponse"/>
+          </variables>
+          <sequence name="Sequence_23">
+            <assign name="setListingStatusLive">
+              <copy>
+                <from expression="'LIVE'"/>
+                <to variable="listing"
+                    query="/lst:listing/lst:listingDetail/lst:listingStatus"/>
+              </copy>
+              <copy>
+                <from variable="listing" query="/lst:listing/lst:listingId"/>
+                <to variable="updateListingStatusInput" part="payload"
+                    query="/ns7:updateListingStatus/lst:listingId"/>
+              </copy>
+              <copy>
+                <from variable="listing"
+                      query="/lst:listing/lst:listingDetail/lst:listingStatus"/>
+                <to variable="updateListingStatusInput" part="payload"
+                    query="/ns7:updateListingStatus/lst:listingStatus"/>
+              </copy>
+            </assign>
+            <invoke name="setListingStatus" partnerLink="Listing"
+                    portType="ns7:Listing" operation="updateListingStatus"
+                    inputVariable="updateListingStatusInput"
+                    outputVariable="updateListingStatusResponse"/>
+          </sequence>
+        </scope>
+        <scope name="CollectListingFee">
+          <variables>
+            <variable name="debitUserAccountInput"
+                      messageType="ns10:debitUserAccount"/>
+            <variable name="debitUserAccountResponse"
+                      messageType="ns10:debitUserAccountResponse"/>
+          </variables>
+          <sequence name="Sequence_24">
+            <assign name="setDebitUserAccountInput">
+              <copy>
+                <from variable="listing"
+                      query="/lst:listing/lst:listingDetail/lst:sellerId"/>
+                <to variable="debitUserAccountInput" part="payload"
+                    query="/ns10:debitUserAccount/usr:userId"/>
+              </copy>
+              <copy>
+                <from variable="listing"
+                      query="/lst:listing/lst:listingDetail/lst:listingFee"/>
+                <to variable="debitUserAccountInput" part="payload"
+                    query="/ns10:debitUserAccount/acc:trnAmount"/>
+              </copy>
+              <copy>
+                <from expression="concat('Listing Fee - ', bpws:getVariableData('listing','/lst:listing/lst:listingId'))"/>
+                <to variable="debitUserAccountInput" part="payload"
+                    query="/ns10:debitUserAccount/acc:trnDesc"/>
+              </copy>
+            </assign>
+            <invoke name="debitUserAccount" partnerLink="UserManagement"
+                    portType="ns10:userManagement" operation="debitUserAccount"
+                    inputVariable="debitUserAccountInput"
+                    outputVariable="debitUserAccountResponse"/>
+          </sequence>
+        </scope>
+      </sequence>
+    </scope>
+    <scope name="RunAuction">
+      <variables>
+        <variable name="auctionItemInput" messageType="ns13:auctionItem"/>
+        <variable name="auctionItemResult"
+                  messageType="ns13:auctionItemResult"/>
+      </variables>
+      <sequence name="Sequence_26">
+        <assign name="setAuctionItemInput">
+          <copy>
+            <from variable="listing" query="/lst:listing"/>
+            <to variable="auctionItemInput" part="payload"
+                query="/ns13:auctionItem/lst:listing"/>
+          </copy>
+        </assign>
+        <invoke name="AuctionItem" partnerLink="AuctionItem"
+                portType="ns13:AuctionItem" operation="auctionItem"
+                inputVariable="auctionItemInput"/>
+        <receive name="ReceiveAuctionItemResult" partnerLink="AuctionItem"
+                 portType="ns13:AuctionItemCallback"
+                 operation="auctionItemResult" variable="auctionItemResult"
+                 createInstance="no"/>
+      </sequence>
+    </scope>
+  </sequence>
+</process>

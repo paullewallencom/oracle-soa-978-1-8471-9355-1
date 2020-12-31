@@ -1,0 +1,152 @@
+<?xml version = "1.0" encoding = "UTF-8" ?>
+<!--
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  Oracle JDeveloper BPEL Designer 
+  
+  Created: Thu Jan 01 19:09:51 EST 2009
+  Author:  mswright
+  Purpose: Synchronous BPEL Process
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+-->
+<process name="BillUser"
+         targetNamespace="http://xmlns.packtpub.com/obay/BillUser"
+         xmlns="http://schemas.xmlsoap.org/ws/2003/03/business-process/"
+         xmlns:bpws="http://schemas.xmlsoap.org/ws/2003/03/business-process/"
+         xmlns:xp20="http://www.oracle.com/XSL/Transform/java/oracle.tip.pc.services.functions.Xpath20"
+         xmlns:ns4="http://xmlns.packtpub.com/obay/bs/UserManagement"
+         xmlns:ids="http://xmlns.oracle.com/bpel/services/IdentityService/xpath"
+         xmlns:ldap="http://schemas.oracle.com/xpath/extension/ldap"
+         xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+         xmlns:ns5="http://xmlns.packtpub.com/obay/ivs/CreditCard"
+         xmlns:client="http://xmlns.packtpub.com/obay/BillUser"
+         xmlns:ns6="http://schemas.packtpub.com/obay/acc"
+         xmlns:ora="http://schemas.oracle.com/xpath/extension"
+         xmlns:xref="http://www.oracle.com/XSL/Transform/java/oracle.tip.xref.xpath.XRefXPathFunctions"
+         xmlns:hwf="http://xmlns.oracle.com/bpel/workflow/xpath"
+         xmlns:ns1="http://schemas.packtpub.com/obay/usr"
+         xmlns:ehdr="http://www.oracle.com/XSL/Transform/java/oracle.tip.esb.server.headers.ESBHeaderFunctions"
+         xmlns:ns3="http://xmlns.packtpub.com/obay/bs/BillUser"
+         xmlns:ns2="http://schemas.packtpub.com/obay/cmn"
+         xmlns:bpelx="http://schemas.oracle.com/bpel/extension"
+         xmlns:orcl="http://www.oracle.com/XSL/Transform/java/oracle.tip.pc.services.functions.ExtFunc">
+  <!-- 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      PARTNERLINKS                                                      
+      List of services participating in this BPEL process               
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  -->
+  <partnerLinks>
+    <!-- 
+      The 'client' role represents the requester of this service. It is 
+      used for callback. The location and correlation information associated
+      with the client role are automatically set using WS-Addressing.
+    -->
+    <partnerLink name="client" partnerLinkType="ns3:BillUser"
+                 myRole="BillUserProvider"/>
+    <partnerLink name="UserManagement" partnerRole="userManagement_Role"
+                 partnerLinkType="ns4:userManagement_PL"/>
+    <partnerLink name="CreditCard" partnerRole="CreditCard_Role"
+                 partnerLinkType="ns5:CreditCard_PL"/>
+  </partnerLinks>
+  <!-- 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      VARIABLES                                                        
+      List of messages and XML documents used within this BPEL process 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  -->
+  <variables>
+    <!-- Reference to the message passed as input during initiation -->
+    <!-- Reference to the message that will be returned to the requester-->
+    <variable name="inputVariable" messageType="ns3:BillUser"/>
+    <variable name="creditUserAccountInput"
+              messageType="ns4:creditUserAccount"/>
+    <variable name="creditUserAccountResponse"
+              messageType="ns4:creditUserAccountResponse"/>
+    <variable name="debitCreditCardInput" messageType="ns5:debitCreditCard"/>
+    <variable name="debitCreditCardResponse"
+              messageType="ns5:debitCreditCardResponse"/>
+    <variable name="getUserInput" messageType="ns4:getUser"/>
+    <variable name="getUserResponse" messageType="ns4:getUserResponse"/>
+  </variables>
+  <!-- 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+     ORCHESTRATION LOGIC                                               
+     Set of activities coordinating the flow of messages across the    
+     services integrated within this business process                  
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  -->
+  <sequence name="main">
+    <!-- Receive input from requestor. (Note: This maps to operation defined in BillUser.wsdl) -->
+    <receive name="receiveInput" partnerLink="client" portType="ns3:BillUser"
+             operation="billUser" variable="inputVariable"
+             createInstance="yes"/>
+    <!-- Generate reply to synchronous request -->
+    <scope name="GetUserCreditCard">
+      <sequence name="Sequence_2">
+        <assign name="setUserId">
+          <copy>
+            <from variable="inputVariable" part="payload"
+                  query="/ns3:billUser/ns1:userId"/>
+            <to variable="getUserInput" part="payload"
+                query="/ns4:getUser/ns1:userId"/>
+          </copy>
+        </assign>
+        <invoke name="getUserDetails" partnerLink="UserManagement"
+                portType="ns4:userManagement" operation="getUser"
+                inputVariable="getUserInput" outputVariable="getUserResponse"/>
+      </sequence>
+    </scope>
+    <scope name="BillUserCreditCard">
+      <sequence name="Sequence_1">
+        <assign name="setDebitCreditCardInput">
+          <copy>
+            <from expression="bpws:getVariableData('inputVariable','payload','/ns3:billUser/ns6:accountBalance') * -1"/>
+            <to variable="debitCreditCardInput" part="payload"
+                query="/ns5:debitCreditCard/ns6:trnAmount"/>
+          </copy>
+          <copy>
+            <from expression="'oBay Account Payment'"/>
+            <to variable="debitCreditCardInput" part="payload"
+                query="/ns5:debitCreditCard/ns6:trnDesc"/>
+          </copy>
+          <copy>
+            <from variable="getUserResponse" part="payload"
+                  query="/ns4:getUserResponse/ns1:user/ns2:creditCard"/>
+            <to variable="debitCreditCardInput" part="payload"
+                query="/ns5:debitCreditCard/ns2:creditCard"/>
+          </copy>
+        </assign>
+        <invoke name="debitCreditCard" partnerLink="CreditCard"
+                portType="ns5:CreditCard" operation="debitCreditCard"
+                inputVariable="debitCreditCardInput"
+                outputVariable="debitCreditCardResponse"/>
+      </sequence>
+    </scope>
+    <scope name="CreditUserAccount">
+      <sequence name="Sequence_3">
+        <assign name="setCreditUserAccountInput">
+          <copy>
+            <from variable="inputVariable" part="payload"
+                  query="/ns3:billUser/ns1:userId"/>
+            <to variable="creditUserAccountInput" part="payload"
+                query="/ns4:creditUserAccount/ns1:userId"/>
+          </copy>
+          <copy>
+            <from expression="bpws:getVariableData('inputVariable','payload','/ns3:billUser/ns6:accountBalance') * -1"/>
+            <to variable="creditUserAccountInput" part="payload"
+                query="/ns4:creditUserAccount/ns6:trnAmount"/>
+          </copy>
+          <copy>
+            <from expression="'oBay Account Payment'"/>
+            <to variable="creditUserAccountInput" part="payload"
+                query="/ns4:creditUserAccount/ns6:trnDesc"/>
+          </copy>
+        </assign>
+        <invoke name="creditUserAccount" partnerLink="UserManagement"
+                portType="ns4:userManagement" operation="creditUserAccount"
+                inputVariable="creditUserAccountInput"
+                outputVariable="creditUserAccountResponse"/>
+      </sequence>
+    </scope>
+  </sequence>
+</process>

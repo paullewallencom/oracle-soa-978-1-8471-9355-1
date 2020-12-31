@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="http://schemas.packtpub.com/obay/auc"
+	elementFormDefault="qualified"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	xmlns="http://schemas.packtpub.com/obay/auc">
+
+	<xsd:element name="auction" type="tAuction" />
+	<xsd:element name="auctionId" type="tAuctionId" />
+	<xsd:element name="auctionItem" type="tAuctionItem" />
+	<xsd:element name="auctionStatus" type="tAuctionStatus" />
+	<xsd:element name="auctionType" type="tAuctionType" />
+	<xsd:element name="startTime" type="xsd:dateTime" />
+	<xsd:element name="endTime" type="xsd:dateTime" />
+	<xsd:element name="startingPrice" type="xsd:double" />
+	<xsd:element name="reservePrice" type="xsd:double" />
+        <xsd:element name="winningPrice" type="xsd:double" />
+        
+	<xsd:element name="bids"      type="tBids" />
+	<xsd:element name="bid"       type="tBid" />
+	<xsd:element name="bidId"     type="tBidId" /> 
+        <xsd:element name="bidNo"     type="xsd:int" />
+        <xsd:element name="bidderId"  type="xsd:string" />
+        <xsd:element name="bidtime"   type="xsd:dateTime" />
+        <xsd:element name="maxAmount" type="xsd:double" />
+        <xsd:element name="bidAmount" type="xsd:double" />
+        <xsd:element name="status"    type="xsd:string" />
+
+	<xsd:complexType name="tAuction">
+		<xsd:sequence>
+			<xsd:element ref="auctionId" />
+			<xsd:element ref="auctionStatus" />
+			<xsd:element ref="auctionItem" />
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	<xsd:complexType name="tAuctionItem">
+		<xsd:sequence>
+			<xsd:element ref="auctionType"/>
+			<xsd:element ref="startTime"/>
+			<xsd:element ref="endTime"/>
+			<xsd:element ref="startingPrice"/>
+			<xsd:element ref="reservePrice"/>
+			<xsd:element ref="winningPrice"/>
+			<xsd:element name="winningBid" minOccurs="0" type="tBid" />
+			<xsd:element name="bidHistory" type="tBids" />
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:complexType name="tBids">
+		<xsd:sequence>
+			<xsd:element name="bid" type="tBid" minOccurs="0"
+				maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:complexType name="tBid">
+		<xsd:sequence>
+			<xsd:element ref="bidNo" />
+			<xsd:element ref="bidderId"/>
+			<xsd:element ref="bidtime"/>
+			<xsd:element ref="maxAmount"/>
+			<xsd:element ref="bidAmount"/>
+			<xsd:element ref="status"/>
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:simpleType name="tAuctionId">
+		<xsd:restriction base="xsd:string">
+			<xsd:maxLength value="20" />
+			<xsd:minLength value="1" />
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<xsd:simpleType name="tBidId">
+		<xsd:restriction base="xsd:string">
+			<xsd:maxLength value="20" />
+			<xsd:minLength value="1" />
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<xsd:simpleType name="tAuctionType">
+		<xsd:restriction base="xsd:string">
+			<xsd:length value="3" />
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<xsd:simpleType name="tAuctionStatus">
+		<xsd:restriction base="xsd:string">
+			<xsd:maxLength value="20" />
+			<xsd:minLength value="3" />
+		</xsd:restriction>
+	</xsd:simpleType>
+
+</xsd:schema>

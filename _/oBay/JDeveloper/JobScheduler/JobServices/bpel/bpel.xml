@@ -1,0 +1,10 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<BPELSuitcase>
+   <BPELProcess id="JobServices" src="JobServices.bpel">
+      <partnerLinkBindings>
+         <partnerLinkBinding name="Job">
+            <property name="wsdlLocation">Job.wsdl</property>
+         </partnerLinkBinding>
+      </partnerLinkBindings>
+   </BPELProcess>
+</BPELSuitcase>

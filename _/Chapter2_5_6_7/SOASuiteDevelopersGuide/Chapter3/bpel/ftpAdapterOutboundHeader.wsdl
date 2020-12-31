@@ -1,0 +1,28 @@
+<definitions
+     name="fileAdapter"
+     targetNamespace="http://xmlns.oracle.com/pcbpel/adapter/ftp/" 
+     xmlns:tns="http://xmlns.oracle.com/pcbpel/adapter/ftp/"   
+     xmlns="http://schemas.xmlsoap.org/wsdl/" >
+
+    <types>
+        <schema attributeFormDefault="qualified" elementFormDefault="qualified" 
+                targetNamespace="http://xmlns.oracle.com/pcbpel/adapter/ftp/"
+                xmlns="http://www.w3.org/2001/XMLSchema" 
+                xmlns:FTPAPP="http://xmlns.oracle.com/pcbpel/adapter/ftp/">
+            <element name="OutboundFTPHeaderType">
+                <complexType>
+                    <sequence>
+                        <element name="fileName" type="string"/>
+                    </sequence>
+                </complexType>
+            </element>
+        </schema>
+    </types>
+   
+    <!-- Header Message --> 
+    <message name="OutboundHeader_msg"> 
+      <part element="tns:OutboundFTPHeaderType" name="outboundHeader"/> 
+   </message> 
+
+</definitions>
+

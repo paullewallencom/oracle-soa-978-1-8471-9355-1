@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions name="ValidateEmailAddress"
+             targetNamespace="http://xmlns.packtpub.com/obay/ValidateEmailAddress"
+             xmlns="http://schemas.xmlsoap.org/wsdl/"
+             xmlns:client="http://xmlns.packtpub.com/obay/ValidateEmailAddress"
+             xmlns:usr="http://schemas.packtpub.com/obay/usr"
+             xmlns:cmn="http://schemas.packtpub.com/obay/cmn"
+             xmlns:plnk="http://schemas.xmlsoap.org/ws/2003/05/partner-link/">
+
+	<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	TYPE DEFINITION - List of services participating in this BPEL process
+	The default output of the BPEL designer uses strings as input and 
+	output to the BPEL Process. But you can define or import any XML 
+	Schema type and use them as part of the message types.
+	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->   
+	<types>
+		<schema xmlns="http://www.w3.org/2001/XMLSchema"
+                        targetNamespace="http://xmlns.packtpub.com/obay/ValidateEmailAddress">
+                        
+			<import namespace="http://schemas.packtpub.com/obay/usr" 
+                                schemaLocation="http://mswright-au.au.oracle.com/orabpel/xmllib/obay/User_v1_0.xsd" />
+			<import namespace="http://schemas.packtpub.com/obay/cmn" 
+                                schemaLocation="http://mswright-au.au.oracle.com/orabpel/xmllib/obay/Common_v1_0.xsd" />
+
+                        <element name="validateEmailAddress"            type="client:tValidateEmailAddress"/>
+                                
+                        <complexType name="tValidateEmailAddress">
+                            <sequence>
+                                <element ref="usr:userId"/>
+                                <element ref="cmn:emailAddress"/>
+                                <element ref="cmn:emailAddressToken"/>
+                                <element name="title"    type="string"/>
+                                <element name="body"     type="string"/>
+                            </sequence>
+                        </complexType>                   
+		</schema>
+	</types>
+
+	<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	MESSAGE TYPE DEFINITION - Definition of the message types used as 
+	part of the port type defintions
+	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->      
+	<message name="ValidateEmailAddress">
+		<part name="payload" element="client:validateEmailAddress" />
+	</message>
+
+	<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	PORT TYPE DEFINITION - A port type groups a set of operations into
+	a logical service unit.
+	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+
+	<!-- portType implemented by the ValidateEmailAddress BPEL process -->
+	<portType name="ValidateEmailAddress">
+		<operation name="validateEmailAddress">
+			<input  message="client:ValidateEmailAddress" />
+		</operation>
+	</portType>
+
+	<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	PARTNER LINK TYPE DEFINITION
+	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ --> 
+	<plnk:partnerLinkType name="ValidateEmailAddress">
+		<plnk:role name="ValidateEmailAddressProvider">
+			<plnk:portType name="client:ValidateEmailAddress"/>
+		</plnk:role>
+	</plnk:partnerLinkType>
+</definitions>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<faultPolicy version="2.0.1" id="DefaultPolicy" xmlns:env="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://schemas.oracle.com/bpel/faultpolicy" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<!-- This section describes fault conditions. Build more conditions with faultName, test and action -->
+	<Conditions>
+		<!-- Fault if wsdlRuntimeLocation is not reachable -->
+		<faultName xmlns:bpelx="http://schemas.oracle.com/bpel/extension" name="bpelx:remoteFault">
+			<condition>
+				<action ref="ora-retry"/>
+			</condition>
+		</faultName>
+		<!-- Fault if location port is not reachable-->
+		<faultName xmlns:bpelx="http://schemas.oracle.com/bpel/extension" name="bpelx:bindingFault">
+			<condition>
+				<action ref="ora-rethrow-fault"/>
+			</condition>
+		</faultName>
+	</Conditions>
+	<Actions>
+		<!-- This action will attempt 8 retries at increasing intervals of 2, 4, 8, 16, 32, 64, 128, and 256 seconds. -->
+		<Action id="ora-retry">
+			<retry>
+				<retryCount>8</retryCount>
+				<retryInterval>2</retryInterval>
+                                <retryFailureAction ref="ora-terminate"/>
+				<exponentialBackoff/>
+			</retry>
+		</Action>
+		<!-- This is an action will cause a replay scope fault-->
+		<Action id="ora-replay-scope">
+			<replayScope/>
+		</Action>
+		<!-- This is an action will bubble up the fault-->
+		<Action id="ora-rethrow-fault">
+			<rethrowFault/>
+		</Action>
+		<!-- This is an action will mark the work item to be "pending recovery from console"-->
+		<Action id="ora-human-intervention">
+			<humanIntervention/>
+		</Action>
+		<!-- This action will cause the instance to terminate-->
+		<Action id="ora-terminate">
+			<abort/>
+		</Action>
+	</Actions>
+</faultPolicy>

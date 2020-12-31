@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+-->
+<xsd:schema blockDefault="#all" 
+            attributeFormDefault="unqualified"
+            elementFormDefault="qualified"
+            targetNamespace="http://xmlns.oracle.com/bpel/rules"
+            xmlns ="http://xmlns.oracle.com/bpel/rules"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns:tns="http://xmlns.oracle.com/bpel/rules">
+
+  <xsd:attributeGroup name="name-desc">
+    <xsd:annotation>
+      <xsd:documentation>
+        Attribute group for elements requiring (name, description) attributes
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:attribute name="name" type="xsd:NCName" use="required"/>
+    <xsd:attribute name="displayName" type="xsd:string" use="optional"/>
+    <xsd:attribute name="description" type="xsd:string" use="optional"/>
+  </xsd:attributeGroup>
+  
+  <xsd:complexType name="tPassword">
+    <xsd:annotation>
+      <xsd:documentation>
+        Password Type
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:simpleContent>
+      <xsd:extension base="xsd:string">
+        <xsd:attribute name="encrypted" type="xsd:boolean" use="optional" default="true"/>
+      </xsd:extension>
+    </xsd:simpleContent>
+  </xsd:complexType>  
+
+  <xsd:complexType name="tProperty">
+    <xsd:annotation>
+      <xsd:documentation>
+        Property Type
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:simpleContent>
+      <xsd:extension base="xsd:string">
+        <xsd:attribute name="name" type="xsd:NCName" use="required"/>
+      </xsd:extension>
+    </xsd:simpleContent>
+  </xsd:complexType>
+
+  <xsd:complexType name="tPropertyList">
+    <xsd:annotation>
+      <xsd:documentation>
+        PropertyList
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="property" type="tns:tProperty" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+</xsd:schema>

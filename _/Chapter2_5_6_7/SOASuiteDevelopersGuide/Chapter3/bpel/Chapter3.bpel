@@ -1,0 +1,103 @@
+<?xml version = "1.0" encoding = "UTF-8" ?>
+<!--
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  Oracle JDeveloper BPEL Designer 
+  
+  Created: Wed Jan 21 12:06:43 GMT 2009
+  Author:  axreynol
+  Purpose: Empty BPEL Process
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+-->
+<process name="Chapter3" targetNamespace="http://soasuite.book/Chapter3"
+         xmlns="http://schemas.xmlsoap.org/ws/2003/03/business-process/"
+         xmlns:xp20="http://www.oracle.com/XSL/Transform/java/oracle.tip.pc.services.functions.Xpath20"
+         xmlns:bpws="http://schemas.xmlsoap.org/ws/2003/03/business-process/"
+         xmlns:ns4="http://xmlns.oracle.com/pcbpel/adapter/db/PayrollDatabaseService/"
+         xmlns:ldap="http://schemas.oracle.com/xpath/extension/ldap"
+         xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+         xmlns:ns5="http://xmlns.oracle.com/pcbpel/adapter/db/top/PayrollDatabaseService"
+         xmlns:client="http://soasuite.book/Chapter3"
+         xmlns:ora="http://schemas.oracle.com/xpath/extension"
+         xmlns:ns1="http://xmlns.oracle.com/pcbpel/adapter/file/PayrollInputFileService/"
+         xmlns:ns3="http://packt.com/PayrollInputFileService"
+         xmlns:ns2="http://xmlns.oracle.com/pcbpel/adapter/ftp/PayrollDeliveryFtpService/"
+         xmlns:bpelx="http://schemas.oracle.com/bpel/extension"
+         xmlns:orcl="http://www.oracle.com/XSL/Transform/java/oracle.tip.pc.services.functions.ExtFunc">
+  <!-- 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      PARTNERLINKS                                                      
+      List of services participating in this BPEL process               
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  -->
+  <partnerLinks>
+    <partnerLink myRole="Read_role" name="PayrollInputFileService"
+                 partnerLinkType="ns1:Read_plt"/>
+    <partnerLink name="PayrollDeliveryFtpService" partnerRole="Put_role"
+                 partnerLinkType="ns2:Put_plt"/>
+    <partnerLink name="PayrollDatabaseService"
+                 partnerRole="PayrollDatabaseService_role"
+                 partnerLinkType="ns4:PayrollDatabaseService_plt"/>
+  </partnerLinks>
+  <variables>
+    <variable name="Payroll_InputVariable" messageType="ns1:PayrollList_msg"/>
+    <variable name="DummyParameter" messageType="ns1:Dummy_msg"/>
+    <variable name="Paryoll_Write_InputVariable"
+              messageType="ns2:PayrollList_msg"/>
+    <variable name="InsertPayrollData_InputVariable"
+              messageType="ns4:PayrollitemCollection_msg"/>
+  </variables>
+  <!-- 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      VARIABLES                                                        
+      List of messages and XML documents used within this BPEL process 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  -->
+  <!-- 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+     ORCHESTRATION LOGIC                                               
+     Set of activities coordinating the flow of messages across the    
+     services integrated within this business process                  
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  -->
+  <sequence name="main">
+    <receive name="ReceiveFile" createInstance="yes"
+             partnerLink="PayrollInputFileService" portType="ns1:Read_ptt"
+             operation="Read" variable="Payroll_InputVariable"/>
+    <assign name="Copydata">
+      <copy>
+        <from variable="Payroll_InputVariable" part="PayrollList"
+              query="/ns3:PayrollList"/>
+        <to variable="Paryoll_Write_InputVariable" part="PayrollList"
+            query="/ns3:PayrollList"/>
+      </copy>
+      <copy>
+        <from expression="'This is just a dummy to remove the unitialied variable warning'"/>
+        <to variable="DummyParameter" part="Dummy"/>
+      </copy>
+      <copy>
+        <from expression="'Dummy to get rid of uninitialized variable warning, will be overwritten by transform'"/>
+        <to variable="InsertPayrollData_InputVariable"
+            part="PayrollitemCollection"
+            query="/ns5:PayrollitemCollection/ns5:Payrollitem/ns5:paymentdate"/>
+      </copy>
+    </assign>
+    <invoke name="WriteFile" partnerLink="PayrollDeliveryFtpService"
+            portType="ns2:Put_ptt" operation="Put"
+            inputVariable="Paryoll_Write_InputVariable"/>
+    <assign name="Transform_Payroll_Format">
+      <bpelx:annotation>
+        <bpelx:pattern>transformation</bpelx:pattern>
+      </bpelx:annotation>
+      <copy>
+        <from expression="ora:processXSLT('PayrollTransformation.xsl',bpws:getVariableData('Payroll_InputVariable','PayrollList'))"/>
+        <to variable="InsertPayrollData_InputVariable"
+            part="PayrollitemCollection"/>
+      </copy>
+    </assign>
+    <invoke name="InsertPayrollData" partnerLink="PayrollDatabaseService"
+            portType="ns4:PayrollDatabaseService_ptt" operation="insert"
+            inputVariable="InsertPayrollData_InputVariable"/>
+    <reply name="Reply" partnerLink="PayrollInputFileService"
+           portType="ns1:Read_ptt" operation="Read" variable="DummyParameter"/>
+  </sequence>
+</process>

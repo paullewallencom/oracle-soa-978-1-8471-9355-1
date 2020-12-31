@@ -1,0 +1,77 @@
+<?xml version="1.0" ?>
+
+<definitions targetNamespace="http://xmlns.oracle.com/pcbpel/validationservice"
+             xmlns:tns="http://xmlns.oracle.com/pcbpel/validationservice"
+             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+             xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+	     xmlns:format="http://schemas.xmlsoap.org/wsdl/formatbinding/"
+             xmlns:java="http://schemas.xmlsoap.org/wsdl/java/"
+             xmlns:sch="http://www.ascc.net/xml/schematron"
+             xmlns:plt="http://schemas.xmlsoap.org/ws/2003/05/partner-link/"
+             xmlns="http://schemas.xmlsoap.org/wsdl/">
+
+  <!-- the service link type of my provider partner -->
+  <plt:partnerLinkType name="ValidationSLT">
+    <plt:role name="service">
+      <plt:portType name="tns:ValidationPT"/>
+    </plt:role>
+  </plt:partnerLinkType>
+
+  <types>
+    <xsd:schema
+      targetNamespace="http://xmlns.oracle.com/pcbpel/validationservice">
+      <xsd:element name="validation" type="xsd:anyType"/>
+      <xsd:complexType name="errorListType">
+        <xsd:sequence>
+          <xsd:element name="error" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:element name="ValidationErrors" type="tns:errorListType"/>   
+    </xsd:schema>
+    <xsd:schema
+      targetNamespace="http://www.ascc.net/xml/schematron">
+      <xsd:element name="schema" type="xsd:anyType"/>   
+    </xsd:schema>
+  </types>
+  
+
+  <message name="ValidationInput">
+    <part name="instanceFile" element="tns:validation"/>
+    <part name="ruleFile" element="sch:schema"/>
+  </message>
+
+  <message name="ValidationErrors">
+    <part name="result" element="tns:ValidationErrors"/>
+  </message>
+
+  <portType name="ValidationPT">
+    <operation name="validation">
+      <input message="tns:ValidationInput"/>
+      <output message="tns:ValidationErrors"/>
+      <fault name="ValidationException"
+       message="tns:ValidationErrors" />
+    </operation>
+  </portType>
+
+  <binding name="JavaBinding" type="tns:ValidationPT">
+    <java:binding/>
+    <format:typeMapping encoding="Java" style="Java">
+      <format:typeMap elementName="tns:validation" formatType="org.w3c.dom.Element" />
+      <format:typeMap elementName="sch:schema" formatType="org.w3c.dom.Element" />
+      <format:typeMap elementName="tns:ValidationErrors" formatType="org.w3c.dom.Element" />
+    </format:typeMapping>
+    <operation name="validation">
+      <java:operation methodName="validation"/>
+      <input/>
+      <output/>
+    </operation>       
+  </binding>
+
+  <service name="ValidationService">
+    <documentation>Data Validation service</documentation>
+    <port name="JavaPort" binding="tns:JavaBinding">
+      <java:address className="oracle.tip.pc.services.validation.ValidationFramework"/>
+    </port>
+  </service>
+
+</definitions>

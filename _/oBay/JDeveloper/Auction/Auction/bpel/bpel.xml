@@ -1,0 +1,21 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<BPELSuitcase>
+   <BPELProcess id="Auction" src="Auction.bpel">
+      <partnerLinkBindings>
+         <partnerLinkBinding name="client">
+            <property name="wsdlLocation">Auction.wsdl</property>
+         </partnerLinkBinding>
+         <partnerLinkBinding name="AuctionDecisionServicePL">
+            <property name="wsdlLocation">AuctionDecisionService.wsdl</property>
+            <property name="DecisionService">AuctionDecisionService</property>
+            <property name="decisionServiceDetails">http://${hostname}:${http_port}/rules/${domain_id}/${process_id}/${process_revision}/AuctionDecisionService/public_html/GetDecisionServiceInfo.jsp</property>
+            <property name="optSoapShortcut">False</property>
+            <property name="wsdlRuntimeLocation">http://${hostname}:${http_port}/rules/${domain_id}/${process_id}/${process_revision}/AuctionDecisionService/AuctionDecisionService?WSDL</property>
+         </partnerLinkBinding>
+      </partnerLinkBindings>
+      <preferences>
+         <property name="Oracle.RuleRepository.Auction.rul" encryption="plaintext">${domain_url}/Auction/rules/oracle/Auction.rul</property>
+         <property name="Oracle.RuleRepository.Auction.rul" encryption="plaintext">${domain_url}/Auction/rules/oracle/Auction.rul</property>
+      </preferences>
+   </BPELProcess>
+</BPELSuitcase>

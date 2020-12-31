@@ -1,0 +1,13 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<BPELSuitcase>
+   <BPELProcess id="GetSoldItems" src="GetSoldItems.bpel">
+      <partnerLinkBindings>
+         <partnerLinkBinding name="client">
+            <property name="wsdlLocation">GetSoldItems.wsdl</property>
+         </partnerLinkBinding>
+         <partnerLinkBinding name="TaskQueryService">
+            <property name="wsdlLocation">TaskQueryServiceRef.wsdl</property>
+         </partnerLinkBinding>
+      </partnerLinkBindings>
+   </BPELProcess>
+</BPELSuitcase>

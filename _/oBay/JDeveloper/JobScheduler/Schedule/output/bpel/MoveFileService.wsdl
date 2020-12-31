@@ -1,0 +1,56 @@
+<definitions
+     name="MoveFileService"
+     targetNamespace="http://xmlns.oracle.com/pcbpel/adapter/file/MoveFileService/"
+     xmlns="http://schemas.xmlsoap.org/wsdl/"
+     xmlns:tns="http://xmlns.oracle.com/pcbpel/adapter/file/MoveFileService/"
+     xmlns:plt="http://schemas.xmlsoap.org/ws/2003/05/partner-link/"
+     xmlns:jca="http://xmlns.oracle.com/pcbpel/wsdl/jca/"
+     xmlns:opaque="http://xmlns.oracle.com/pcbpel/adapter/opaque/"
+     xmlns:hdr="http://xmlns.oracle.com/pcbpel/adapter/file/"
+    >
+    <import namespace="http://xmlns.oracle.com/pcbpel/adapter/file/" location="fileAdapterOutboundHeader.wsdl"/>
+    <types>
+    <schema targetNamespace="http://xmlns.oracle.com/pcbpel/adapter/opaque/"
+            xmlns="http://www.w3.org/2001/XMLSchema" >
+      <element name="opaqueElement" type="base64Binary" />
+      <element name="empty"><complexType/></element>
+    </schema>
+    </types>
+    <message name="Empty_msg">
+        <part name="Empty" element="opaque:empty"/>
+    </message>
+    <message name="MoveFile_msg">
+        <part name="opaque" element="opaque:opaqueElement"/>
+    </message>
+    <portType name="MoveFile_ptt">
+        <operation name="MoveFile">
+            <input message="tns:Empty_msg"/>
+            <output message="tns:MoveFile_msg"/>
+        </operation>
+    </portType>
+    <binding name="MoveFile_binding" type="tns:MoveFile_ptt">
+    <jca:binding  />
+        <operation name="MoveFile">
+            <jca:operation InteractionSpec="oracle.tip.adapter.file.outbound.FileIoInteractionSpec"
+                            SourcePhysicalDirectory="D:\Soa1013\schedule\config"
+                            SourceFileName="schedule.xml"
+                            TargetPhysicalDirectory="D:\Soa1013\schedule\execute"
+                            TargetFileName="schedule.xml"
+                            Type="COPY">
+            </jca:operation>
+      <input>
+        <jca:header message="hdr:OutboundHeader_msg" part="outboundHeader"/>
+      </input>
+        </operation>
+    </binding>
+    <service name="MoveFileService">
+        <port name="MoveFile_pt" binding="tns:MoveFile_binding">
+      <jca:address location="eis/FileAdapter" />
+        </port>
+    </service>
+  <plt:partnerLinkType name="MoveFile_plt" >
+    <plt:role name="MoveFile_role" >
+      <plt:portType name="tns:MoveFile_ptt" />
+    </plt:role>
+  </plt:partnerLinkType>
+</definitions>

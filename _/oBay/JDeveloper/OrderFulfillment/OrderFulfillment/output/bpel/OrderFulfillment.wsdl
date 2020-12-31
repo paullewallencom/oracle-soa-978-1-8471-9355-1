@@ -1,0 +1,58 @@
+<definitions
+     name="OrderFulfillment"
+     targetNamespace="http://xmlns.packtpub.com/obay/bp/OrderFulfillment"
+     xmlns="http://schemas.xmlsoap.org/wsdl/"
+     xmlns:ord="http://schemas.packtpub.com/obay/ord"
+     xmlns:plnk="http://schemas.xmlsoap.org/ws/2003/05/partner-link/"
+     xmlns:cmn="http://schemas.packtpub.com/obay/cmn"
+     xmlns:client="http://xmlns.packtpub.com/obay/bp/OrderFulfillment"
+    >
+    <types>
+        <schema elementFormDefault="qualified" xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://xmlns.packtpub.com/obay/bp/OrderFulfillment"
+             xmlns:ord="http://schemas.packtpub.com/obay/ord" xmlns:plnk="http://schemas.xmlsoap.org/ws/2003/05/partner-link/"
+             xmlns:cmn="http://schemas.packtpub.com/obay/cmn" xmlns:client="http://xmlns.packtpub.com/obay/bp/OrderFulfillment">
+            <import namespace="http://schemas.packtpub.com/obay/ord" schemaLocation="Order_v1_0.xsd"/>
+            <element name="fulfillOrder" type="client:tFulfillOrder"/>
+            <element name="fulfillOrderResult" type="client:tFulfillOrderResult"/>
+            <complexType name="tFulfillOrder">
+                <sequence>
+                    <element ref="ord:orderDesc"/>
+                    <element ref="ord:itemId"/>
+                    <element ref="ord:sellerId"/>
+                    <element ref="ord:buyerId"/>
+                    <element ref="ord:quantity"/>
+                    <element ref="ord:itemPrice"/>
+                </sequence>
+            </complexType>
+            <complexType name="tFulfillOrderResult">
+                <sequence>
+                    <element ref="ord:order"/>
+                </sequence>
+            </complexType>
+        </schema>
+    </types>
+    <message name="fulfillOrder">
+        <part name="payload" element="client:fulfillOrder"/>
+    </message>
+    <message name="fulfillOrderResult">
+        <part name="payload" element="client:fulfillOrderResult"/>
+    </message>
+    <portType name="OrderFulfillment">
+        <operation name="fulfillOrder">
+            <input message="client:fulfillOrder"/>
+        </operation>
+    </portType>
+    <portType name="OrderFulfillmentCallback">
+        <operation name="fulfillOrderResult">
+            <input message="client:fulfillOrderResult"/>
+        </operation>
+    </portType>
+    <plnk:partnerLinkType name="OrderFulfillment">
+        <plnk:role name="OrderFulfillmentProvider">
+            <plnk:portType name="client:OrderFulfillment"/>
+        </plnk:role>
+        <plnk:role name="OrderFulfillmentRequester">
+            <plnk:portType name="client:OrderFulfillmentCallback"/>
+        </plnk:role>
+    </plnk:partnerLinkType>
+</definitions>

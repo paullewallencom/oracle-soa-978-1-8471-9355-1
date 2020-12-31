@@ -1,0 +1,131 @@
+<?xml version="1.0"?>
+<xsd:schema targetNamespace="http://xmlns.oracle.com/bpel/workflow/taskQueryService"
+     xmlns:tns="http://xmlns.oracle.com/bpel/workflow/taskQueryService"
+     xmlns:common="http://xmlns.oracle.com/bpel/workflow/common"
+     xmlns:task="http://xmlns.oracle.com/bpel/workflow/task"
+     xmlns:query="http://xmlns.oracle.com/bpel/workflow/taskQuery"
+     xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="1.0"
+     xmlns="http://www.w3.org/2001/XMLSchema" 
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+     elementFormDefault="qualified">
+
+  <!-- specify package info to JAXB -->
+  <xsd:annotation>
+    <xsd:appinfo>
+      <jaxb:schemaBindings>
+        <jaxb:package name="oracle.bpel.services.workflow.query.model"/>
+      </jaxb:schemaBindings>
+    </xsd:appinfo>
+  </xsd:annotation>
+
+  <xsd:import namespace="http://xmlns.oracle.com/bpel/workflow/common"
+          schemaLocation="WorkflowCommon.xsd"/>
+  <xsd:import namespace="http://xmlns.oracle.com/bpel/workflow/task"
+          schemaLocation="WorkflowTask.xsd"/>
+  <xsd:import namespace="http://xmlns.oracle.com/bpel/workflow/taskQuery"
+          schemaLocation="TaskQuery.xsd"/>
+
+  <!-- Request Elements -->
+  <xsd:element name="taskListRequest" type="tns:taskListRequestType"/>
+
+  <xsd:element name="queryViewTasksRequest" type="tns:queryViewTasksRequestType"/>
+
+  <xsd:element name="taskHistoryRequest" type="tns:taskHistoryRequestType"/>
+
+  <xsd:element name="taskDetailsByIdRequest" type="tns:taskDetailsByIdRequestType"/>
+
+  <xsd:element name="taskDetailsByNumberRequest" type="tns:taskDetailsByNumberRequestType"/>
+
+  <xsd:element name="taskVersionDetailsRequest" type="tns:taskVersionDetailsRequestType"/>
+
+  <xsd:element name="taskQueryServiceFaultResponse" type="tns:taskQueryServiceFaultType"/>
+
+  <!-- Response Elements -->
+  <xsd:element name="taskListResponse" type="tns:taskListResponseType"/>
+
+  <xsd:element name="successResponse" type="xsd:string"/>
+
+  <!-- Type definitions -->
+  <xsd:complexType name="contextAndPredicateQueryRequestBaseType">
+    <xsd:sequence>
+      <xsd:element ref="common:workflowContext"/>
+      <xsd:element ref="query:taskPredicateQuery"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="contextAndTaskIdRequestBaseType">
+    <xsd:sequence>
+      <xsd:element ref="common:workflowContext"/>
+      <xsd:element name="taskId" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="contextAndTaskNumberRequestBaseType">
+    <xsd:sequence>
+      <xsd:element ref="common:workflowContext"/>
+      <xsd:element name="taskNumber" type="xsd:positiveInteger" minOccurs="1" maxOccurs="1"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="taskListRequestType">
+    <xsd:complexContent>
+      <xsd:extension base="tns:contextAndPredicateQueryRequestBaseType">
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:complexType name="queryViewTasksRequestType">
+    <xsd:sequence>
+      <xsd:element ref="common:workflowContext"/>
+      <xsd:element ref="query:viewTaskPredicateQuery"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="taskHistoryRequestType">
+    <xsd:complexContent>
+      <xsd:extension base="tns:contextAndTaskIdRequestBaseType">
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:complexType name="taskDetailsByIdRequestType">
+    <xsd:complexContent>
+      <xsd:extension base="tns:contextAndTaskIdRequestBaseType">
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:complexType name="taskDetailsByNumberRequestType">
+    <xsd:complexContent>
+      <xsd:extension base="tns:contextAndTaskNumberRequestBaseType">
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:complexType name="taskVersionDetailsRequestType">
+    <xsd:complexContent>
+      <xsd:extension base="tns:contextAndTaskIdRequestBaseType">
+        <xsd:sequence>
+          <xsd:element name="versionNumber" type="xsd:positiveInteger" minOccurs="1" maxOccurs="1"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:complexType name="taskListResponseType">
+    <xsd:sequence>
+      <xsd:element ref="task:task" minOccurs="0"
+                   maxOccurs="unbounded"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="taskQueryServiceFaultType">
+    <xsd:sequence>
+      <xsd:element name="message" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+</xsd:schema>
+
+
+

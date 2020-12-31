@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="WINDOWS-1252"?>
+<xsd:schema
+	targetNamespace="http://schemas.packtpub.com/obay/ord"
+	elementFormDefault="qualified"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	xmlns="http://schemas.packtpub.com/obay/ord"
+	xmlns:cmn="http://schemas.packtpub.com/obay/cmn">
+
+	<xsd:include schemaLocation="Base_v1_0.xsd" />
+	<xsd:import namespace="http://schemas.packtpub.com/obay/cmn" schemaLocation="Common_v1_0.xsd" />
+
+	<xsd:element name="itemId"         type="tItemId" />
+        <xsd:element name="sellerId"       type="tIdentifier" />
+        <xsd:element name="buyerId"        type="tIdentifier" />
+	<xsd:element name="order"          type="tOrder" />
+	<xsd:element name="orderDetail"    type="tOrderDetail" />
+        <xsd:element name="orderSummary"   type="tOrderSummary" />
+        <xsd:element name="orderDesc"      type="xsd:string" />
+	<xsd:element name="orderNo"        type="tOrderNo" />
+	<xsd:element name="shipTo"         type="tShipTo" />
+        <xsd:element name="quantity"       type="xsd:int" />
+        <xsd:element name="orderDate"      type="xsd:date" />
+        <xsd:element name="saleDate"       type="xsd:date" />
+        <xsd:element name="lastUpdateDate" type="xsd:date" />
+        <xsd:element name="orderStatus"    type="tStatus" />
+        <xsd:element name="itemPrice"      type="tAmount" />
+        <xsd:element name="subTotal"       type="tAmount" />
+        <xsd:element name="shippingPrice"  type="tAmount" />
+        <xsd:element name="totalPrice"     type="tAmount" />
+        <xsd:element name="nextAction"     type="xsd:string" />
+
+	<xsd:complexType name="tOrder">
+		<xsd:sequence>
+			<xsd:element ref="orderNo" />
+			<xsd:element ref="orderDesc"/>
+			<xsd:element ref="itemId" />
+			<xsd:element ref="sellerId"/>
+			<xsd:element ref="buyerId"/>
+			<xsd:element ref="orderDetail"/>
+			<xsd:element ref="shipTo" />
+		</xsd:sequence>
+	</xsd:complexType>
+
+        <xsd:complexType name="tOrderSummary">
+            <xsd:sequence>
+                <xsd:element ref="orderNo"/>
+                <xsd:element ref="orderDesc"/>
+                <xsd:element ref="itemId"/>
+                <xsd:element ref="sellerId"/>
+                <xsd:element ref="buyerId"/>
+                <xsd:element ref="itemPrice"/>
+                <xsd:element ref="totalPrice"/>
+                <xsd:element ref="orderDate"/>
+                <xsd:element ref="orderStatus"/>
+                <xsd:element ref="lastUpdateDate"/>
+                <xsd:element ref="nextAction"/>
+            </xsd:sequence>
+        </xsd:complexType> 
+            
+	<xsd:complexType name="tOrderDetail">
+		<xsd:sequence>
+			<xsd:element ref="orderDate"/>
+			<xsd:element ref="orderStatus"/>
+			<xsd:element ref="quantity"/>
+			<xsd:element ref="itemPrice"/>
+			<xsd:element ref="subTotal"/>
+			<xsd:element ref="shippingPrice"/>
+			<xsd:element ref="totalPrice"/>
+                        <xsd:element ref="lastUpdateDate"/>
+                        <xsd:element ref="nextAction"/>
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:complexType name="tShipTo">
+		<xsd:sequence>
+			<xsd:element name="shippingName"           type="xsd:string" />
+			<xsd:element name="shippingAddress"        type="cmn:tAddress" />
+			<xsd:element name="additionalInstructions" type="xsd:string" />
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	<xsd:simpleType name="tOrderNo">
+		<xsd:restriction base="xsd:string">
+			<xsd:maxLength value="20" />
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<xsd:simpleType name="tItemId">
+		<xsd:restriction base="xsd:string">
+			<xsd:maxLength value="20" />
+		</xsd:restriction>
+	</xsd:simpleType>
+
+
+</xsd:schema>

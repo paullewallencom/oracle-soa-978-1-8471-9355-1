@@ -1,0 +1,122 @@
+<?xml version = "1.0" encoding = "UTF-8" ?>
+<!--
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  Oracle JDeveloper BPEL Designer 
+  
+  Created: Wed Feb 18 12:47:28 EST 2009
+  Author:  mswright
+  Purpose: Empty BPEL Process
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+-->
+<process name="AccountBilling"
+         targetNamespace="http://xmlns.packtpub.com/obay/bs/JobServices"
+         xmlns="http://schemas.xmlsoap.org/ws/2003/03/business-process/"
+         xmlns:xp20="http://www.oracle.com/XSL/Transform/java/oracle.tip.pc.services.functions.Xpath20"
+         xmlns:bpws="http://schemas.xmlsoap.org/ws/2003/03/business-process/"
+         xmlns:ns4="http://schemas.packtpub.com/obay/usr"
+         xmlns:acc="http://schemas.packtpub.com/obay/acc"
+         xmlns:ids="http://xmlns.oracle.com/bpel/services/IdentityService/xpath"
+         xmlns:sch="http://schemas.packtpub.com/obay/sch"
+         xmlns:ldap="http://schemas.oracle.com/xpath/extension/ldap"
+         xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+         xmlns:ns5="http://xmlns.packtpub.com/obay/bs/BillUser"
+         xmlns:client="http://xmlns.packtpub.com/obay/bs/JobServices"
+         xmlns:ora="http://schemas.oracle.com/xpath/extension"
+         xmlns:xref="http://www.oracle.com/XSL/Transform/java/oracle.tip.xref.xpath.XRefXPathFunctions"
+         xmlns:hwf="http://xmlns.oracle.com/bpel/workflow/xpath"
+         xmlns:ns1="http://xmlns.packtpub.com/obay/bs/Job"
+         xmlns:ehdr="http://www.oracle.com/XSL/Transform/java/oracle.tip.esb.server.headers.ESBHeaderFunctions"
+         xmlns:ns2="http://xmlns.packtpub.com/obay/bs/UserManagement"
+         xmlns:bpelx="http://schemas.oracle.com/bpel/extension"
+         xmlns:orcl="http://www.oracle.com/XSL/Transform/java/oracle.tip.pc.services.functions.ExtFunc">
+  <!-- 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      PARTNERLINKS                                                      
+      List of services participating in this BPEL process               
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  -->
+  <partnerLinks>
+    <partnerLink myRole="Job_Role" name="Job" partnerLinkType="ns1:Job_PL"/>
+    <partnerLink name="userManagement" partnerRole="userManagement_Role"
+                 partnerLinkType="ns2:userManagement_PL"/>
+    <partnerLink name="BillUser" partnerRole="BillUserProvider"
+                 partnerLinkType="ns5:BillUser"/>
+  </partnerLinks>
+  <variables>
+    <variable name="InputVariable" messageType="ns1:executeJob"/>
+    <variable name="findUserAccountsByBalanceInput"
+              messageType="ns2:findUserAccountsByBalance"/>
+    <variable name="findUserAccountsByBalanceResponse"
+              messageType="ns2:findUserAccountsByBalanceResponse"/>
+    <variable name="index" type="xsd:int"/>
+  </variables>
+  <!-- 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      VARIABLES                                                        
+      List of messages and XML documents used within this BPEL process 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  -->
+  <!-- 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+     ORCHESTRATION LOGIC                                               
+     Set of activities coordinating the flow of messages across the    
+     services integrated within this business process                  
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  -->
+  <sequence name="main">
+    <receive name="ExecuteJob" partnerLink="Job" portType="ns1:Job"
+             operation="executeJob" variable="InputVariable"
+             createInstance="yes"/>
+    <assign name="setMaxBalance">
+      <copy>
+        <from>
+          <user:findUserAccountsByBalance startRow="0" endRow="0"
+                                          xmlns:user="http://xmlns.packtpub.com/obay/bs/UserManagement">
+            <user:maxAmount/>
+          </user:findUserAccountsByBalance>
+        </from>
+        <to variable="findUserAccountsByBalanceInput" part="payload"/>
+      </copy>
+      <copy>
+        <from variable="InputVariable" part="payload"
+              query="/ns1:executeJob/sch:job/sch:jobDetail/acc:accountBalance"/>
+        <to variable="findUserAccountsByBalanceInput" part="payload"
+            query="/ns2:findUserAccountsByBalance/ns2:maxAmount"/>
+      </copy>
+    </assign>
+    <invoke name="findUserAccountsByBalance" partnerLink="userManagement"
+            portType="ns2:userManagement" operation="findUserAccountsByBalance"
+            inputVariable="findUserAccountsByBalanceInput"
+            outputVariable="findUserAccountsByBalanceResponse"/>
+    <switch name="AnyAccounts">
+      <case condition="count(bpws:getVariableData('findUserAccountsByBalanceResponse','payload','/ns2:findUserAccountsByBalanceResponse/ns2:accountList/ns2:account')) > 0">
+        <bpelx:flowN name="BillAccounts"
+                     N="count(bpws:getVariableData('findUserAccountsByBalanceResponse','payload','/ns2:findUserAccountsByBalanceResponse/ns2:accountList/ns2:account'))"
+                     indexVariable="index">
+          <sequence name="Sequence_1">
+            <scope name="BillUser">
+              <variables>
+                <variable name="billUserInput" messageType="ns5:BillUser"/>
+              </variables>
+              <sequence name="Sequence_2">
+                <assign name="setBillUserInput">
+                  <copy>
+                    <from variable="findUserAccountsByBalanceResponse"
+                          part="payload"
+                          query="/ns2:findUserAccountsByBalanceResponse/ns2:accountList/ns2:account[bpws:getVariableData('index')]"/>
+                    <to variable="billUserInput" part="payload"
+                        query="/ns5:billUser"/>
+                  </copy>
+                </assign>
+                <invoke name="billUser" partnerLink="BillUser"
+                        portType="ns5:BillUser" operation="billUser"
+                        inputVariable="billUserInput"/>
+              </sequence>
+            </scope>
+          </sequence>
+        </bpelx:flowN>
+      </case>
+      <otherwise/>
+    </switch>
+  </sequence>
+</process>

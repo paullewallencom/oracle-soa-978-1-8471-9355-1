@@ -1,0 +1,10 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<BPELSuitcase>
+   <BPELProcess id="Visa" src="Visa.bpel">
+      <partnerLinkBindings>
+         <partnerLinkBinding name="Visa">
+            <property name="wsdlLocation">VisaCard.wsdl</property>
+         </partnerLinkBinding>
+      </partnerLinkBindings>
+   </BPELProcess>
+</BPELSuitcase>

@@ -1,0 +1,54 @@
+<definitions
+     name="SubmitBid"
+     targetNamespace="http://xmlns.packtpub.com/obay/bs/SubmitBid"
+     xmlns="http://schemas.xmlsoap.org/wsdl/"
+     xmlns:tns="http://xmlns.packtpub.com/obay/bs/SubmitBid"
+     xmlns:bpws="http://schemas.xmlsoap.org/ws/2003/03/business-process/"
+     xmlns:plnk="http://schemas.xmlsoap.org/ws/2003/05/partner-link/"
+     xmlns:auc="http://schemas.packtpub.com/obay/auc"
+     xmlns:lst="http://schemas.packtpub.com/obay/lst"
+    >
+    <types>
+        <schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:auc="http://schemas.packtpub.com/obay/auc" xmlns:lst="http://schemas.packtpub.com/obay/lst"
+             targetNamespace="http://xmlns.packtpub.com/obay/bs/SubmitBid" xmlns:tns="http://xmlns.packtpub.com/obay/bs/SubmitBid"
+             xmlns:plnk="http://schemas.xmlsoap.org/ws/2003/05/partner-link/">
+            <import namespace="http://schemas.packtpub.com/obay/auc" schemaLocation="http://localhost/orabpel/xmllib/obay/Auction_v1_0.xsd"/>
+            <import namespace="http://schemas.packtpub.com/obay/lst" schemaLocation="http://localhost/orabpel/xmllib/obay/Listing_v1_0.xsd"/>
+            <import namespace="http://schemas.packtpub.com/obay/flt" schemaLocation="http://localhost/orabpel/xmllib/obay/Fault_v1_0.xsd"/>
+
+            <element name="submitBid" type="tns:tSubmitBid"/>
+            <element name="submitBidResponse" type="tns:tSubmitBidResponse"/>
+
+            <complexType name="tSubmitBid">
+                <sequence>
+                    <element ref="lst:listingId"/>
+                    <element ref="lst:buyerId"/>
+                    <element ref="lst:amount"/>
+                </sequence>
+            </complexType>
+            <complexType name="tSubmitBidResponse">
+                <sequence>
+                    <element ref="lst:listingId"/>
+                    <element ref="auc:bid"/>
+                </sequence>
+            </complexType>
+        </schema>
+    </types>
+    <message name="submitBid">
+        <part name="payload" element="tns:submitBid"/>
+    </message>
+    <message name="submitBidResponse">
+        <part name="payload" element="tns:submitBidResponse"/>
+    </message>
+    <portType name="SubmitBid">
+        <operation name="submitBid">
+            <input message="tns:submitBid"/>
+            <output message="tns:submitBidResponse"/>
+        </operation>
+    </portType>
+    <plnk:partnerLinkType name="SubmitBid">
+        <plnk:role name="SubmitBidProvider">
+            <plnk:portType name="tns:SubmitBid"/>
+        </plnk:role>
+    </plnk:partnerLinkType>
+</definitions>

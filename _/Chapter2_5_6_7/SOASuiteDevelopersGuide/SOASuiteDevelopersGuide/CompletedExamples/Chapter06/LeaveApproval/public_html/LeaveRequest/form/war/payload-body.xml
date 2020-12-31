@@ -1,0 +1,43 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<form targetnamespace="http://xmlns.oracle.com/bpel/worklist/payload/xpathmap" xmlns:ns0="http://xmlns.oracle.com/bpel/workflow/task" showXmlView="false" xmlEditable="true" xmlns:ns1="http://schemas.packtpub.com/LeaveRequest">
+   <field>
+      <xpath>/ns0:task/ns0:payload/ns1:leaveRequest</xpath>
+      <editable>false</editable>
+      <resourceKey>_sl_ns0_cl_task_sl_ns0_cl_payload_sl_ns1_cl_leaveRequest</resourceKey>
+   </field>
+   <field>
+      <xpath>/ns0:task/ns0:payload/ns1:leaveRequest/ns1:employeeId</xpath>
+      <editable>false</editable>
+      <resourceKey>_sl_ns0_cl_task_sl_ns0_cl_payload_sl_ns1_cl_leaveRequest_sl_ns1_cl_employeeId</resourceKey>
+   </field>
+   <field>
+      <xpath>/ns0:task/ns0:payload/ns1:leaveRequest/ns1:fullName</xpath>
+      <editable>false</editable>
+      <resourceKey>_sl_ns0_cl_task_sl_ns0_cl_payload_sl_ns1_cl_leaveRequest_sl_ns1_cl_fullName</resourceKey>
+   </field>
+   <field>
+      <xpath>/ns0:task/ns0:payload/ns1:leaveRequest/ns1:startDate</xpath>
+      <editable>false</editable>
+      <resourceKey>_sl_ns0_cl_task_sl_ns0_cl_payload_sl_ns1_cl_leaveRequest_sl_ns1_cl_startDate</resourceKey>
+   </field>
+   <field>
+      <xpath>/ns0:task/ns0:payload/ns1:leaveRequest/ns1:endDate</xpath>
+      <editable>false</editable>
+      <resourceKey>_sl_ns0_cl_task_sl_ns0_cl_payload_sl_ns1_cl_leaveRequest_sl_ns1_cl_endDate</resourceKey>
+   </field>
+   <field>
+      <xpath>/ns0:task/ns0:payload/ns1:leaveRequest/ns1:leaveType</xpath>
+      <editable>false</editable>
+      <resourceKey>_sl_ns0_cl_task_sl_ns0_cl_payload_sl_ns1_cl_leaveRequest_sl_ns1_cl_leaveType</resourceKey>
+   </field>
+   <field>
+      <xpath>/ns0:task/ns0:payload/ns1:leaveRequest/ns1:leaveReason</xpath>
+      <editable>false</editable>
+      <resourceKey>_sl_ns0_cl_task_sl_ns0_cl_payload_sl_ns1_cl_leaveRequest_sl_ns1_cl_leaveReason</resourceKey>
+   </field>
+   <field>
+      <xpath>/ns0:task/ns0:payload/ns1:leaveRequest/ns1:requestStatus</xpath>
+      <editable>false</editable>
+      <resourceKey>_sl_ns0_cl_task_sl_ns0_cl_payload_sl_ns1_cl_leaveRequest_sl_ns1_cl_requestStatus</resourceKey>
+   </field>
+</form>

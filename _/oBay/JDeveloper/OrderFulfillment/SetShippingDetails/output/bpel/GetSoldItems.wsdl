@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions name="GetSoldItems"
+             targetNamespace="http://xmlns.packtpub.com/obay/bs/GetSoldItems"
+             xmlns="http://schemas.xmlsoap.org/wsdl/"
+             xmlns:client="http://xmlns.packtpub.com/obay/bs/GetSoldItems"
+             xmlns:ord="http://schemas.packtpub.com/obay/ord"
+             xmlns:plnk="http://schemas.xmlsoap.org/ws/2003/05/partner-link/"
+             xmlns:cmn="http://schemas.packtpub.com/obay/cmn">
+
+    <types>
+        <schema xmlns="http://www.w3.org/2001/XMLSchema" 
+                targetNamespace="http://xmlns.packtpub.com/obay/bs/GetSoldItems"
+                xmlns:ord="http://schemas.packtpub.com/obay/ord" xmlns:plnk="http://schemas.xmlsoap.org/ws/2003/05/partner-link/"
+                xmlns:cmn="http://schemas.packtpub.com/obay/cmn" xmlns:client="http://xmlns.packtpub.com/obay/bs/GetSoldItems">
+            
+            <import namespace="http://schemas.packtpub.com/obay/ord" schemaLocation="http://localhost:80/orabpel/xmllib/obay/Order_v1_0.xsd"/>
+            
+            <element name="getSoldItems"         type="client:tGetSoldItems"/>
+            <element name="getSoldItemsResponse" type="client:tGetSoldItemsResponse"/>
+            <complexType name="tGetSoldItems">
+                <sequence>
+                    <element ref="ord:sellerId"/>
+                </sequence>
+            </complexType>
+            <complexType name="tGetSoldItemsResponse">
+                <sequence>
+                    <element name="orderSummaryList" type="client:tOrderSummaryList"/>
+                </sequence>
+            </complexType>
+
+            <complexType name="tOrderSummaryList">
+                <sequence>
+			<element ref="ord:orderSummary" minOccurs="0" maxOccurs="unbounded" />
+		</sequence>
+            </complexType>
+           
+            
+        </schema>
+    </types>
+    <message name="getSoldItems">
+        <part name="payload" element="client:getSoldItems"/>
+    </message>
+    <message name="getSoldItemsResponse">
+        <part name="payload" element="client:getSoldItemsResponse"/>
+    </message>
+    <portType name="GetSoldItems">
+        <operation name="getSoldItems">
+            <input message="client:getSoldItems"/>
+            <output message="client:getSoldItemsResponse"/>
+        </operation>
+    </portType>    
+	<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	PARTNER LINK TYPE DEFINITION
+	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ --> 
+	<plnk:partnerLinkType name="GetSoldItems">
+		<plnk:role name="GetSoldItemsProvider">
+			<plnk:portType name="client:GetSoldItems"/>
+		</plnk:role>
+	</plnk:partnerLinkType>
+</definitions>

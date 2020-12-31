@@ -1,0 +1,16 @@
+<definitions
+     name="TaskQueryService"
+     targetNamespace="http://xmlns.oracle.com/bpel/workflow/taskQueryService"
+     xmlns="http://schemas.xmlsoap.org/wsdl/"
+     xmlns:tns="http://xmlns.oracle.com/bpel/workflow/taskQueryService"
+     xmlns:bpws="http://schemas.xmlsoap.org/ws/2003/03/business-process/"
+     xmlns:plnk="http://schemas.xmlsoap.org/ws/2003/05/partner-link/"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    >
+    <import namespace="http://xmlns.oracle.com/bpel/workflow/taskQueryService" location="TaskQueryService.wsdl"/>
+    <plnk:partnerLinkType name="TaskQueryService_PL">
+        <plnk:role name="TaskQueryService_Role">
+            <plnk:portType name="tns:TaskQueryService"/>
+        </plnk:role>
+    </plnk:partnerLinkType>
+</definitions>

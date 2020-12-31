@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions name="GetOrderDetails"
+             targetNamespace="http://xmlns.packtpub.com/obay/bs/GetOrderDetails"
+             xmlns="http://schemas.xmlsoap.org/wsdl/"
+             xmlns:client="http://xmlns.packtpub.com/obay/bs/GetOrderDetails"
+             xmlns:ord="http://schemas.packtpub.com/obay/ord"
+             xmlns:plnk="http://schemas.xmlsoap.org/ws/2003/05/partner-link/"
+             xmlns:cmn="http://schemas.packtpub.com/obay/cmn">
+
+    <types>
+        <schema xmlns="http://www.w3.org/2001/XMLSchema" 
+                targetNamespace="http://xmlns.packtpub.com/obay/bs/GetOrderDetails"
+                xmlns:ord="http://schemas.packtpub.com/obay/ord" xmlns:plnk="http://schemas.xmlsoap.org/ws/2003/05/partner-link/"
+                xmlns:cmn="http://schemas.packtpub.com/obay/cmn" xmlns:client="http://xmlns.packtpub.com/obay/bs/GetOrderDetails">
+            
+            <import namespace="http://schemas.packtpub.com/obay/ord" schemaLocation="http://localhost:80/orabpel/xmllib/obay/Order_v1_0.xsd"/>
+            
+            <element name="getOrderDetails"         type="client:tGetOrderDetails"/>
+            <element name="getOrderDetailsResponse" type="client:tGetOrderDetailsResponse"/>
+            <complexType name="tGetOrderDetails">
+                <sequence>
+                    <element ref="ord:orderNo"/>
+                </sequence>
+            </complexType>
+            <complexType name="tGetOrderDetailsResponse">
+                <sequence>
+                    <element ref="ord:order"/>
+                </sequence>
+            </complexType>
+        </schema>
+    </types>
+    <message name="getOrderDetails">
+        <part name="payload" element="client:getOrderDetails"/>
+    </message>
+    <message name="getOrderDetailsResponse">
+        <part name="payload" element="client:getOrderDetailsResponse"/>
+    </message>
+    <portType name="GetOrderDetails">
+        <operation name="getOrderDetails">
+            <input message="client:getOrderDetails"/>
+            <output message="client:getOrderDetailsResponse"/>
+        </operation>
+    </portType>    
+	<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	PARTNER LINK TYPE DEFINITION
+	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ --> 
+	<plnk:partnerLinkType name="GetOrderDetails">
+		<plnk:role name="GetOrderDetailsProvider">
+			<plnk:portType name="client:GetOrderDetails"/>
+		</plnk:role>
+	</plnk:partnerLinkType>
+</definitions>

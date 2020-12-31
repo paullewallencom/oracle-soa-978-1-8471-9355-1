@@ -1,0 +1,23 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<BPELSuitcase>
+   <BPELProcess id="Chapter3" src="Chapter3.bpel">
+      <partnerLinkBindings>
+         <partnerLinkBinding name="PayrollInputFileService">
+            <property name="wsdlLocation">PayrollInputFileService.wsdl</property>
+         </partnerLinkBinding>
+         <partnerLinkBinding name="PayrollDeliveryFtpService">
+            <property name="wsdlLocation">PayrollDeliveryFtpService.wsdl</property>
+            <property name="retryInterval">60</property>
+         </partnerLinkBinding>
+         <partnerLinkBinding name="PayrollDatabaseService">
+            <property name="wsdlLocation">PayrollDatabaseService.wsdl</property>
+            <property name="retryInterval">60</property>
+         </partnerLinkBinding>
+      </partnerLinkBindings>
+      <activationAgents>
+         <activationAgent className="oracle.tip.adapter.fw.agent.jca.JCAActivationAgent" partnerLink="PayrollInputFileService">
+            <property name="portType">Read_ptt</property>
+         </activationAgent>
+      </activationAgents>
+   </BPELProcess>
+</BPELSuitcase>

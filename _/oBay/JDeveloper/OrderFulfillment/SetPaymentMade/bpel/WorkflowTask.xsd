@@ -1,0 +1,350 @@
+<?xml version="1.0"?>
+<schema targetNamespace="http://xmlns.oracle.com/bpel/workflow/task"
+     xmlns:tns="http://xmlns.oracle.com/bpel/workflow/task"
+     xmlns="http://www.w3.org/2001/XMLSchema" 
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+     xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" 
+     jaxb:version="1.0"
+     elementFormDefault="qualified" blockDefault="#all">
+
+    <element name="task">
+      <complexType>
+        <sequence>
+          <element name="title" type="xsd:string" minOccurs="0"/>
+          <element name="payload" type="xsd:anyType" minOccurs="1" maxOccurs="1"/>
+          <element name="taskDefinitionURI" type="xsd:string" minOccurs="0"/>
+          <element name="creator" type="xsd:string" minOccurs="0"/>
+          <element name="ownerUser" type="xsd:string" minOccurs="0"/>
+          <element name="ownerGroup" type="xsd:string" minOccurs="0"/>
+          <element name="priority" type="tns:priorityType" minOccurs="0"/>
+          <element name="identityContext" type="xsd:string" minOccurs="0"/>
+          <element name="userComment" type="tns:commentType" minOccurs="0" maxOccurs="unbounded"/>
+          <element name="attachment" type="tns:attachmentType" minOccurs="0" maxOccurs="unbounded"/>
+          <element name="processInfo" type="tns:processType" minOccurs="0"/>
+          <element name="systemAttributes" type="tns:systemAttributesType" minOccurs="0"/>
+          <element name="systemMessageAttributes" type="tns:systemMessageAttributesType" minOccurs="0"/>
+          <element name="titleResourceKey" type="xsd:string" minOccurs="0"/>
+          <element name="callback" type="tns:callbackType" minOccurs="0"/>
+          <element name="identificationKey" type="xsd:string" minOccurs="0"/>
+        </sequence>
+      </complexType>
+    </element>
+
+    <complexType name="commentType">
+      <sequence>
+        <element name="comment" type="xsd:string" minOccurs="0"/>
+        <element name="updatedBy" type="tns:identityType" minOccurs="0"/>
+        <element name="updatedDate" type="xsd:dateTime" minOccurs="0"/>
+        <element name="displayNameLanguage" type="xsd:string" minOccurs="0"/>
+        <element name="action" type="xsd:string" minOccurs="0"/>
+        <element name="systemVersionFlag" type="xsd:string" minOccurs="0"/>
+      </sequence>
+    </complexType>
+
+    <complexType name="processType">
+      <sequence>
+        <element name="domainId" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+        <element name="instanceId" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+        <element name="processId" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+        <element name="processName" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+        <element name="processType" type="tns:processTypeEnum" minOccurs="1" maxOccurs="1"/>
+        <element name="processVersion" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+      </sequence>
+    </complexType>
+
+    <simpleType name="processTypeEnum">
+      <restriction base="xsd:string">
+        <enumeration value="BPEL"/>
+        <enumeration value="OWF"/>
+        <enumeration value="OTHER"/>
+      </restriction>
+    </simpleType>
+
+    <complexType name="callbackType">
+      <sequence>
+        <element name="context" type="xsd:string" minOccurs="0"/>
+        <element name="id" type="xsd:string" minOccurs="0"/>
+        <element name="type" type="tns:callbackTypeEnum" minOccurs="0"/>
+      </sequence>
+    </complexType>
+
+    <simpleType name="callbackTypeEnum">
+      <restriction base="xsd:string">
+        <enumeration value="JAVA"/>
+        <enumeration value="PLSQL"/>
+        <enumeration value="WS"/>
+      </restriction>
+    </simpleType>
+
+    <element name="attachment" type="tns:attachmentType"/>
+
+    <complexType name="attachmentType">
+      <sequence>
+        <element name="content" type="xsd:string" minOccurs="0"/>
+        <element name="mimeType" type="xsd:string" minOccurs="0"/>
+        <element name="name" type="xsd:string" minOccurs="0"/>
+        <element name="updatedBy" type="xsd:string" minOccurs="0"/>
+        <element name="URI" type="xsd:string" minOccurs="0"/>
+        <element name="systemVersionFlag" type="xsd:string" minOccurs="0"/>
+        <element name="taskId" type="xsd:string" minOccurs="0"/>
+        <element name="version" type="tns:integerType" minOccurs="0"/>
+      </sequence>
+    </complexType>
+
+    <complexType name="identityType">
+      <sequence>
+        <element name="id" type="xsd:string" minOccurs="0"/>
+        <element name="displayName" type="xsd:string" minOccurs="0"/>
+        <element name="systemVersionFlag" type="xsd:string" minOccurs="0"/>
+      </sequence>
+    </complexType>
+
+    <complexType name="systemAttributesType">
+      <sequence>
+        <element name="accessKey" type="xsd:string" minOccurs="0"/>
+        <element name="acquiredBy" type="xsd:string" minOccurs="0"/>
+        <element name="approvalDuration" type="xsd:long" minOccurs="0"/>
+        <element name="approvers" type="xsd:string" minOccurs="0"/>
+        <element name="assignedDate" type="xsd:dateTime" minOccurs="0"/>
+        <element name="assigneeGroups" type="tns:identityType" minOccurs="0" maxOccurs="unbounded"/>
+        <element name="assigneeUsers" type="tns:identityType" minOccurs="0" maxOccurs="unbounded"/>
+        <element name="createdDate" type="xsd:dateTime" minOccurs="0"/>
+        <element name="customActions" type="tns:actionType" minOccurs="0" maxOccurs="unbounded"/>
+        <element name="digitalSignatureRequired" type="xsd:boolean" minOccurs="0"/>
+        <element name="elapsedTime" type="xsd:long" minOccurs="0"/>
+        <element name="endDate" type="xsd:dateTime" minOccurs="0"/>
+        <element name="expirationDate" type="xsd:dateTime" minOccurs="0"/>
+        <element name="expirationDuration" type="tns:durationType" minOccurs="0"/>
+        <element name="fromUser" type="tns:identityType" minOccurs="0"/>
+        <element name="hasSubTasks" type="xsd:boolean" minOccurs="0"/>
+        <element name="inShortHistory" type="xsd:boolean" minOccurs="0"/>
+        <element name="isGroup" type="xsd:boolean" minOccurs="0"/>
+        <element name="language" type="xsd:string" minOccurs="0"/>
+        <element name="mailStatus" type="tns:mailStatusEnum" minOccurs="0"/>
+        <element name="numberOfTimesModified" type="tns:integerType" minOccurs="0"/>
+        <element name="originalAssigneeUser" type="xsd:string" minOccurs="0"/>
+        <element name="outcome" type="xsd:string" minOccurs="0"/>
+        <element name="parallelOutcomeCount" type="xsd:string" minOccurs="0"/>
+        <element name="passwordRequiredOnUpdate" type="xsd:boolean" minOccurs="0"/>
+        <element name="pushbackSequence" type="xsd:string" minOccurs="0"/>
+        <element name="secureNotifications" type="xsd:boolean" minOccurs="0"/>
+        <element name="shortHistory" type="tns:shortHistoryType" minOccurs="0"/>
+        <element name="state" type="tns:stateEnum" minOccurs="0"/>
+        <element name="substate" type="tns:substateEnum" minOccurs="0"/>
+        <element name="systemActions" type="tns:actionType" minOccurs="0" maxOccurs="unbounded"/>
+        <element name="systemString1" type="xsd:string" minOccurs="0"/>
+        <element name="systemString2" type="xsd:string" minOccurs="0"/>
+        <element name="systemString3" type="xsd:string" minOccurs="0"/>
+        <element name="taskGroupId" type="xsd:string" minOccurs="0"/>
+        <element name="taskId" type="xsd:string" minOccurs="0"/>
+        <element name="taskNumber" type="tns:integerType" minOccurs="0"/>
+        <element name="updatedBy" type="tns:identityType" minOccurs="0"/>
+        <element name="updatedDate" type="xsd:dateTime" minOccurs="0"/>
+        <element name="version" type="tns:integerType" minOccurs="0"/>
+        <element name="versionReason" type="xsd:string" minOccurs="0"/>
+        <element name="taskDefinitionId" type="xsd:string" minOccurs="0"/>
+        <element name="taskDefinitionName" type="xsd:string" minOccurs="0"/>
+        <element name="workflowPattern" type="xsd:string" minOccurs="0"/>
+      </sequence>
+    </complexType>
+
+    <complexType name="actionType">
+      <sequence>
+        <element name="action" type="xsd:string" minOccurs="0"/>
+        <element name="displayName" type="xsd:string" minOccurs="0"/>
+      </sequence>
+    </complexType>      
+
+    <complexType name="shortHistoryType">
+      <sequence>
+        <element name="task" type="tns:shortHistoryTaskType" minOccurs="0" maxOccurs="unbounded"/>
+      </sequence>
+    </complexType>
+
+    <complexType name="shortHistoryTaskType">
+      <sequence>
+        <element name="state" type="xsd:string" minOccurs="0"/>
+        <element name="outcome" type="xsd:string" minOccurs="0"/>
+        <element name="comments" type="xsd:string" minOccurs="0"/>
+        <element name="updatedBy" type="tns:identityType" minOccurs="0"/>
+        <element name="updatedDate" type="xsd:dateTime" minOccurs="0"/>
+        <element name="version" type="tns:integerType" minOccurs="0"/>
+        <element name="versionReason" type="xsd:string" minOccurs="0"/>
+      </sequence>
+    </complexType>
+
+    <simpleType name="stateEnum">
+      <restriction base="xsd:string">
+        <enumeration value="ASSIGNED"/>
+        <enumeration value="COMPLETED"/>
+        <enumeration value="ERRORED"/>
+        <enumeration value="EXPIRED"/>
+        <enumeration value="INFO_REQUESTED"/>
+        <enumeration value="OUTCOME_UPDATED"/>
+        <enumeration value="STALE"/>
+        <enumeration value="SUSPENDED"/>
+        <enumeration value="WITHDRAWN"/>
+      </restriction>
+    </simpleType>
+
+    <simpleType name="substateEnum">
+      <restriction base="xsd:string">
+        <enumeration value="ACQUIRED"/>
+        <enumeration value="ADHOC_ROUTED"/>
+        <enumeration value="ASSIGNED"/>
+        <enumeration value="DELEGATED"/>
+        <enumeration value="ESCALATED"/>
+        <enumeration value="INFO_SUBMITTED"/>
+        <enumeration value="PUSHED_BACK"/>
+        <enumeration value="REASSIGNED"/>
+        <enumeration value="RELEASED"/>
+        <enumeration value="RENEWED"/>
+        <enumeration value="RESUMED"/>
+        <enumeration value="ROUTED"/>
+      </restriction>
+    </simpleType>
+
+    <simpleType name="taskActionEnum">
+      <restriction base="xsd:string">
+        <enumeration value="ACQUIRE"/>
+        <enumeration value="ADHOC_ROUTE"/>
+        <enumeration value="AUTO_RELEASE"/>
+        <enumeration value="COMPLETE"/>
+        <enumeration value="DELEGATE"/>
+        <enumeration value="ERROR"/>
+        <enumeration value="ESCALATE"/>
+        <enumeration value="EXPIRE"/>
+        <enumeration value="INFO_REQUEST"/>
+        <enumeration value="INFO_SUBMIT"/>
+        <enumeration value="INITIATE"/>
+        <enumeration value="OUTCOME_UPDATE"/>
+        <enumeration value="OUTCOME_UPDATE_ROUTE"/>
+        <enumeration value="OVERRIDE_ROUTING_SLIP"/>
+        <enumeration value="PUSH_BACK"/>
+        <enumeration value="REASSIGN"/>
+        <enumeration value="REINITIATE"/>
+        <enumeration value="RELEASE"/>
+        <enumeration value="RENEW"/>
+        <enumeration value="RESUME"/>
+        <enumeration value="SKIP_CURRENT_ASSIGNMENT"/>
+        <enumeration value="SUBTASK_OUTCOME_UPDATE"/>
+        <enumeration value="SUSPEND"/>
+        <enumeration value="UPDATE"/>
+        <enumeration value="WITHDRAW"/>
+      </restriction>
+    </simpleType>
+
+    <simpleType name="mailStatusEnum">
+      <restriction base="xsd:string">
+        <enumeration value="ERRORED"/>
+        <enumeration value="RETRY"/>
+        <enumeration value="SENT"/>
+      </restriction>
+    </simpleType>
+
+    <complexType name="systemMessageAttributesType">
+      <sequence>
+        <element name="textAttribute1" type="xsd:string" minOccurs="0"/>
+        <element name="textAttribute2" type="xsd:string" minOccurs="0"/>
+        <element name="textAttribute3" type="xsd:string" minOccurs="0"/>
+        <element name="textAttribute4" type="xsd:string" minOccurs="0"/>
+        <element name="textAttribute5" type="xsd:string" minOccurs="0"/>
+        <element name="textAttribute6" type="xsd:string" minOccurs="0"/>
+        <element name="textAttribute7" type="xsd:string" minOccurs="0"/>
+        <element name="textAttribute8" type="xsd:string" minOccurs="0"/>
+        <element name="textAttribute9" type="xsd:string" minOccurs="0"/>
+        <element name="textAttribute10" type="xsd:string" minOccurs="0"/>
+        <element name="formAttribute1" type="xsd:string" minOccurs="0"/>
+        <element name="formAttribute2" type="xsd:string" minOccurs="0"/>
+        <element name="formAttribute3" type="xsd:string" minOccurs="0"/>
+        <element name="formAttribute4" type="xsd:string" minOccurs="0"/>
+        <element name="formAttribute5" type="xsd:string" minOccurs="0"/>
+        <element name="urlAttribute1" type="xsd:string" minOccurs="0"/>
+        <element name="urlAttribute2" type="xsd:string" minOccurs="0"/>
+        <element name="urlAttribute3" type="xsd:string" minOccurs="0"/>
+        <element name="urlAttribute4" type="xsd:string" minOccurs="0"/>
+        <element name="urlAttribute5" type="xsd:string" minOccurs="0"/>
+        <element name="dateAttribute1" type="xsd:dateTime" minOccurs="0"/>
+        <element name="dateAttribute2" type="xsd:dateTime" minOccurs="0"/>
+        <element name="dateAttribute3" type="xsd:dateTime" minOccurs="0"/>
+        <element name="dateAttribute4" type="xsd:dateTime" minOccurs="0"/>
+        <element name="dateAttribute5" type="xsd:dateTime" minOccurs="0"/>
+        <element name="numberAttribute1" type="xsd:double" minOccurs="0"/>
+        <element name="numberAttribute2" type="xsd:double" minOccurs="0"/>
+        <element name="numberAttribute3" type="xsd:double" minOccurs="0"/>
+        <element name="numberAttribute4" type="xsd:double" minOccurs="0"/>
+        <element name="numberAttribute5" type="xsd:double" minOccurs="0"/>
+        <element name="protectedTextAttribute1" type="xsd:string" minOccurs="0"/>
+        <element name="protectedTextAttribute2" type="xsd:string" minOccurs="0"/>
+        <element name="protectedTextAttribute3" type="xsd:string" minOccurs="0"/>
+        <element name="protectedTextAttribute4" type="xsd:string" minOccurs="0"/>
+        <element name="protectedTextAttribute5" type="xsd:string" minOccurs="0"/>
+        <element name="protectedTextAttribute6" type="xsd:string" minOccurs="0"/>
+        <element name="protectedTextAttribute7" type="xsd:string" minOccurs="0"/>
+        <element name="protectedTextAttribute8" type="xsd:string" minOccurs="0"/>
+        <element name="protectedTextAttribute9" type="xsd:string" minOccurs="0"/>
+        <element name="protectedTextAttribute10" type="xsd:string" minOccurs="0"/>
+        <element name="protectedFormAttribute1" type="xsd:string" minOccurs="0"/>
+        <element name="protectedFormAttribute2" type="xsd:string" minOccurs="0"/>
+        <element name="protectedFormAttribute3" type="xsd:string" minOccurs="0"/>
+        <element name="protectedFormAttribute4" type="xsd:string" minOccurs="0"/>
+        <element name="protectedFormAttribute5" type="xsd:string" minOccurs="0"/>
+        <element name="protectedURLAttribute1" type="xsd:string" minOccurs="0"/>
+        <element name="protectedURLAttribute2" type="xsd:string" minOccurs="0"/>
+        <element name="protectedURLAttribute3" type="xsd:string" minOccurs="0"/>
+        <element name="protectedURLAttribute4" type="xsd:string" minOccurs="0"/>
+        <element name="protectedURLAttribute5" type="xsd:string" minOccurs="0"/>
+        <element name="protectedDateAttribute1" type="xsd:dateTime" minOccurs="0"/>
+        <element name="protectedDateAttribute2" type="xsd:dateTime" minOccurs="0"/>
+        <element name="protectedDateAttribute3" type="xsd:dateTime" minOccurs="0"/>
+        <element name="protectedDateAttribute4" type="xsd:dateTime" minOccurs="0"/>
+        <element name="protectedDateAttribute5" type="xsd:dateTime" minOccurs="0"/>
+        <element name="protectedNumberAttribute1" type="xsd:double" minOccurs="0"/>
+        <element name="protectedNumberAttribute2" type="xsd:double" minOccurs="0"/>
+        <element name="protectedNumberAttribute3" type="xsd:double" minOccurs="0"/>
+        <element name="protectedNumberAttribute4" type="xsd:double" minOccurs="0"/>
+        <element name="protectedNumberAttribute5" type="xsd:double" minOccurs="0"/>
+      </sequence>
+    </complexType>
+
+    <simpleType name="integerType">
+      <annotation> 
+        <appinfo>
+          <jaxb:javaType name="int" 
+           parseMethod="oracle.bpel.services.workflow.task.impl.CustomJaxbDatatypeConverter.parseToInt" 
+           printMethod="oracle.bpel.services.workflow.task.impl.CustomJaxbDatatypeConverter.printInt"/>
+        </appinfo>
+      </annotation>  
+      <restriction base="xsd:integer">
+        <minInclusive value="1"/>
+      </restriction>
+    </simpleType> 
+
+    <simpleType name="priorityType">
+      <annotation> 
+        <appinfo>
+          <jaxb:javaType name="int" 
+           parseMethod="oracle.bpel.services.workflow.task.impl.CustomJaxbDatatypeConverter.parseToInt" 
+           printMethod="oracle.bpel.services.workflow.task.impl.CustomJaxbDatatypeConverter.printInt"/>
+        </appinfo>
+      </annotation>  
+      <restriction base="xsd:integer">
+        <minInclusive value="1"/>
+        <maxInclusive value="5"/>
+      </restriction>
+    </simpleType> 
+
+    <simpleType name="durationType">
+      <annotation> 
+        <appinfo>
+          <jaxb:javaType name="org.exolab.types.Duration" 
+           parseMethod="oracle.bpel.services.workflow.task.impl.CustomJaxbDatatypeConverter.parseToDuration" 
+           printMethod="oracle.bpel.services.workflow.task.impl.CustomJaxbDatatypeConverter.printDuration"/>
+        </appinfo>
+      </annotation>  
+      <restriction base="xsd:duration"/>
+    </simpleType> 
+
+</schema>
+
+

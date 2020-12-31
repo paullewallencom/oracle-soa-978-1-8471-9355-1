@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<weblogic-webservices xmlns="http://www.bea.com/ns/weblogic/90" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <webservice-description>
+    <webservice-description-name>AuctionDecisionService</webservice-description-name>
+    <port-component>
+      <port-component-name>AuctionDecisionServicePort</port-component-name>
+      <service-endpoint-address>
+        <webservice-contextpath>AuctionDecisionService</webservice-contextpath>
+        <webservice-serviceuri>/AuctionDecisionService</webservice-serviceuri>
+      </service-endpoint-address>
+    </port-component>
+  </webservice-description>
+</weblogic-webservices>

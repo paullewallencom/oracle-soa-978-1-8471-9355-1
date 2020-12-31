@@ -1,0 +1,16 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<BPELSuitcase>
+   <BPELProcess id="SubmitBid" src="SubmitBid.bpel">
+      <partnerLinkBindings>
+         <partnerLinkBinding name="client">
+            <property name="wsdlLocation">SubmitBid.wsdl</property>
+         </partnerLinkBinding>
+         <partnerLinkBinding name="AuctionProxy">
+            <property name="wsdlLocation">http://localhost:80/orabpel/obay/AuctionProxy/AuctionProxy?wsdl</property>
+         </partnerLinkBinding>
+         <partnerLinkBinding name="Listing">
+            <property name="wsdlLocation">Listing.wsdl</property>
+         </partnerLinkBinding>
+      </partnerLinkBindings>
+   </BPELProcess>
+</BPELSuitcase>

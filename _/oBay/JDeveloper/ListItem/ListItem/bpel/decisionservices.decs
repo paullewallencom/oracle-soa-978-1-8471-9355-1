@@ -1,0 +1,1 @@
+<?xml version = '1.0' encoding = 'UTF-8'?><decisionServices xmlns="http://xmlns.oracle.com/bpel/rules"><ruleEngineProvider provider="Oracle" name="Auction.rul"><repository type="File"><file>/D:/oBay/JDeveloper/ListItem/ListItem/bpel/rules/oracle/Auction.rul</file></repository></ruleEngineProvider></decisionServices>

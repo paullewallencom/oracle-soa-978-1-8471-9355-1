@@ -1,0 +1,53 @@
+<definitions
+     name="ScheduleFileAdapter"
+     targetNamespace="http://xmlns.oracle.com/pcbpel/adapter/file/ScheduleFileAdapter/"
+     xmlns="http://schemas.xmlsoap.org/wsdl/"
+     xmlns:tns="http://xmlns.oracle.com/pcbpel/adapter/file/ScheduleFileAdapter/"
+     xmlns:plt="http://schemas.xmlsoap.org/ws/2003/05/partner-link/"
+     xmlns:jca="http://xmlns.oracle.com/pcbpel/wsdl/jca/"
+     xmlns:pc="http://xmlns.oracle.com/pcbpel/"
+     xmlns:imp1="http://schemas.packtpub.com/obay/sch"
+     xmlns:hdr="http://xmlns.oracle.com/pcbpel/adapter/file/"
+    >
+    <import namespace="http://xmlns.oracle.com/pcbpel/adapter/file/" location="fileAdapterInboundHeader.wsdl"/>
+    <types>
+      <schema xmlns="http://www.w3.org/2001/XMLSchema" >
+        <import namespace="http://schemas.packtpub.com/obay/sch" schemaLocation="http://localhost/orabpel/xmllib/obay/Schedule_v1_0.xsd" />
+      </schema>
+    </types>
+    <message name="schedule_msg">
+        <part name="schedule" element="imp1:schedule"/>
+    </message>
+    <portType name="ReadScheduleFile_ptt">
+        <operation name="ReadScheduleFile">
+            <input message="tns:schedule_msg"/>
+        </operation>
+    </portType>
+    <binding name="ReadScheduleFile_binding" type="tns:ReadScheduleFile_ptt">
+    <pc:inbound_binding  />
+        <operation name="ReadScheduleFile">
+      <jca:operation
+          LogicalDirectory="schedulerExecuteDir"
+          ActivationSpec="oracle.tip.adapter.file.inbound.FileActivationSpec"
+          DeleteFile="true"
+          IncludeFiles="schedule.*\.xml"
+          PollingFrequency="300"
+          MinimumAge="0"
+          OpaqueSchema="false" >
+      </jca:operation>
+      <input>
+        <jca:header message="hdr:InboundHeader_msg" part="inboundHeader"/>
+      </input>
+        </operation>
+    </binding>
+    <service name="ScheduleFileAdapter">
+        <port name="ReadScheduleFile_pt" binding="tns:ReadScheduleFile_binding">
+      <jca:address location="eis/FileAdapter" UIincludeWildcard="schedule*.xml" />
+        </port>
+    </service>
+  <plt:partnerLinkType name="ReadScheduleFile_plt" >
+    <plt:role name="ReadScheduleFile_role" >
+      <plt:portType name="tns:ReadScheduleFile_ptt" />
+    </plt:role>
+  </plt:partnerLinkType>
+</definitions>

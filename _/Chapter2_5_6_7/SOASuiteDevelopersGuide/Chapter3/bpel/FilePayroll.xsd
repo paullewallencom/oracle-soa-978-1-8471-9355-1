@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns:nxsd="http://xmlns.oracle.com/pcbpel/nxsd"
+            targetNamespace="http://packt.com/PayrollInputFileService"
+            xmlns:tns="http://packt.com/PayrollInputFileService"
+            elementFormDefault="qualified"
+            attributeFormDefault="unqualified" nxsd:encoding="ASCII" nxsd:stream="chars" nxsd:version="NXSD">
+  <xsd:element name="PayrollList">
+    <xsd:complexType>
+      <xsd:choice minOccurs="1" maxOccurs="unbounded" nxsd:choiceCondition="terminated" nxsd:terminatedBy=",">
+        <xsd:element name="Header" nxsd:conditionValue="H">
+          <xsd:complexType>
+            <xsd:sequence>
+              <xsd:element name="Batch" type="xsd:int" nxsd:style="terminated" nxsd:terminatedBy="," nxsd:quotedBy="&quot;">
+              </xsd:element>
+              <xsd:element name="BatchDate" type="xsd:string" nxsd:style="terminated" nxsd:terminatedBy="${eol}" nxsd:quotedBy="&quot;">
+              </xsd:element>
+            </xsd:sequence>
+          </xsd:complexType>
+        </xsd:element>
+        <xsd:element name="Payee" nxsd:conditionValue="R">
+          <xsd:complexType>
+            <xsd:sequence>
+              <xsd:element name="EmployeeNo" type="xsd:int" nxsd:style="terminated" nxsd:terminatedBy="," nxsd:quotedBy="&quot;">
+              </xsd:element>
+              <xsd:element name="FirstName" type="xsd:string" nxsd:style="terminated" nxsd:terminatedBy="," nxsd:quotedBy="&quot;">
+              </xsd:element>
+              <xsd:element name="Lastname" type="xsd:string" nxsd:style="terminated" nxsd:terminatedBy="," nxsd:quotedBy="&quot;">
+              </xsd:element>
+              <xsd:element name="PayDate" type="xsd:string" nxsd:style="terminated" nxsd:terminatedBy="," nxsd:quotedBy="&quot;">
+              </xsd:element>
+              <xsd:element name="AccountNo" type="xsd:int" nxsd:style="terminated" nxsd:terminatedBy="," nxsd:quotedBy="&quot;">
+              </xsd:element>
+              <xsd:element name="Amount" type="xsd:int" nxsd:style="terminated" nxsd:terminatedBy="${eol}" nxsd:quotedBy="&quot;">
+              </xsd:element>
+            </xsd:sequence>
+          </xsd:complexType>
+        </xsd:element>
+      </xsd:choice>
+    </xsd:complexType>
+  </xsd:element>
+</xsd:schema>
+<!--NXSDWIZ:C:\Projects\JDeveloper\SOASuiteDevelopersGuide\Chapter3\SamplePayroll.txt:-->
+<!--USE-HEADER:false:-->

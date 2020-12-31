@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions name="BillUser"
+             targetNamespace="http://xmlns.packtpub.com/obay/bs/BillUser"
+             xmlns="http://schemas.xmlsoap.org/wsdl/"
+             xmlns:client="http://xmlns.packtpub.com/obay/bs/BillUser"
+             xmlns:usr="http://schemas.packtpub.com/obay/usr"
+             xmlns:acc="http://schemas.packtpub.com/obay/acc"
+             xmlns:plnk="http://schemas.xmlsoap.org/ws/2003/05/partner-link/">
+
+	<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	TYPE DEFINITION - List of services participating in this BPEL process
+	The default output of the BPEL designer uses strings as input and 
+	output to the BPEL Process. But you can define or import any XML 
+	Schema type and use them as part of the message types.
+	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->   
+	<types>
+		<schema xmlns="http://www.w3.org/2001/XMLSchema"
+                        xmlns:usr="http://schemas.packtpub.com/obay/usr"
+                        xmlns:acc="http://schemas.packtpub.com/obay/acc"
+                        targetNamespace="http://xmlns.packtpub.com/obay/bs/BillUser">
+                        
+			<import namespace="http://schemas.packtpub.com/obay/acc" 
+                                schemaLocation="http://localhost/orabpel/xmllib/obay/Account_v1_0.xsd" />
+			<import namespace="http://schemas.packtpub.com/obay/usr" 
+                                schemaLocation="http://localhost/orabpel/xmllib/obay/User_v1_0.xsd" />
+
+                        <element name="billUser"            type="client:tBillUser"/>
+                                
+                        <complexType name="tBillUser">
+                            <sequence>
+                                <element ref="usr:userId"/>
+                                <element ref="acc:accountBalance"/>
+                            </sequence>
+                        </complexType>                   
+		</schema>
+	</types>
+
+	<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	MESSAGE TYPE DEFINITION - Definition of the message types used as 
+	part of the port type defintions
+	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->      
+	<message name="BillUser">
+		<part name="payload" element="client:billUser" />
+	</message>
+
+	<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	PORT TYPE DEFINITION - A port type groups a set of operations into
+	a logical service unit.
+	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+
+	<!-- portType implemented by the BillUser BPEL process -->
+	<portType name="BillUser">
+		<operation name="billUser">
+			<input  message="client:BillUser" />
+		</operation>
+	</portType>
+
+	<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	PARTNER LINK TYPE DEFINITION
+	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ --> 
+	<plnk:partnerLinkType name="BillUser">
+		<plnk:role name="BillUserProvider">
+			<plnk:portType name="client:BillUser"/>
+		</plnk:role>
+	</plnk:partnerLinkType>
+</definitions>

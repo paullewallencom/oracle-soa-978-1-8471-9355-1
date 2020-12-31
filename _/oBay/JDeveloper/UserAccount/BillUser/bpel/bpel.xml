@@ -1,0 +1,19 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<BPELSuitcase>
+   <BPELProcess id="BillUser" src="BillUser.bpel">
+      <partnerLinkBindings>
+         <partnerLinkBinding name="client">
+            <property name="wsdlLocation">BillUser.wsdl</property>
+         </partnerLinkBinding>
+         <partnerLinkBinding name="UserManagement">
+            <property name="wsdlLocation">userManagement.wsdl</property>
+         </partnerLinkBinding>
+         <partnerLinkBinding name="CreditCard">
+            <property name="wsdlLocation">CreditCard.wsdl</property>
+         </partnerLinkBinding>
+      </partnerLinkBindings>
+    <faultPolicyBindings>
+      <process faultPolicy="CreditCardPolicy"/>
+    </faultPolicyBindings>
+   </BPELProcess>
+</BPELSuitcase>

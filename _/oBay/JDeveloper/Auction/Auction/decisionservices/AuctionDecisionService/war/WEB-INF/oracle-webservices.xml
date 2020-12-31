@@ -1,0 +1,26 @@
+<oracle-webservices xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                    xsi:noNamespaceSchemaLocation="http://xmlns.oracle.com/oracleas/schema/oracle-webservices-10_0.xsd">
+  <webservice-description name="AuctionDecisionService"
+                          strictJaxrpcValidation="false"
+                          searchSchema="false">
+    <port-component name="AuctionDecisionServicePort">
+      <operations>
+        <operation name="assert"
+                   inputName="assertInput"
+                   input="{http://xmlns.packtpub.com/obay/bs/Auction/AuctionDecisionService}assert"/>        <operation name="assertExecute"
+                   inputName="assertExecuteInput"
+                   input="{http://xmlns.packtpub.com/obay/bs/Auction/AuctionDecisionService}assertExecute"/>         <operation name="assertExecuteWatchStateful"
+                    inputName="assertExecuteWatchStatefulInput"
+                    outputName="assertExecuteWatchStatefulOutput"
+                    input="{http://xmlns.packtpub.com/obay/bs/Auction/AuctionDecisionService}assertExecuteWatchStateful"/>         <operation name="assertExecuteWatchStateless"
+                    inputName="assertExecuteWatchStatelessInput"
+                    outputName="assertExecuteWatchStatelessOutput"
+                    input="{http://xmlns.packtpub.com/obay/bs/Auction/AuctionDecisionService}assertExecuteWatchStateless"/>        <operation name="watch"
+                   inputName="watchInput"
+                   outputName="watchOutput"
+                   input="{http://xmlns.packtpub.com/obay/bs/Auction/AuctionDecisionService}watch"/>
+      </operations>
+    </port-component>
+  </webservice-description>
+</oracle-webservices>
+

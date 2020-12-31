@@ -1,0 +1,473 @@
+<?xml version = "1.0" encoding = "UTF-8" ?>
+<!--
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  Oracle JDeveloper BPEL Designer 
+  
+  Created: Thu Jan 01 17:14:43 EST 2009
+  Author:  mswright
+  Purpose: Synchronous BPEL Process
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+-->
+<process name="UserRegistration"
+         targetNamespace="http://xmlns.packtpub.com/obay/UserRegistration"
+         xmlns="http://schemas.xmlsoap.org/ws/2003/03/business-process/"
+         xmlns:bpws="http://schemas.xmlsoap.org/ws/2003/03/business-process/"
+         xmlns:xp20="http://www.oracle.com/XSL/Transform/java/oracle.tip.pc.services.functions.Xpath20"
+         xmlns:flt="http://schemas.packtpub.com/obay/flt"
+         xmlns:ns4="http://xmlns.packtpub.com/obay/ValidateEmailAddress"
+         xmlns:ns7="http://xmlns.oracle.com/pcbpel/validationservice"
+         xmlns:ids="http://xmlns.oracle.com/bpel/services/IdentityService/xpath"
+         xmlns:ldap="http://schemas.oracle.com/xpath/extension/ldap"
+         xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+         xmlns:cmn="http://schemas.packtpub.com/obay/cmn"
+         xmlns:usr="http://schemas.packtpub.com/obay/usr"
+         xmlns:client="http://xmlns.packtpub.com/obay/UserRegistration"
+         xmlns:ora="http://schemas.oracle.com/xpath/extension"
+         xmlns:xref="http://www.oracle.com/XSL/Transform/java/oracle.tip.xref.xpath.XRefXPathFunctions"
+         xmlns:ns9="http://xmlns.packtpub.com/obay/bs/UserManagement"
+         xmlns:hwf="http://xmlns.oracle.com/bpel/workflow/xpath"
+         xmlns:ns1="http://xmlns.packtpub.com/obay/ivs/CreditCard"
+         xmlns:ehdr="http://www.oracle.com/XSL/Transform/java/oracle.tip.esb.server.headers.ESBHeaderFunctions"
+         xmlns:ns3="http://xmlns.packtpub.com/obay/UserRegistration/correlationset"
+         xmlns:bpelx="http://schemas.oracle.com/bpel/extension"
+         xmlns:orcl="http://www.oracle.com/XSL/Transform/java/oracle.tip.pc.services.functions.ExtFunc"
+         xmlns:ns8="http://www.ascc.net/xml/schematron">
+  <!-- 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      PARTNERLINKS                                                      
+      List of services participating in this BPEL process               
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  -->
+  <partnerLinks>
+    <!-- 
+      The 'client' role represents the requester of this service. It is 
+      used for callback. The location and correlation information associated
+      with the client role are automatically set using WS-Addressing.
+    -->
+    <partnerLink name="client" partnerLinkType="client:UserRegistration"
+                 myRole="UserRegistrationProvider"/>
+    <partnerLink name="ValidateEmailAddress"
+                 partnerRole="ValidateEmailAddressProvider"
+                 partnerLinkType="ns4:ValidateEmailAddress"/>
+    <partnerLink name="Schematron" partnerRole="service"
+                 partnerLinkType="ns7:ValidationSLT"/>
+    <partnerLink name="UserManagement" partnerRole="userManagement_Role"
+                 partnerLinkType="ns9:userManagement_PL"/>
+    <partnerLink name="CreditCard" partnerRole="CreditCard_Role"
+                 partnerLinkType="ns1:CreditCard_PL"/>
+  </partnerLinks>
+  <!-- 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      VARIABLES                                                        
+      List of messages and XML documents used within this BPEL process 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  -->
+  <variables>
+    <!-- Reference to the message passed as input during initiation -->
+    <!-- Reference to the message that will be returned to the requester-->
+    <variable name="submitUserRegistrationInput"
+              messageType="client:submitUserRegistration"/>
+    <variable name="submitUserRegistrationResponse"
+              messageType="client:submitUserRegistrationResponse"/>
+    <variable name="invalidUserDetailsFault"
+              messageType="client:invalidUserDetailsFault"/>
+  </variables>
+  <correlationSets>
+    <correlationSet name="EmailTokenCS" properties="ns3:EmailToken"/>
+  </correlationSets>
+  <faultHandlers>
+    <catch faultName="client:invalidUserDetails"
+           faultVariable="invalidUserDetailsFault">
+      <sequence name="Sequence_7">
+        <compensate name="Compensate"/>
+        <reply name="returnInvalidUserDetails" partnerLink="client"
+               portType="client:UserRegistration"
+               operation="submitUserRegistration"
+               variable="invalidUserDetailsFault"
+               faultName="client:invalidUserDetails"/>
+      </sequence>
+    </catch>
+  </faultHandlers>
+  <!-- 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+     ORCHESTRATION LOGIC                                               
+     Set of activities coordinating the flow of messages across the    
+     services integrated within this business process                  
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  -->
+  <sequence name="main">
+    <!-- Receive input from requestor. (Note: This maps to operation defined in UserRegistration.wsdl) -->
+    <receive name="submitUserRegistration" partnerLink="client"
+             portType="client:UserRegistration"
+             operation="submitUserRegistration"
+             variable="submitUserRegistrationInput" createInstance="yes"/>
+    <!-- Generate reply to synchronous request -->
+    <scope name="ValidateUserDetails">
+      <bpelx:annotation>
+        <bpelx:documentation>Validate DoB and Password</bpelx:documentation>
+      </bpelx:annotation>
+      <variables>
+        <variable name="validationInput" messageType="ns7:ValidationInput"/>
+        <variable name="validationOutput" messageType="ns7:ValidationErrors"/>
+        <variable name="ValidationExceptionFault"
+                  messageType="ns7:ValidationErrors"/>
+      </variables>
+      <faultHandlers>
+        <catch faultName="ns7:ValidationException"
+               faultVariable="ValidationExceptionFault">
+          <sequence name="Sequence_9">
+            <assign name="setInvalidUserDetailsFault">
+              <copy>
+                <from expression="'CODE'"/>
+                <to variable="invalidUserDetailsFault" part="payload"
+                    query="/flt:fault/flt:code"/>
+              </copy>
+              <copy>
+                <from expression="'Invalid User Details'"/>
+                <to variable="invalidUserDetailsFault" part="payload"
+                    query="/flt:fault/flt:summary"/>
+              </copy>
+              <copy>
+                <from variable="ValidationExceptionFault" part="result"
+                      query="/ns7:ValidationErrors"/>
+                <to variable="invalidUserDetailsFault" part="payload"
+                    query="/flt:fault/flt:detail"/>
+              </copy>
+            </assign>
+            <throw name="invalidUserDetails"
+                   faultName="client:invalidUserDetails"
+                   faultVariable="invalidUserDetailsFault"/>
+          </sequence>
+        </catch>
+      </faultHandlers>
+      <sequence name="Sequence_8">
+        <assign name="setValidationInput">
+          <copy>
+            <from variable="submitUserRegistrationInput" part="payload"
+                  query="/client:submitUserRegistration"/>
+            <to variable="validationInput" part="instanceFile"
+                query="/ns7:validation"/>
+          </copy>
+          <bpelx:remove>
+            <bpelx:target variable="validationInput" part="instanceFile"
+                          query="/ns7:validation/usr:password"/>
+          </bpelx:remove>
+          <copy>
+            <from expression="ora:doc('http://localhost:80/orabpel/xmllib/obay/sch/valUser.sch')"/>
+            <to variable="validationInput" part="ruleFile" query="/ns8:schema"/>
+          </copy>
+        </assign>
+        <invoke name="validateUserDetails" partnerLink="Schematron"
+                portType="ns7:ValidationPT" operation="validation"
+                inputVariable="validationInput"
+                outputVariable="validationOutput"/>
+      </sequence>
+    </scope>
+    <scope name="ValidateCreditCard">
+      <variables>
+        <variable name="validationInput" messageType="ns7:ValidationInput"/>
+        <variable name="validationOutput" messageType="ns7:ValidationErrors"/>
+        <variable name="ValidationExceptionFault"
+                  messageType="ns7:ValidationErrors"/>
+      </variables>
+      <faultHandlers>
+        <catch faultName="ns7:ValidationException"
+               faultVariable="ValidationExceptionFault">
+          <sequence name="Sequence_9">
+            <assign name="setInvalidCreditCardFault">
+              <copy>
+                <from expression="'CODE'"/>
+                <to variable="invalidUserDetailsFault" part="payload"
+                    query="/flt:fault/flt:code"/>
+              </copy>
+              <copy>
+                <from expression="'Invalid Credit Card'"/>
+                <to variable="invalidUserDetailsFault" part="payload"
+                    query="/flt:fault/flt:summary"/>
+              </copy>
+              <copy>
+                <from variable="ValidationExceptionFault" part="result"
+                      query="/ns7:ValidationErrors"/>
+                <to variable="invalidUserDetailsFault" part="payload"
+                    query="/flt:fault/flt:detail"/>
+              </copy>
+            </assign>
+            <throw name="invalidUserDetails"
+                   faultName="client:invalidUserDetails"
+                   faultVariable="invalidUserDetailsFault"/>
+          </sequence>
+        </catch>
+      </faultHandlers>
+      <sequence name="Sequence_11">
+        <assign name="setValidationInput">
+          <copy>
+            <from>
+              <validation xmlns="http://xmlns.oracle.com/pcbpel/validationservice">
+                <creditCard xmlns="http://schemas.packtpub.com/obay/cmn"/>
+              </validation>
+            </from>
+            <to variable="validationInput" part="instanceFile"
+                query="/ns7:validation"/>
+          </copy>
+          <copy>
+            <from variable="submitUserRegistrationInput" part="payload"
+                  query="/client:submitUserRegistration/usr:user/cmn:creditCard"/>
+            <to variable="validationInput" part="instanceFile"
+                query="/ns7:validation/cmn:creditCard"/>
+          </copy>
+          <copy>
+            <from expression="ora:doc('http://localhost:80/orabpel/xmllib/obay/sch/valCreditCard.sch')"/>
+            <to variable="validationInput" part="ruleFile" query="/ns8:schema"/>
+          </copy>
+        </assign>
+        <invoke name="validateCreditCardDetails" partnerLink="Schematron"
+                portType="ns7:ValidationPT" operation="validation"
+                inputVariable="validationInput"
+                outputVariable="validationOutput"/>
+      </sequence>
+    </scope>
+    <scope name="CreateUser">
+      <variables>
+        <variable name="createUserInput" messageType="ns9:createUser"/>
+        <variable name="createUserOutput" messageType="ns9:createUserResponse"/>
+        <variable name="invalidUserIdFault"
+                  messageType="ns9:invalidUserIdFault"/>
+        <variable name="deleteUserInput" messageType="ns9:deleteUser"/>
+        <variable name="deleteUserOutput" messageType="ns9:deleteUserResponse"/>
+      </variables>
+      <faultHandlers>
+        <catch faultName="ns9:invalidUserId" faultVariable="invalidUserIdFault">
+          <sequence name="Sequence_4">
+            <assign name="setInvalidUserDetailsFault">
+              <copy>
+                <from variable="invalidUserIdFault" part="payload"
+                      query="/flt:fault"/>
+                <to variable="invalidUserDetailsFault" part="payload"
+                    query="/flt:fault"/>
+              </copy>
+            </assign>
+            <throw name="invalidUserDetails"
+                   faultName="client:invalidUserDetails"
+                   faultVariable="invalidUserDetailsFault"/>
+          </sequence>
+        </catch>
+      </faultHandlers>
+      <compensationHandler>
+        <sequence name="Sequence_3">
+          <assign name="setDeleteUserInput">
+            <copy>
+              <from variable="submitUserRegistrationInput" part="payload"
+                    query="/client:submitUserRegistration/usr:user/usr:userId"/>
+              <to variable="deleteUserInput" part="payload"
+                  query="/ns9:deleteUser/usr:userId"/>
+            </copy>
+          </assign>
+          <invoke name="deleteUser" partnerLink="UserManagement"
+                  portType="ns9:userManagement" operation="deleteUser"
+                  inputVariable="deleteUserInput"
+                  outputVariable="deleteUserOutput"/>
+        </sequence>
+      </compensationHandler>
+      <sequence name="Sequence_2">
+        <assign name="setCreateUserInput">
+          <copy>
+            <from variable="submitUserRegistrationInput" part="payload"
+                  query="/client:submitUserRegistration"/>
+            <to variable="createUserInput" part="payload"
+                query="/ns9:createUser"/>
+          </copy>
+        </assign>
+        <invoke name="createUser" partnerLink="UserManagement"
+                portType="ns9:userManagement" operation="createUser"
+                inputVariable="createUserInput"
+                outputVariable="createUserOutput"/>
+      </sequence>
+    </scope>
+    <scope name="VerifyCreditCard">
+      <variables>
+        <variable name="verifyCreditCardInput"
+                  messageType="ns1:verifyCreditCard"/>
+        <variable name="verifyCreditCardResponse"
+                  messageType="ns1:verifyCreditCardResponse"/>
+        <variable name="invalidCreditCardFault"
+                  messageType="ns1:invalidCreditCardFault"/>
+      </variables>
+      <faultHandlers>
+        <catch faultName="ns1:invalidCreditCard"
+               faultVariable="invalidCreditCardFault">
+          <sequence name="Sequence_13">
+            <assign name="SetInvalidCC">
+              <copy>
+                <from expression="'CODE'"/>
+                <to variable="invalidUserDetailsFault" part="payload"
+                    query="/flt:fault/flt:code"/>
+              </copy>
+              <copy>
+                <from expression="'Credit Card Declined'"/>
+                <to variable="invalidUserDetailsFault" part="payload"
+                    query="/flt:fault/flt:summary"/>
+              </copy>
+              <copy>
+                <from variable="invalidCreditCardFault" part="payload"
+                      query="/flt:fault/flt:detail"/>
+                <to variable="invalidUserDetailsFault" part="payload"
+                    query="/flt:fault/flt:detail"/>
+              </copy>
+            </assign>
+            <throw name="invalidUserDetails"
+                   faultName="client:invalidUserDetails"
+                   faultVariable="invalidUserDetailsFault"/>
+          </sequence>
+        </catch>
+      </faultHandlers>
+      <sequence name="Sequence_12">
+        <assign name="SetCardDetails">
+          <copy>
+            <from variable="submitUserRegistrationInput" part="payload"
+                  query="/client:submitUserRegistration/usr:user/cmn:creditCard"/>
+            <to variable="verifyCreditCardInput" part="payload"
+                query="/ns1:verifyCreditCard/cmn:creditCard"/>
+          </copy>
+        </assign>
+        <invoke name="VerifyCreditCard" partnerLink="CreditCard"
+                portType="ns1:CreditCard" operation="verifyCreditCard"
+                inputVariable="verifyCreditCardInput"
+                outputVariable="verifyCreditCardResponse"/>
+      </sequence>
+    </scope>
+    <assign name="setSubmitUserRegistrationResponse">
+      <copy>
+        <from variable="submitUserRegistrationInput" part="payload"
+              query="/client:submitUserRegistration/usr:user/usr:userId"/>
+        <to variable="submitUserRegistrationResponse" part="payload"
+            query="/client:submitUserRegistrationResponse/usr:userId"/>
+      </copy>
+    </assign>
+    <reply name="submitUserRegistrationResponse" partnerLink="client"
+           portType="client:UserRegistration" operation="submitUserRegistration"
+           variable="submitUserRegistrationResponse"/>
+    <scope name="ValidateEmailAddress">
+      <variables>
+        <variable name="validateEmailAddressInput"
+                  messageType="ns4:ValidateEmailAddress"/>
+        <variable name="confirmEmailAddressInput"
+                  messageType="client:confirmEmailAddress"/>
+        <variable name="confirmEmailAddressResponse"
+                  messageType="client:confirmEmailAddressResponse"/>
+        <variable name="deleteUserInput" messageType="ns9:deleteUser"/>
+        <variable name="deleteUserOutput" messageType="ns9:deleteUserResponse"/>
+      </variables>
+      <eventHandlers>
+        <onAlarm for="'P1DT'">
+          <sequence name="Sequence_5">
+            <assign name="setDeleteUserInput">
+              <copy>
+                <from variable="submitUserRegistrationInput" part="payload"
+                      query="/client:submitUserRegistration/usr:user/usr:userId"/>
+                <to variable="deleteUserInput" part="payload"
+                    query="/ns9:deleteUser/usr:userId"/>
+              </copy>
+            </assign>
+            <invoke name="deleteUser" portType="ns9:userManagement"
+                    inputVariable="deleteUserInput"
+                    outputVariable="deleteUserOutput"
+                    partnerLink="UserManagement" operation="deleteUser"/>
+            <terminate name="Terminate"/>
+          </sequence>
+        </onAlarm>
+      </eventHandlers>
+      <sequence name="Sequence_1">
+        <assign name="setValidateEmailAddressInput">
+          <copy>
+            <from variable="submitUserRegistrationInput" part="payload"
+                  query="/client:submitUserRegistration/usr:user/usr:userId"/>
+            <to variable="validateEmailAddressInput" part="payload"
+                query="/ns4:validateEmailAddress/usr:userId"/>
+          </copy>
+          <copy>
+            <from variable="submitUserRegistrationInput" part="payload"
+                  query="/client:submitUserRegistration/usr:user/cmn:emailAddress"/>
+            <to variable="validateEmailAddressInput" part="payload"
+                query="/ns4:validateEmailAddress/cmn:emailAddress"/>
+          </copy>
+          <copy>
+            <from expression="ora:getInstanceId()"/>
+            <to variable="validateEmailAddressInput" part="payload"
+                query="/ns4:validateEmailAddress/cmn:emailAddressToken"/>
+          </copy>
+        </assign>
+        <invoke name="validateEmailAddress" partnerLink="ValidateEmailAddress"
+                portType="ns4:ValidateEmailAddress"
+                operation="validateEmailAddress"
+                inputVariable="validateEmailAddressInput">
+          <correlations>
+            <correlation initiate="yes" set="EmailTokenCS" pattern="out"/>
+          </correlations>
+        </invoke>
+        <receive name="confirmEmailAddress" partnerLink="client"
+                 portType="client:UserRegistration"
+                 operation="confirmEmailAddress"
+                 variable="confirmEmailAddressInput" createInstance="no">
+          <correlations>
+            <correlation initiate="no" set="EmailTokenCS"/>
+          </correlations>
+        </receive>
+        <assign name="setConfirmEmailAddressResponse">
+          <copy>
+            <from variable="submitUserRegistrationInput" part="payload"
+                  query="/client:submitUserRegistration/usr:user/usr:userId"/>
+            <to variable="confirmEmailAddressResponse" part="payload"
+                query="/client:confirmEmailAddressResponse/usr:userId"/>
+          </copy>
+        </assign>
+        <reply name="confirmEmailAddressResponse" partnerLink="client"
+               portType="client:UserRegistration"
+               operation="confirmEmailAddress"
+               variable="confirmEmailAddressResponse"/>
+      </sequence>
+    </scope>
+    <scope name="ActivateUser">
+      <variables>
+        <variable name="activateUserInput" messageType="ns9:activateUser"/>
+        <variable name="activateUserOutput"
+                  messageType="ns9:activateUserResponse"/>
+      </variables>
+      <sequence name="Sequence_6">
+        <assign name="setActivateUserInput">
+          <copy>
+            <from variable="submitUserRegistrationInput" part="payload"
+                  query="/client:submitUserRegistration/usr:user/usr:userId"/>
+            <to variable="activateUserInput" part="payload"
+                query="/ns9:activateUser/usr:userId"/>
+          </copy>
+        </assign>
+        <invoke name="activateUser" portType="ns9:userManagement"
+                inputVariable="activateUserInput"
+                outputVariable="activateUserOutput" partnerLink="UserManagement"
+                operation="activateUser"/>
+      </sequence>
+    </scope>
+    <scope name="createUserAccount">
+      <variables>
+        <variable name="createUserAccountInput"
+                  messageType="ns9:createUserAccount"/>
+        <variable name="createUserAccountOutput"
+                  messageType="ns9:createUserAccountResponse"/>
+      </variables>
+      <sequence name="Sequence_10">
+        <assign name="setCreateUserAccountInput">
+          <copy>
+            <from variable="submitUserRegistrationInput" part="payload"
+                  query="/client:submitUserRegistration/usr:user/usr:userId"/>
+            <to variable="createUserAccountInput" part="payload"
+                query="/ns9:createUserAccount/usr:userId"/>
+          </copy>
+        </assign>
+        <invoke name="createUserAccount" partnerLink="UserManagement"
+                portType="ns9:userManagement" operation="createUserAccount"
+                inputVariable="createUserAccountInput"
+                outputVariable="createUserAccountOutput"/>
+      </sequence>
+    </scope>
+  </sequence>
+</process>

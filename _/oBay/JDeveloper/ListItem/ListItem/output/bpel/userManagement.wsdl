@@ -1,0 +1,16 @@
+<definitions
+     name="userManagement"
+     targetNamespace="http://xmlns.packtpub.com/obay/bs/UserManagement"
+     xmlns="http://schemas.xmlsoap.org/wsdl/"
+     xmlns:bpws="http://schemas.xmlsoap.org/ws/2003/03/business-process/"
+     xmlns:plnk="http://schemas.xmlsoap.org/ws/2003/05/partner-link/"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+     xmlns:s1="http://xmlns.packtpub.com/obay/bs/UserManagement"
+    >
+    <import namespace="http://xmlns.packtpub.com/obay/bs/UserManagement" location="http://localhost:7001//oBay/bs/UserManagement?wsdl"/>
+    <plnk:partnerLinkType name="userManagement_PL">
+        <plnk:role name="userManagement_Role">
+            <plnk:portType name="s1:userManagement"/>
+        </plnk:role>
+    </plnk:partnerLinkType>
+</definitions>

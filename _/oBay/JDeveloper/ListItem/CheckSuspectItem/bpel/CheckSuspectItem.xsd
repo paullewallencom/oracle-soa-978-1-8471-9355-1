@@ -1,0 +1,24 @@
+<schema xmlns="http://www.w3.org/2001/XMLSchema" 
+        targetNamespace="http://xmlns.packtpub.com/CheckSuspectItem"
+        xmlns:tns="http://xmlns.packtpub.com/CheckSuspectItem"
+        xmlns:lst="http://schemas.packtpub.com/obay/lst">
+        
+        <import namespace="http://schemas.packtpub.com/obay/lst" schemaLocation="http://localhost/orabpel/xmllib/obay/Listing_v1_0.xsd"/>
+        
+        <element name="checkSuspectItem"         type="tns:tCheckSuspectItem"/>
+        <element name="checkSuspectItemResponse" type="tns:tCheckSuspectItemResponse"/>                
+
+        <complexType name="tCheckSuspectItem">
+            <sequence>
+                <element ref="lst:item"/>
+                <element name="reasonCode"          type="string"/>
+                <element name="reasonDescription"   type="string"/>
+            </sequence>
+        </complexType>
+        
+        <complexType name="tCheckSuspectItemResponse">
+            <sequence>
+                <element ref="lst:itemStatus"/>
+            </sequence>
+        </complexType>
+</schema>

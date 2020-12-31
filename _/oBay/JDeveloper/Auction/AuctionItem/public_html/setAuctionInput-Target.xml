@@ -1,0 +1,8 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<tns:initiateAuction xmlns:tns="http://xmlns.packtpub.com/obay/bs/AuctionProxy">
+   <auc:auctionId xmlns:auc="http://schemas.packtpub.com/obay/auc">1</auc:auctionId>
+   <auc:auctionType xmlns:auc="http://schemas.packtpub.com/obay/auc">STD</auc:auctionType>
+   <auc:startTime xmlns:auc="http://schemas.packtpub.com/obay/auc">2009-02-22T12:16:17.046</auc:startTime>
+   <auc:endTime xmlns:auc="http://schemas.packtpub.com/obay/auc">2009-03-01T12:16:17+10:00</auc:endTime>
+   <auc:reservePrice xmlns:auc="http://schemas.packtpub.com/obay/auc">0</auc:reservePrice>
+</tns:initiateAuction>

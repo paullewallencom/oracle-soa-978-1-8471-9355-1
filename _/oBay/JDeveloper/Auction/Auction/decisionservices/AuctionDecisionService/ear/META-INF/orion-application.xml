@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<orion-application>
+  <imported-shared-libraries>
+    <import-shared-library name="oracle.cache"/>
+    <import-shared-library name="oracle.bpel.common"/>
+  </imported-shared-libraries>
+</orion-application>

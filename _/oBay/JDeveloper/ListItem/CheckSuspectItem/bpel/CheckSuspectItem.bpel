@@ -1,0 +1,273 @@
+<?xml version = "1.0" encoding = "UTF-8" ?>
+<!--
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  Oracle JDeveloper BPEL Designer 
+  
+  Created: Sat Jan 24 17:02:30 EST 2009
+  Author:  mswright
+  Purpose: Asynchronous BPEL Process
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+-->
+<process name="CheckSuspectItem"
+         targetNamespace="http://xmlns.packtpub.com/CheckSuspectItem"
+         xmlns="http://schemas.xmlsoap.org/ws/2003/03/business-process/"
+         xmlns:bpws="http://schemas.xmlsoap.org/ws/2003/03/business-process/"
+         xmlns:xp20="http://www.oracle.com/XSL/Transform/java/oracle.tip.pc.services.functions.Xpath20"
+         xmlns:wfcommon="http://xmlns.oracle.com/bpel/workflow/common"
+         xmlns:ids="http://xmlns.oracle.com/bpel/services/IdentityService/xpath"
+         xmlns:ldap="http://schemas.oracle.com/xpath/extension/ldap"
+         xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+         xmlns:wf="http://schemas.oracle.com/bpel/extension/workflow"
+         xmlns:client="http://xmlns.packtpub.com/CheckSuspectItem"
+         xmlns:ora="http://schemas.oracle.com/xpath/extension"
+         xmlns:taskservice="http://xmlns.oracle.com/bpel/workflow/taskService"
+         xmlns:xref="http://www.oracle.com/XSL/Transform/java/oracle.tip.xref.xpath.XRefXPathFunctions"
+         xmlns:hwf="http://xmlns.oracle.com/bpel/workflow/xpath"
+         xmlns:lst="http://schemas.packtpub.com/obay/lst"
+         xmlns:ehdr="http://www.oracle.com/XSL/Transform/java/oracle.tip.esb.server.headers.ESBHeaderFunctions"
+         xmlns:bpelx="http://schemas.oracle.com/bpel/extension"
+         xmlns:task="http://xmlns.oracle.com/bpel/workflow/task"
+         xmlns:orcl="http://www.oracle.com/XSL/Transform/java/oracle.tip.pc.services.functions.ExtFunc">
+    <!-- 
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        PARTNERLINKS                                                      
+        List of services participating in this BPEL process               
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    -->
+    <partnerLinks>
+        <!-- 
+      The 'client' role represents the requester of this service. It is 
+      used for callback. The location and correlation information associated
+      with the client role are automatically set using WS-Addressing.
+    -->
+        <partnerLink name="client" partnerLinkType="client:CheckSuspectItem"
+                     myRole="CheckSuspectItemProvider"
+                     partnerRole="CheckSuspectItemRequester"/>
+        <partnerLink myRole="TaskServiceCallbackListener" name="TaskService"
+                     partnerRole="TaskService"
+                     partnerLinkType="taskservice:TaskService"/>
+    </partnerLinks>
+    <variables>
+        <variable name="inputVariable" messageType="client:checkSuspectItem"/>
+        <variable name="outputVariable"
+                  messageType="client:checkSuspectItemResponse"/>
+        <variable name="CheckSuspectItem_globalVariable"
+                  messageType="taskservice:taskMessage"/>
+    </variables>
+    <!-- 
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        VARIABLES                                                        
+        List of messages and XML documents used within this BPEL process 
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    -->
+    <!-- 
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+       ORCHESTRATION LOGIC                                               
+       Set of activities coordinating the flow of messages across the    
+       services integrated within this business process                  
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    -->
+    <sequence name="main">
+        <!-- Receive input from requestor. (Note: This maps to operation defined in CheckSuspectItem.wsdl) -->
+        <receive name="receiveInput" partnerLink="client"
+                 portType="client:CheckSuspectItem" operation="checkSuspectItem"
+                 variable="inputVariable" createInstance="yes"/>
+        <!-- 
+          Asynchronous callback to the requester. (Note: the callback location and correlation id is transparently handled using WS-addressing.)
+        -->
+        <scope name="CheckSuspectItem"
+               xmlns:wf="http://schemas.oracle.com/bpel/extension/workflow"
+               wf:key="CheckSuspectItem_globalVariable">
+            <bpelx:annotation>
+                <bpelx:pattern patternName="bpelx:workflow"></bpelx:pattern>
+            </bpelx:annotation>
+            <variables>
+                <variable name="initiateTaskInput"
+                          messageType="taskservice:initiateTaskMessage"/>
+                <variable name="initiateTaskResponseMessage"
+                          messageType="taskservice:initiateTaskResponseMessage"/>
+            </variables>
+            <correlationSets>
+                <correlationSet name="WorkflowTaskIdCor"
+                                properties="taskservice:taskId"/>
+            </correlationSets>
+            <sequence>
+                <assign name="CheckSuspectItem_AssignTaskAttributes">
+                    <copy>
+                        <from expression="concat(ora:getProcessURL(), string('/CheckSuspectItem/CheckSuspectItem.task'))"/>
+                        <to variable="initiateTaskInput" part="payload"
+                            query="/taskservice:initiateTask/task:task/task:taskDefinitionURI"/>
+                    </copy>
+                    <copy>
+                        <from expression="number(3)"/>
+                        <to variable="initiateTaskInput" part="payload"
+                            query="/taskservice:initiateTask/task:task/task:priority"/>
+                    </copy>
+                    <copy>
+                        <from>
+                            <payload xmlns="http://xmlns.oracle.com/bpel/workflow/task">
+                                <checkSuspectItem xmlns="http://xmlns.packtpub.com/CheckSuspectItem"/>
+                            </payload>
+                        </from>
+                        <to variable="initiateTaskInput" part="payload"
+                            query="/taskservice:initiateTask/task:task/task:payload"/>
+                    </copy>
+                    <copy>
+                        <from expression="concat(string('Check Suspect Item:'), bpws:getVariableData('inputVariable','payload','/client:checkSuspectItem/lst:item/lst:title'))"/>
+                        <to variable="initiateTaskInput" part="payload"
+                            query="/taskservice:initiateTask/task:task/task:title"/>
+                    </copy>
+                    <copy>
+                        <from variable="inputVariable" part="payload"
+                              query="/client:checkSuspectItem"/>
+                        <to variable="initiateTaskInput" part="payload"
+                            query="/taskservice:initiateTask/task:task/task:payload/client:checkSuspectItem"/>
+                    </copy>
+                </assign>
+                <assign name="CheckSuspectItem_AssignSystemTaskAttributes">
+                    <copy>
+                        <from expression="ora:getInstanceId()"/>
+                        <to variable="initiateTaskInput" part="payload"
+                            query="/taskservice:initiateTask/task:task/task:processInfo/task:instanceId"/>
+                    </copy>
+                    <copy>
+                        <from expression="ora:getProcessId()"/>
+                        <to variable="initiateTaskInput" part="payload"
+                            query="/taskservice:initiateTask/task:task/task:processInfo/task:processName"/>
+                    </copy>
+                    <copy>
+                        <from expression="ora:getProcessId()"/>
+                        <to variable="initiateTaskInput" part="payload"
+                            query="/taskservice:initiateTask/task:task/task:processInfo/task:processId"/>
+                    </copy>
+                    <copy>
+                        <from expression="ora:getProcessVersion()"/>
+                        <to variable="initiateTaskInput" part="payload"
+                            query="/taskservice:initiateTask/task:task/task:processInfo/task:processVersion"/>
+                    </copy>
+                    <copy>
+                        <from expression="ora:getDomainId()"/>
+                        <to variable="initiateTaskInput" part="payload"
+                            query="/taskservice:initiateTask/task:task/task:processInfo/task:domainId"/>
+                    </copy>
+                    <copy>
+                        <from expression="string('BPEL')"/>
+                        <to variable="initiateTaskInput" part="payload"
+                            query="/taskservice:initiateTask/task:task/task:processInfo/task:processType"/>
+                    </copy>
+                </assign>
+                <invoke name="initiateTask_CheckSuspectItem"
+                        partnerLink="TaskService"
+                        portType="taskservice:TaskService"
+                        operation="initiateTask"
+                        inputVariable="initiateTaskInput"
+                        outputVariable="initiateTaskResponseMessage">
+                    <correlations>
+                        <correlation initiate="yes" set="WorkflowTaskIdCor"
+                                     pattern="in"/>
+                    </correlations>
+                </invoke>
+                <receive name="receiveCompletedTask_CheckSuspectItem"
+                         partnerLink="TaskService"
+                         portType="taskservice:TaskServiceCallback"
+                         operation="onTaskCompleted"
+                         variable="CheckSuspectItem_globalVariable"
+                         createInstance="no">
+                    <correlations>
+                        <correlation initiate="no" set="WorkflowTaskIdCor"/>
+                    </correlations>
+                </receive>
+            </sequence>
+        </scope>
+        <switch name="taskSwitch">
+            <case condition="bpws:getVariableData('CheckSuspectItem_globalVariable', 'payload', '/task:task/task:systemAttributes/task:state') = 'COMPLETED' and bpws:getVariableData('CheckSuspectItem_globalVariable', 'payload', '/task:task/task:systemAttributes/task:outcome') = 'DEFER'">
+                <bpelx:annotation>
+                    <bpelx:pattern patternName="case">Task outcome is DEFER</bpelx:pattern>
+                </bpelx:annotation>
+                <sequence>
+                    <assign name="CopyPayloadFromTask">
+                        <copy>
+                            <from variable="CheckSuspectItem_globalVariable"
+                                  part="payload"
+                                  query="/task:task/task:payload/client:checkSuspectItem"/>
+                            <to variable="inputVariable" part="payload"
+                                query="/client:checkSuspectItem"/>
+                        </copy>
+                        <copy>
+                            <from expression="'REJECTED'"/>
+                            <to variable="outputVariable" part="payload"
+                                query="/client:checkSuspectItemResponse/lst:itemStatus"/>
+                        </copy>
+                    </assign>
+                </sequence>
+            </case>
+            <case condition="bpws:getVariableData('CheckSuspectItem_globalVariable', 'payload', '/task:task/task:systemAttributes/task:state') = 'COMPLETED' and bpws:getVariableData('CheckSuspectItem_globalVariable', 'payload', '/task:task/task:systemAttributes/task:outcome') = 'REJECT'">
+                <bpelx:annotation>
+                    <bpelx:pattern patternName="case">Task outcome is REJECT</bpelx:pattern>
+                </bpelx:annotation>
+                <sequence>
+                    <assign name="CopyPayloadFromTask">
+                        <copy>
+                            <from variable="CheckSuspectItem_globalVariable"
+                                  part="payload"
+                                  query="/task:task/task:payload/client:checkSuspectItem"/>
+                            <to variable="inputVariable" part="payload"
+                                query="/client:checkSuspectItem"/>
+                        </copy>
+                        <copy>
+                            <from expression="'REJECTED'"/>
+                            <to variable="outputVariable" part="payload"
+                                query="/client:checkSuspectItemResponse/lst:itemStatus"/>
+                        </copy>
+                    </assign>
+                </sequence>
+            </case>
+            <case condition="bpws:getVariableData('CheckSuspectItem_globalVariable', 'payload', '/task:task/task:systemAttributes/task:state') = 'COMPLETED' and bpws:getVariableData('CheckSuspectItem_globalVariable', 'payload', '/task:task/task:systemAttributes/task:outcome') = 'APPROVE'">
+                <bpelx:annotation>
+                    <bpelx:pattern patternName="case">Task outcome is APPROVE</bpelx:pattern>
+                </bpelx:annotation>
+                <sequence>
+                    <assign name="CopyPayloadFromTask">
+                        <copy>
+                            <from variable="CheckSuspectItem_globalVariable"
+                                  part="payload"
+                                  query="/task:task/task:payload/client:checkSuspectItem"/>
+                            <to variable="inputVariable" part="payload"
+                                query="/client:checkSuspectItem"/>
+                        </copy>
+                        <copy>
+                            <from expression="'APPROVED'"/>
+                            <to variable="outputVariable" part="payload"
+                                query="/client:checkSuspectItemResponse/lst:itemStatus"/>
+                        </copy>
+                    </assign>
+                </sequence>
+            </case>
+            <otherwise>
+                <bpelx:annotation>
+                    <bpelx:pattern>Task is outcome is EXPIRED, STALE, WITHDRAWN or ERRORED</bpelx:pattern>
+                </bpelx:annotation>
+                <sequence>
+                    <assign name="CopyPayloadFromTask">
+                        <copy>
+                            <from variable="CheckSuspectItem_globalVariable"
+                                  part="payload"
+                                  query="/task:task/task:payload/client:checkSuspectItem"/>
+                            <to variable="inputVariable" part="payload"
+                                query="/client:checkSuspectItem"/>
+                        </copy>
+                        <copy>
+                            <from expression="'REJECTED'"/>
+                            <to variable="outputVariable" part="payload"
+                                query="/client:checkSuspectItemResponse/lst:itemStatus"/>
+                        </copy>
+                    </assign>
+                </sequence>
+            </otherwise>
+        </switch>
+        <invoke name="callbackClient" partnerLink="client"
+                portType="client:CheckSuspectItemCallback"
+                operation="checkSuspectItemResponse"
+                inputVariable="outputVariable"/>
+    </sequence>
+</process>

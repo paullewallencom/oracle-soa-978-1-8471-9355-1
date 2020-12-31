@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<auctionItem xmlns="http://xmlns.packtpub.com/obay/bp/AuctionItem">
+   <listing xmlns="http://schemas.packtpub.com/obay/lst">
+      <listingId>1</listingId>
+      <listingDetail>
+         <sellerId>sellerId3</sellerId>
+         <listingStatus>455</listingStatus>
+         <item>
+            <categoryCode>categoryCode6</categoryCode>
+            <title>title7</title>
+            <description>description8</description>
+            <condition>condition9</condition>
+         </item>
+         <paymentMethod>paymentMethod10</paymentMethod>
+         <startTime>2009-02-22T12:16:17.046</startTime>
+         <duration>P7D</duration>
+         <listingFormat>
+            <formatType>AUCTION</formatType>
+            <stdAuctionFormat>
+               <auctionType xmlns="http://schemas.packtpub.com/obay/auc">STD</auctionType>
+               <startingPrice xmlns="http://schemas.packtpub.com/obay/auc">1000</startingPrice>
+            </stdAuctionFormat>
+         </listingFormat>
+         <currentPrice>15</currentPrice>
+         <listingFee>16</listingFee>
+      </listingDetail>
+   </listing>
+</auctionItem>

@@ -1,0 +1,20 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<BPELSuitcase>
+   <BPELProcess id="LeaveApproval" src="LeaveApproval.bpel">
+      <partnerLinkBindings>
+         <partnerLinkBinding name="client">
+            <property name="wsdlLocation">LeaveApproval.wsdl</property>
+         </partnerLinkBinding>
+         <partnerLinkBinding name="TaskService">
+            <property name="wsdlLocation">TaskServiceWSIF.wsdl</property>
+         </partnerLinkBinding>
+         <partnerLinkBinding name="LeaveApprovalDecisionServicePL">
+            <property name="wsdlLocation">LeaveApprovalDecisionService.wsdl</property>
+            <property name="DecisionService">LeaveApprovalDecisionService</property>
+            <property name="decisionServiceDetails">http://${hostname}:${http_port}/rules/${domain_id}/${process_id}/${process_revision}/LeaveApprovalDecisionService/public_html/GetDecisionServiceInfo.jsp</property>
+            <property name="optSoapShortcut">False</property>
+            <property name="wsdlRuntimeLocation">http://${hostname}:${http_port}/rules/${domain_id}/${process_id}/${process_revision}/LeaveApprovalDecisionService/LeaveApprovalDecisionService?WSDL</property>
+         </partnerLinkBinding>
+      </partnerLinkBindings>
+   </BPELProcess>
+</BPELSuitcase>

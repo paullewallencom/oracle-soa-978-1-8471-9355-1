@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<graphics>
+   <bookmarks>
+       <bookmark name="Initiate Activity" xpath="/process/sequence[0]/receive[0]" />
+   </bookmarks>
+</graphics>

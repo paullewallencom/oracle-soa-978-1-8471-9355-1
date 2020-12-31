@@ -1,0 +1,66 @@
+<definitions
+     name="SetShippingDetails"
+     targetNamespace="http://xmlns.packtpub.com/obay/bs/SetShippingDetails"
+     xmlns="http://schemas.xmlsoap.org/wsdl/"
+     xmlns:ord="http://schemas.packtpub.com/obay/ord"
+     xmlns:plnk="http://schemas.xmlsoap.org/ws/2003/05/partner-link/"
+     xmlns:wfc="http://xmlns.oracle.com/bpel/workflow/common"
+     xmlns:cmn="http://schemas.packtpub.com/obay/cmn"
+     xmlns:flt="http://schemas.packtpub.com/obay/flt"
+     xmlns:client="http://xmlns.packtpub.com/obay/bs/SetShippingDetails"
+    >
+    <types>
+        <schema elementFormDefault="qualified"
+                xmlns="http://www.w3.org/2001/XMLSchema" 
+                targetNamespace="http://xmlns.packtpub.com/obay/bs/SetShippingDetails"
+                xmlns:ord="http://schemas.packtpub.com/obay/ord" 
+                xmlns:plnk="http://schemas.xmlsoap.org/ws/2003/05/partner-link/"
+                xmlns:cmn="http://schemas.packtpub.com/obay/cmn" 
+                xmlns:client="http://xmlns.packtpub.com/obay/bs/SetShippingDetails"
+                xmlns:wfc="http://xmlns.oracle.com/bpel/workflow/common">
+                
+            <import namespace="http://xmlns.oracle.com/bpel/workflow/common" schemaLocation="WorkflowCommon.xsd"/>
+            <import namespace="http://schemas.packtpub.com/obay/ord" schemaLocation="http://localhost/orabpel/xmllib/obay/Order_v1_0.xsd"/>
+            <import namespace="http://schemas.packtpub.com/obay/flt" schemaLocation="http://localhost/orabpel/xmllib/obay/Fault_v1_0.xsd"/>
+            
+            <element name="setShippingDetails" type="client:tSetShippingDetails"/>
+            <element name="setShippingDetailsResponse" type="client:tSetShippingDetailsResponse"/>
+            <complexType name="tSetShippingDetails">
+                <sequence>
+                    <element ref="wfc:workflowContext"/>
+                    <element ref="ord:orderNo"/>
+                    <element ref="ord:shipTo"/>
+                </sequence>
+            </complexType>
+            <complexType name="tSetShippingDetailsResponse">
+                <sequence>
+                    <element ref="ord:order"/>
+                </sequence>
+            </complexType>
+        </schema>
+    </types>
+    <message name="setShippingDetails">
+        <part name="payload" element="client:setShippingDetails"/>
+    </message>
+    <message name="setShippingDetailsResponse">
+        <part name="payload" element="client:setShippingDetailsResponse"/>
+    </message>
+    <message name="invalidActionFault">
+        <part name="payload" element="flt:fault"/>
+    </message>
+    <portType name="SetShippingDetails">
+        <operation name="setShippingDetails">
+            <input message="client:setShippingDetails"/>
+            <output message="client:setShippingDetailsResponse"/>
+
+            <!-- Returned if user details are invalid -->
+            <fault name="invalidAction"
+                   message="client:invalidActionFault"/>
+        </operation>
+    </portType>
+    <plnk:partnerLinkType name="SetShippingDetails">
+        <plnk:role name="SetShippingDetailsProvider">
+            <plnk:portType name="client:SetShippingDetails"/>
+        </plnk:role>
+    </plnk:partnerLinkType>
+</definitions>

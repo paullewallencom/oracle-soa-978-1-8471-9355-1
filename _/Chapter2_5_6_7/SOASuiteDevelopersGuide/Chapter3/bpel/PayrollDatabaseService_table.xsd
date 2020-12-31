@@ -1,0 +1,79 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<xs:schema targetNamespace="http://xmlns.oracle.com/pcbpel/adapter/db/top/PayrollDatabaseService" xmlns="http://xmlns.oracle.com/pcbpel/adapter/db/top/PayrollDatabaseService" elementFormDefault="qualified" attributeFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+   <xs:element name="PayrollitemCollection" type="PayrollitemCollection"/>
+   <xs:element name="Payrollitem" type="Payrollitem"/>
+   <xs:complexType name="PayrollitemCollection">
+      <xs:sequence>
+         <xs:element name="Payrollitem" type="Payrollitem" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+   </xs:complexType>
+   <xs:complexType name="Payrollitem">
+      <xs:sequence>
+         <xs:element name="employeeid" minOccurs="0">
+            <xs:simpleType>
+               <xs:restriction base="xs:string">
+                  <xs:maxLength value="8"/>
+               </xs:restriction>
+            </xs:simpleType>
+         </xs:element>
+         <xs:element name="paymentdate" type="xs:dateTime" minOccurs="0"/>
+         <xs:element name="paymentamount" minOccurs="0" nillable="true">
+            <xs:simpleType>
+               <xs:restriction base="xs:string">
+                  <xs:maxLength value="8"/>
+               </xs:restriction>
+            </xs:simpleType>
+         </xs:element>
+         <xs:element name="batchid" minOccurs="0">
+            <xs:simpleType>
+               <xs:restriction base="xs:string">
+                  <xs:maxLength value="8"/>
+               </xs:restriction>
+            </xs:simpleType>
+         </xs:element>
+         <xs:element name="batch" type="Batch"/>
+         <xs:element name="employee" type="Employee"/>
+      </xs:sequence>
+   </xs:complexType>
+   <xs:complexType name="Batch">
+      <xs:sequence>
+         <xs:element name="id">
+            <xs:simpleType>
+               <xs:restriction base="xs:string">
+                  <xs:maxLength value="8"/>
+               </xs:restriction>
+            </xs:simpleType>
+         </xs:element>
+         <xs:element name="batchdate" type="xs:dateTime" minOccurs="0" nillable="true"/>
+      </xs:sequence>
+   </xs:complexType>
+   <xs:complexType name="Employee">
+      <xs:sequence>
+         <xs:element name="id">
+            <xs:simpleType>
+               <xs:restriction base="xs:string">
+                  <xs:maxLength value="8"/>
+               </xs:restriction>
+            </xs:simpleType>
+         </xs:element>
+         <xs:element name="firstname" minOccurs="0" nillable="true">
+            <xs:simpleType>
+               <xs:restriction base="xs:string">
+                  <xs:maxLength value="20"/>
+               </xs:restriction>
+            </xs:simpleType>
+         </xs:element>
+         <xs:element name="lastname" minOccurs="0" nillable="true">
+            <xs:simpleType>
+               <xs:restriction base="xs:string">
+                  <xs:maxLength value="20"/>
+               </xs:restriction>
+            </xs:simpleType>
+         </xs:element>
+      </xs:sequence>
+   </xs:complexType>
+   <xs:element name="PayrollDatabaseServiceSelectInputParameters" type="PayrollDatabaseServiceSelect"/>
+   <xs:complexType name="PayrollDatabaseServiceSelect">
+      <xs:sequence/>
+   </xs:complexType>
+</xs:schema>

@@ -1,0 +1,175 @@
+  Body, Form, Table, Textarea, Select, Input, Option
+  {  
+    font-family : verdana, arial, helvetica, sans-serif; 
+    font-size : 8pt; 
+  }
+
+  a.white {
+    color: white;
+  }
+  
+  a.blue {
+    color: blue;
+  }
+  
+  a.black {
+    color: black;
+  }
+  
+  td.gray {
+    color: gray;
+  }
+
+  td.bold {
+    font-weight: bold;
+  }
+
+  td.white {
+    background-color: white;
+  }
+
+  tr.gray {
+    color: #D3D3D3;
+  }
+  
+  hr.black {
+    color: black;
+  }
+  
+  table.silver {
+    background-color: silver;
+  }
+
+  table.whitesmoke{
+    background-color: whitesmoke;
+  }
+
+  .error {
+    color: red;
+    background-color: yellow;
+    font-weight: bold;
+  }
+  
+  .ChromeStart {
+    background-color: white;
+    filter: progid:DXImageTransform.Microsoft.Gradient( GradientType=0, StartColorStr=white, EndColorStr=silver);
+  }
+    
+  .ChromeMainSilver {
+    background-color: silver;
+  }
+    
+  .ChromeMainWhite {
+    background-color: white;
+  }
+    
+  .ChromeMainGainsboro {
+    background-color: gainsboro;
+  }
+    
+  .ChromeEnd {
+    background-color: white;
+    filter: progid:DXImageTransform.Microsoft.Gradient( GradientType=0, StartColorStr=silver, EndColorStr=white);
+  }
+    
+  .HeaderPane {
+    background-color: darkgray;
+    filter: progid:DXImageTransform.Microsoft.Gradient( GradientType=0, StartColorStr=darkgray, EndColorStr=gainsboro);
+  }
+
+  .CentralPane {
+    background-color: whitesmoke;
+  }
+    
+  .FooterPane {
+    background-color: darkgray;
+    filter: progid:DXImageTransform.Microsoft.Gradient( GradientType=0, StartColorStr=gainsboro, EndColorStr=darkgray);
+  }
+     
+  .BluePane {
+     filter: progid:DXImageTransform.Microsoft.Gradient(GradientType=0,startColorstr='#FF00CCFF', endColorstr='#990000FF');
+  }
+    
+  .CyanPane {
+    background-color: cyan;
+    filter: progid:DXImageTransform.Microsoft.Gradient( GradientType=0, StartColorStr=#CCFCFCFC, EndColorStr=#CCDBDBDB);
+  }
+    
+  #pcwtable tbody tr.even td {
+    background-color: gainsboro;
+    filter: progid:DXImageTransform.Microsoft.Gradient( GradientType=0, StartColorStr=gainsboro, EndColorStr=white);
+  }
+  #pcwtable tbody tr.even a.link {
+    background-color: gainsboro;
+    filter: progid:DXImageTransform.Microsoft.Gradient( GradientType=0, StartColorStr=gainsboro, EndColorStr=white);
+  }
+  #pcwtable tbody tr.odd  td {
+    background-color: gainsboro;
+    filter: progid:DXImageTransform.Microsoft.Gradient( GradientType=0, StartColorStr=gainsboro, EndColorStr=white);
+  }
+  #pcwtable tbody tr.odd a.link {
+    background-color: gainsboro;
+    filter: progid:DXImageTransform.Microsoft.Gradient( GradientType=0, StartColorStr=gainsboro, EndColorStr=white);
+  }
+  #pcwtable tbody tr.warning  td {
+    background-color: #FFFFCC;
+  }
+  #pcwtable tbody tr.warning  a.link {
+    background-color: #FFFFCC;
+  }
+  #pcwtable tbody tr.header  td {
+    background-color: dimgray;
+    filter: progid:DXImageTransform.Microsoft.Gradient( GradientType=0, StartColorStr=dimgray, EndColorStr=darkgray);
+    color: white;
+  }
+  #pcwtable tbody tr.header  a.link {
+    background-color: dimgray;
+    filter: progid:DXImageTransform.Microsoft.Gradient( GradientType=0, StartColorStr=dimgray, EndColorStr=darkgray);
+    color: white;
+  }
+  #pcwtable tbody tr.grey td {
+    background-color: #FFFFF0;
+  }
+
+  .payloadSectionTitle
+  {  
+    font-family : verdana, arial, helvetica, sans-serif; 
+    font-size : 10pt;
+    font-weight: bold;
+    color: black;
+  }
+
+  .payloadTable
+  {  
+	width   : 80%;
+	height	: 100%;
+	padding	: 0px;
+	spacing	: 0px;
+	border	: 0px;	
+  }
+
+  .payloadAsterick
+  {
+        font-size: 6pt;
+        color: #F68622;
+  }
+  
+  .payloadDataType
+  {
+	color: #C0C0C0;
+  }
+
+.DefaultTable
+{
+	width   : 100%;
+	height	: 100%;
+	padding	: 0px;
+	spacing	: 0px;
+	border	: 0px;	
+}
+
+.hiddentext 
+{display:none}  
+
+.outline 
+{cursor:hand; cursor:pointer; text-decoration:underline}

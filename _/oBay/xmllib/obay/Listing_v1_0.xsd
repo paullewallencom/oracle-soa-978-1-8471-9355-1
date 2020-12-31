@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="http://schemas.packtpub.com/obay/lst" elementFormDefault="qualified" 
+			xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+			xmlns:auc="http://schemas.packtpub.com/obay/auc" 
+			xmlns="http://schemas.packtpub.com/obay/lst">
+
+	<xsd:include schemaLocation="Base_v1_0.xsd"/>
+	<xsd:import namespace="http://schemas.packtpub.com/obay/auc" schemaLocation="Auction_v1_0.xsd"/>
+
+	<xsd:element name="categoryCode" type="tCategoryCode"/>
+	<xsd:element name="category" type="tCategory"/>
+	<xsd:element name="categoryList" type="tCategoryList"/>
+	<xsd:element name="listing" type="tListing"/>
+	<xsd:element name="listingId" type="tListingId"/>
+	<xsd:element name="listingDetail" type="tListingDetail"/>
+	<xsd:element name="listingStatus" type="tListingStatus"/>
+	<xsd:element name="listingFormat" type="tListingFormat"/>
+	<xsd:element name="stdAuctionFormat" type="tStdAuctionFormat"/>
+	<xsd:element name="item" type="tItem"/>
+	<xsd:element name="itemStatus" type="tItemStatus"/>
+	<xsd:element name="currentPrice" type="tAmount"/>
+	<xsd:element name="listingFee" type="tAmount"/>
+	<xsd:element name="saleFee" type="tAmount"/>
+	<xsd:element name="paymentMethod" type="xsd:string"/>
+	<xsd:element name="buyerId" type="xsd:string"/>
+	<xsd:element name="sellerId" type="xsd:string"/>
+    <xsd:element name="startTime" type="xsd:dateTime"/>
+    <xsd:element name="duration" type="tDuration"/>
+    <xsd:element name="amount" type="tAmount"/>
+
+	<xsd:complexType name="tCategory">
+		<xsd:sequence>
+			<xsd:element name="code"           type="tCategoryCode"/>
+			<xsd:element name="description"    type="xsd:string"/>
+			<xsd:element name="parentCategory" type="tCategoryCode"/>
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:complexType name="tCategoryList">
+		<xsd:sequence>
+			<xsd:element name="category" minOccurs="0" maxOccurs="unbounded" type="tCategory"/>
+		</xsd:sequence>
+	</xsd:complexType>
+		
+	<xsd:complexType name="tListing">
+		<xsd:sequence>
+			<xsd:element ref="listingId"/>
+			<xsd:element ref="listingDetail"/>
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:complexType name="tListingDetail">
+		<xsd:sequence>
+			<xsd:element ref="sellerId"/>
+			<xsd:element ref="listingStatus"/>
+			<xsd:element ref="item"/>
+			<xsd:element ref="paymentMethod"/>
+			<xsd:element ref="startTime"/>
+			<xsd:element ref="duration"/>
+			<xsd:element ref="listingFormat"/>
+			<xsd:element ref="currentPrice"/>
+			<xsd:element ref="listingFee"/>
+			<xsd:element ref="saleFee"/>
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:complexType name="tItem">
+		<xsd:sequence>
+			<xsd:element name="categoryCode" type="tCategoryCode"/>
+			<xsd:element name="title" type="xsd:string"/>
+			<xsd:element name="description" type="xsd:string"/>
+			<xsd:element name="condition" type="xsd:string"/>
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:complexType name="tListingFormat">
+		<xsd:sequence>
+			<xsd:element name="formatType" type="xsd:string"/>
+			<!--  Currently only contains a single choice but modelled this way to indicate scope for future functionality -->
+			<xsd:choice>
+				<xsd:element ref="stdAuctionFormat"/>
+			</xsd:choice>
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:complexType name="tStdAuctionFormat">
+		<xsd:sequence>
+			<xsd:element ref="auc:auctionType"/>
+			<xsd:element ref="auc:startingPrice"/>
+			<xsd:element ref="auc:reservePrice"/>
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:simpleType name="tCategoryCode">
+		<xsd:restriction base="xsd:string">
+			<xsd:maxLength value="8"/>
+			<xsd:minLength value="1"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	
+	<xsd:simpleType name="tListingId">
+		<xsd:restriction base="xsd:string">
+			<xsd:maxLength value="20"/>
+			<xsd:minLength value="1"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<xsd:simpleType name="tListingStatus">
+		<xsd:restriction base="xsd:string">
+			<xsd:maxLength value="20"/>
+			<xsd:minLength value="3"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<xsd:simpleType name="tItemStatus">
+		<xsd:restriction base="xsd:string">
+			<xsd:maxLength value="20"/>
+			<xsd:minLength value="3"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+
+</xsd:schema>

@@ -1,0 +1,169 @@
+<?xml version = "1.0" encoding = "UTF-8" ?>
+<!--
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  Oracle JDeveloper BPEL Designer 
+  
+  Created: Wed Feb 25 17:45:39 EST 2009
+  Author:  mswright
+  Purpose: Synchronous BPEL Process
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+-->
+<process name="SubmitBid"
+         targetNamespace="http://xmlns.packtpub.com/obay/bs/SubmitBid"
+         xmlns="http://schemas.xmlsoap.org/ws/2003/03/business-process/"
+         xmlns:bpws="http://schemas.xmlsoap.org/ws/2003/03/business-process/"
+         xmlns:xp20="http://www.oracle.com/XSL/Transform/java/oracle.tip.pc.services.functions.Xpath20"
+         xmlns:ids="http://xmlns.oracle.com/bpel/services/IdentityService/xpath"
+         xmlns:ldap="http://schemas.oracle.com/xpath/extension/ldap"
+         xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+         xmlns:client="http://xmlns.packtpub.com/obay/bs/SubmitBid"
+         xmlns:ora="http://schemas.oracle.com/xpath/extension"
+         xmlns:xref="http://www.oracle.com/XSL/Transform/java/oracle.tip.xref.xpath.XRefXPathFunctions"
+         xmlns:lst="http://schemas.packtpub.com/obay/lst"
+         xmlns:hwf="http://xmlns.oracle.com/bpel/workflow/xpath"
+         xmlns:ns1="http://xmlns.packtpub.com/obay/bs/AuctionProxy"
+         xmlns:ehdr="http://www.oracle.com/XSL/Transform/java/oracle.tip.esb.server.headers.ESBHeaderFunctions"
+         xmlns:ns3="http://xmlns.packtpub.com/obay/ivs/Listing"
+         xmlns:bpelx="http://schemas.oracle.com/bpel/extension"
+         xmlns:auc="http://schemas.packtpub.com/obay/auc"
+         xmlns:orcl="http://www.oracle.com/XSL/Transform/java/oracle.tip.pc.services.functions.ExtFunc">
+  <!-- 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      PARTNERLINKS                                                      
+      List of services participating in this BPEL process               
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  -->
+  <partnerLinks>
+    <!-- 
+      The 'client' role represents the requester of this service. It is 
+      used for callback. The location and correlation information associated
+      with the client role are automatically set using WS-Addressing.
+    -->
+    <partnerLink name="client" partnerLinkType="client:SubmitBid"
+                 myRole="SubmitBidProvider"/>
+    <partnerLink myRole="AuctionProxyRequester" name="AuctionProxy"
+                 partnerRole="AuctionProxyProvider"
+                 partnerLinkType="ns1:AuctionProxy"/>
+    <partnerLink name="Listing" partnerRole="Listing_Role"
+                 partnerLinkType="ns3:Listing_PL"/>
+  </partnerLinks>
+  <!-- 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      VARIABLES                                                        
+      List of messages and XML documents used within this BPEL process 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  -->
+  <variables>
+    <!-- Reference to the message passed as input during initiation -->
+    <!-- Reference to the message that will be returned to the requester-->
+    <variable name="inputVariable" messageType="client:submitBid"/>
+    <variable name="outputVariable" messageType="client:submitBidResponse"/>
+    <variable name="submitBidInput" messageType="ns1:submitBid"/>
+    <variable name="bidResultInput" messageType="ns1:returnBidResult"/>
+    <variable name="updateBidsInput" messageType="ns3:updateBids"/>
+    <variable name="updateBidsOutput" messageType="ns3:updateBidsResponse"/>
+    <variable name="auctionStatus" type="xsd:string"/>
+  </variables>
+  <!-- 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+     ORCHESTRATION LOGIC                                               
+     Set of activities coordinating the flow of messages across the    
+     services integrated within this business process                  
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  -->
+  <sequence name="main">
+    <!-- Receive input from requestor. (Note: This maps to operation defined in SubmitBid.wsdl) -->
+    <receive name="receiveInput" partnerLink="client"
+             portType="client:SubmitBid" operation="submitBid"
+             variable="inputVariable" createInstance="yes"/>
+    <!-- Generate reply to synchronous request -->
+    <assign name="setSubmitBidInput">
+      <copy>
+        <from variable="inputVariable" part="payload"
+              query="/client:submitBid/lst:listingId"/>
+        <to variable="submitBidInput" part="payload"
+            query="/ns1:submitBid/auc:auctionId"/>
+      </copy>
+      <copy>
+        <from variable="inputVariable" part="payload"
+              query="/client:submitBid/lst:buyerId"/>
+        <to variable="submitBidInput" part="payload"
+            query="/ns1:submitBid/auc:bidderId"/>
+      </copy>
+      <copy>
+        <from variable="inputVariable" part="payload"
+              query="/client:submitBid/lst:amount"/>
+        <to variable="submitBidInput" part="payload"
+            query="/ns1:submitBid/auc:maxAmount"/>
+      </copy>
+    </assign>
+    <invoke name="submitBid" partnerLink="AuctionProxy"
+            portType="ns1:AuctionProxy" operation="submitBid"
+            inputVariable="submitBidInput"/>
+    <receive name="receiveBidResult" partnerLink="AuctionProxy"
+             portType="ns1:AuctionProxyCallback" operation="returnBidResult"
+             variable="bidResultInput" createInstance="no"/>
+    <switch name="Switch_1">
+      <case condition="bpws:getVariableData('bidResultInput','payload','/ns1:returnBidResult/auc:auction/auc:auctionItem/auc:winningPrice') >= bpws:getVariableData('bidResultInput','payload','/ns1:returnBidResult/auc:auction/auc:auctionItem/auc:reservePrice')">
+        <assign name="setWinningBid">
+          <copy>
+            <from expression="'Winning Bid'"/>
+            <to variable="auctionStatus"/>
+          </copy>
+        </assign>
+      </case>
+      <otherwise>
+        <assign name="SetReserveNotMet">
+          <copy>
+            <from expression="'Reserve Not Met'"/>
+            <to variable="auctionStatus"/>
+          </copy>
+        </assign>
+      </otherwise>
+    </switch>
+    <assign name="setUpdateBidsInput">
+      <copy>
+        <from variable="inputVariable" part="payload"
+              query="/client:submitBid/lst:listingId"/>
+        <to variable="updateBidsInput" part="payload"
+            query="/ns3:updateBids/lst:listingId"/>
+      </copy>
+      <copy>
+        <from variable="bidResultInput" part="payload"
+              query="/ns1:returnBidResult/auc:auction/auc:auctionItem/auc:winningBid"/>
+        <to variable="updateBidsInput" part="payload"
+            query="/ns3:updateBids/auc:winningBid"/>
+      </copy>
+      <copy>
+        <from variable="bidResultInput" part="payload"
+              query="/ns1:returnBidResult/auc:auction/auc:auctionItem/auc:bidHistory"/>
+        <to variable="updateBidsInput" part="payload"
+            query="/ns3:updateBids/auc:bidHistory"/>
+      </copy>
+      <copy>
+        <from variable="auctionStatus"/>
+        <to variable="updateBidsInput" part="payload"
+            query="/ns3:updateBids/auc:auctionStatus"/>
+      </copy>
+    </assign>
+    <invoke name="updateBids" partnerLink="Listing" portType="ns3:Listing"
+            operation="updateBids" inputVariable="updateBidsInput"
+            outputVariable="updateBidsOutput"/>
+    <assign name="setOutput">
+      <copy>
+        <from variable="inputVariable" part="payload"
+              query="/client:submitBid/lst:listingId"/>
+        <to variable="outputVariable" part="payload"
+            query="/client:submitBidResponse/lst:listingId"/>
+      </copy>
+      <copy>
+        <from variable="bidResultInput" part="payload"
+              query="/ns1:returnBidResult/auc:bid"/>
+        <to variable="outputVariable" part="payload"
+            query="/client:submitBidResponse/auc:bid"/>
+      </copy>
+    </assign>
+    <reply name="replyOutput" partnerLink="client" portType="client:SubmitBid"
+           operation="submitBid" variable="outputVariable"/>
+  </sequence>
+</process>

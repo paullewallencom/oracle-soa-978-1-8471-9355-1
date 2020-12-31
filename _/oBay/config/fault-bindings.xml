@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<faultPolicyBindings version="2.0.1" 
+                     xmlns="http://schemas.oracle.com/bpel/faultpolicy" 
+                     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+        <!-- Enabling this will cause all processes in this domain to use this 
+             fault policy
+	<process faultPolicy="DefaultPolicy"/>
+	-->
+        <!-- DefaultPolicy is defined in ./fault-policies/DefaultPolicy.xml -->
+	<partnerLink faultPolicy="DefaultPolicy">
+	    <!-- Enabling this will cause all invoke faults at partner link 
+	         name of "creditRatingService" to use fault policy with
+	         id id = DefaultPolicy 
+	    <name>creditRatingService</name>
+	    -->
+            <!-- all invoke faults at partner link below port type use fault policy
+                 with id = DefaultPolicy
+                 The following entry covers the samples/tutorials/122.DBAdapter/InsertWithCatch sample. -->
+	    <portType xmlns:db="http://xmlns.oracle.com/pcbpel/adapter/db/insert/">db:insert_plt</portType>
+	</partnerLink>
+        <partnerLink faultPolicy="HWFAPIPolicy">
+            <portType xmlns:tqs="http://xmlns.oracle.com/bpel/workflow/taskQueryService">tqs:TaskQueryService_PL</portType>
+        </partnerLink>
+</faultPolicyBindings>

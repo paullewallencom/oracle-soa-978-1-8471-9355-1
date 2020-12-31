@@ -1,0 +1,65 @@
+<definitions
+     name="SetItemReceived"
+     targetNamespace="http://xmlns.packtpub.com/obay/bs/SetItemReceived"
+     xmlns="http://schemas.xmlsoap.org/wsdl/"
+     xmlns:ord="http://schemas.packtpub.com/obay/ord"
+     xmlns:plnk="http://schemas.xmlsoap.org/ws/2003/05/partner-link/"
+     xmlns:wfc="http://xmlns.oracle.com/bpel/workflow/common"
+     xmlns:cmn="http://schemas.packtpub.com/obay/cmn"
+     xmlns:flt="http://schemas.packtpub.com/obay/flt"
+     xmlns:client="http://xmlns.packtpub.com/obay/bs/SetItemReceived"
+    >
+    <types>
+        <schema elementFormDefault="qualified"
+                xmlns="http://www.w3.org/2001/XMLSchema" 
+                targetNamespace="http://xmlns.packtpub.com/obay/bs/SetItemReceived"
+                xmlns:ord="http://schemas.packtpub.com/obay/ord" 
+                xmlns:plnk="http://schemas.xmlsoap.org/ws/2003/05/partner-link/"
+                xmlns:cmn="http://schemas.packtpub.com/obay/cmn" 
+                xmlns:client="http://xmlns.packtpub.com/obay/bs/SetItemReceived"
+                xmlns:wfc="http://xmlns.oracle.com/bpel/workflow/common">
+                
+            <import namespace="http://xmlns.oracle.com/bpel/workflow/common" schemaLocation="WorkflowCommon.xsd"/>
+            <import namespace="http://schemas.packtpub.com/obay/ord" schemaLocation="http://localhost/orabpel/xmllib/obay/Order_v1_0.xsd"/>
+            <import namespace="http://schemas.packtpub.com/obay/flt" schemaLocation="http://localhost/orabpel/xmllib/obay/Fault_v1_0.xsd"/>
+            
+            <element name="setItemReceived" type="client:tSetItemReceived"/>
+            <element name="setItemReceivedResponse" type="client:tSetItemReceivedResponse"/>
+            <complexType name="tSetItemReceived">
+                <sequence>
+                    <element ref="wfc:workflowContext"/>
+                    <element ref="ord:orderNo"/>
+                </sequence>
+            </complexType>
+            <complexType name="tSetItemReceivedResponse">
+                <sequence>
+                    <element ref="ord:order"/>
+                </sequence>
+            </complexType>
+        </schema>
+    </types>
+    <message name="setItemReceived">
+        <part name="payload" element="client:setItemReceived"/>
+    </message>
+    <message name="setItemReceivedResponse">
+        <part name="payload" element="client:setItemReceivedResponse"/>
+    </message>
+    <message name="invalidActionFault">
+        <part name="payload" element="flt:fault"/>
+    </message>
+    <portType name="SetItemReceived">
+        <operation name="setItemReceived">
+            <input message="client:setItemReceived"/>
+            <output message="client:setItemReceivedResponse"/>
+
+            <!-- Returned if user details are invalid -->
+            <fault name="invalidAction"
+                   message="client:invalidActionFault"/>
+        </operation>
+    </portType>
+    <plnk:partnerLinkType name="SetItemReceived">
+        <plnk:role name="SetItemReceivedProvider">
+            <plnk:portType name="client:SetItemReceived"/>
+        </plnk:role>
+    </plnk:partnerLinkType>
+</definitions>

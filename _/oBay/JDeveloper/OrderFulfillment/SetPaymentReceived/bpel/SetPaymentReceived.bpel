@@ -1,0 +1,271 @@
+<?xml version = "1.0" encoding = "UTF-8" ?>
+<!--
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  Oracle JDeveloper BPEL Designer 
+  
+  Created: Sat Feb 07 13:07:48 EST 2009
+  Author:  mswright
+  Purpose: Synchronous BPEL Process
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+-->
+<process name="SetPaymentReceived"
+         targetNamespace="http://xmlns.packtpub.com/obay/bs/SetPaymentReceived"
+         xmlns="http://schemas.xmlsoap.org/ws/2003/03/business-process/"
+         xmlns:xp20="http://www.oracle.com/XSL/Transform/java/oracle.tip.pc.services.functions.Xpath20"
+         xmlns:bpws="http://schemas.xmlsoap.org/ws/2003/03/business-process/"
+         xmlns:ns4="http://schemas.packtpub.com/obay/flt"
+         xmlns:ord="http://schemas.packtpub.com/obay/ord"
+         xmlns:ids="http://xmlns.oracle.com/bpel/services/IdentityService/xpath"
+         xmlns:ldap="http://schemas.oracle.com/xpath/extension/ldap"
+         xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+         xmlns:ns5="http://xmlns.oracle.com/bpel/workflow/taskService"
+         xmlns:cmn="http://schemas.packtpub.com/obay/cmn"
+         xmlns:client="http://xmlns.packtpub.com/obay/bs/SetPaymentReceived"
+         xmlns:ora="http://schemas.oracle.com/xpath/extension"
+         xmlns:xref="http://www.oracle.com/XSL/Transform/java/oracle.tip.xref.xpath.XRefXPathFunctions"
+         xmlns:hwf="http://xmlns.oracle.com/bpel/workflow/xpath"
+         xmlns:ns1="http://xmlns.oracle.com/bpel/workflow/taskQueryService"
+         xmlns:ehdr="http://www.oracle.com/XSL/Transform/java/oracle.tip.esb.server.headers.ESBHeaderFunctions"
+         xmlns:ns3="http://xmlns.oracle.com/bpel/workflow/taskQuery"
+         xmlns:ns2="http://xmlns.oracle.com/bpel/workflow/common"
+         xmlns:bpelx="http://schemas.oracle.com/bpel/extension"
+         xmlns:task="http://xmlns.oracle.com/bpel/workflow/task"
+         xmlns:orcl="http://www.oracle.com/XSL/Transform/java/oracle.tip.pc.services.functions.ExtFunc">
+  <!-- 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      PARTNERLINKS                                                      
+      List of services participating in this BPEL process               
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  -->
+  <partnerLinks>
+    <!-- 
+      The 'client' role represents the requester of this service. It is 
+      used for callback. The location and correlation information associated
+      with the client role are automatically set using WS-Addressing.
+    -->
+    <partnerLink name="client" partnerLinkType="client:SetPaymentReceived"
+                 myRole="SetPaymentReceivedProvider"/>
+    <partnerLink name="TaskQueryService" partnerRole="TaskQueryService_Role"
+                 partnerLinkType="ns1:TaskQueryService_PL"/>
+    <partnerLink myRole="TaskServiceCallbackListener" name="TaskService"
+                 partnerRole="TaskService" partnerLinkType="ns5:TaskService"/>
+  </partnerLinks>
+  <!-- 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      VARIABLES                                                        
+      List of messages and XML documents used within this BPEL process 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  -->
+  <variables>
+    <!-- Reference to the message passed as input during initiation -->
+    <!-- Reference to the message that will be returned to the requester-->
+    <variable name="inputVariable" messageType="client:setPaymentReceived"/>
+    <variable name="outputVariable"
+              messageType="client:setPaymentReceivedResponse"/>
+    <variable name="order" element="ord:order"/>
+    <variable name="invalidActionFault"
+              messageType="client:invalidActionFault"/>
+    <variable name="getTaskDetailsInput"
+              messageType="ns1:taskDetailsByNumberRequestMessage"/>
+    <variable name="getTaskDetailsOutput"
+              messageType="ns1:taskDetailsResponseMessage"/>
+  </variables>
+  <faultHandlers>
+    <catch faultName="client:invalidAction" faultVariable="invalidActionFault">
+      <reply name="invalidActionFault" partnerLink="client"
+             portType="client:SetPaymentReceived" operation="setPaymentReceived"
+             variable="invalidActionFault" faultName="client:invalidAction"/>
+    </catch>
+  </faultHandlers>
+  <!-- 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+     ORCHESTRATION LOGIC                                               
+     Set of activities coordinating the flow of messages across the    
+     services integrated within this business process                  
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  -->
+  <sequence name="main">
+    <!-- Receive input from requestor. (Note: This maps to operation defined in SetPaymentReceived.wsdl) -->
+    <receive name="receiveInput" partnerLink="client"
+             portType="client:SetPaymentReceived" operation="setPaymentReceived"
+             variable="inputVariable" createInstance="yes"/>
+    <!-- Generate reply to synchronous request -->
+    <scope name="GetOrder">
+      <faultHandlers>
+        <catchAll>
+          <sequence name="Sequence_3">
+            <assign name="setInvalidAction">
+              <copy>
+                <from expression="'CODE'"/>
+                <to variable="invalidActionFault" part="payload"
+                    query="/ns4:fault/ns4:code"/>
+              </copy>
+              <copy>
+                <from expression="'Invalid Order Number'"/>
+                <to variable="invalidActionFault" part="payload"
+                    query="/ns4:fault/ns4:summary"/>
+              </copy>
+            </assign>
+            <throw name="InvalidAction" faultName="client:invalidAction"
+                   faultVariable="invalidActionFault"/>
+          </sequence>
+        </catchAll>
+      </faultHandlers>
+      <sequence name="Sequence_2">
+        <assign name="setGetTaskDetailsInput">
+          <copy>
+            <from variable="inputVariable"
+                  query="/client:setPaymentReceived/ns2:workflowContext"
+                  part="payload"/>
+            <to variable="getTaskDetailsInput"
+                query="/ns1:taskDetailsByNumberRequest/ns2:workflowContext"
+                part="payload"/>
+          </copy>
+          <copy>
+            <from variable="inputVariable" part="payload"
+                  query="/client:setPaymentReceived/ord:orderNo"/>
+            <to variable="getTaskDetailsInput" part="payload"
+                query="/ns1:taskDetailsByNumberRequest/ns1:taskNumber"/>
+          </copy>
+        </assign>
+        <invoke name="getTaskDetails" partnerLink="TaskQueryService"
+                portType="ns1:TaskQueryService"
+                operation="getTaskDetailsByNumber"
+                inputVariable="getTaskDetailsInput"
+                outputVariable="getTaskDetailsOutput"/>
+        <assign name="getOrder">
+          <copy>
+            <from variable="getTaskDetailsOutput" part="payload"
+                  query="/task:task/task:payload/ord:order"/>
+            <to variable="order" query="/ord:order"/>
+          </copy>
+        </assign>
+      </sequence>
+    </scope>
+    <switch name="ValidateNextAction">
+      <case condition="bpws:getVariableData('order','/ord:order/ord:orderDetail/ord:nextAction') = 'Confirm Receipt of Payment'">
+        <sequence name="Sequence_1">
+          <scope name="UpdateOrder">
+            <variables>
+              <variable name="updateTaskInput"
+                        messageType="ns5:updateTaskMessage"/>
+              <variable name="updateTaskOutput" messageType="ns5:taskMessage"/>
+            </variables>
+            <faultHandlers>
+              <catchAll>
+                <sequence name="Sequence_6">
+                  <assign name="setInvalidAction">
+                    <copy>
+                      <from expression="'CODE'"/>
+                      <to variable="invalidActionFault" part="payload"
+                          query="/ns4:fault/ns4:code"/>
+                    </copy>
+                    <copy>
+                      <from expression="'Invalid Action'"/>
+                      <to variable="invalidActionFault" part="payload"
+                          query="/ns4:fault/ns4:summary"/>
+                    </copy>
+                    <copy>
+                      <from expression="'User does not have access/privilege to perform this action.'"/>
+                      <to variable="invalidActionFault" part="payload"
+                          query="/ns4:fault/ns4:detail"/>
+                    </copy>
+                  </assign>
+                  <throw name="invalidAction" faultName="client:invalidAction"
+                         faultVariable="invalidActionFault"/>
+                </sequence>
+              </catchAll>
+            </faultHandlers>
+            <sequence name="Sequence_5">
+              <assign name="updateTask">
+                <copy>
+                  <from expression="'Payment Received'"/>
+                  <to variable="order"
+                      query="/ord:order/ord:orderDetail/ord:orderStatus"/>
+                </copy>
+                <copy>
+                  <from expression="'Ship Item'"/>
+                  <to variable="order"
+                      query="/ord:order/ord:orderDetail/ord:nextAction"/>
+                </copy>
+                <copy>
+                  <from variable="inputVariable" part="payload"
+                        query="/client:setPaymentReceived/ns2:workflowContext"/>
+                  <to variable="updateTaskInput" part="payload"
+                      query="/ns5:updateTask/ns2:workflowContext"/>
+                </copy>
+                <copy>
+                  <from variable="getTaskDetailsOutput" part="payload"
+                        query="/task:task"/>
+                  <to variable="updateTaskInput" part="payload"
+                      query="/ns5:updateTask/task:task"/>
+                </copy>
+                <copy>
+                  <from variable="order" query="/ord:order"/>
+                  <to variable="updateTaskInput" part="payload"
+                      query="/ns5:updateTask/task:task/task:payload/ord:order"/>
+                </copy>
+                <copy>
+                  <from variable="order"
+                        query="/ord:order/ord:orderDetail/ord:orderStatus"/>
+                  <to variable="updateTaskInput" part="payload"
+                      query="/ns5:updateTask/task:task/task:systemMessageAttributes/task:textAttribute3"/>
+                </copy>
+                <copy>
+                  <from variable="order"
+                        query="/ord:order/ord:orderDetail/ord:nextAction"/>
+                  <to variable="updateTaskInput" part="payload"
+                      query="/ns5:updateTask/task:task/task:systemMessageAttributes/task:textAttribute4"/>
+                </copy>
+                <bpelx:append>
+                  <bpelx:from>
+                    <outcome xmlns="http://xmlns.oracle.com/bpel/workflow/task">COMPLETED</outcome>
+                  </bpelx:from>
+                  <bpelx:to variable="updateTaskInput" part="payload"
+                            query="/ns5:updateTask/task:task/task:systemAttributes"/>
+                </bpelx:append>
+              </assign>
+              <invoke name="updateTask" partnerLink="TaskService"
+                      portType="ns5:TaskService" operation="updateTask"
+                      inputVariable="updateTaskInput"
+                      outputVariable="updateTaskOutput"/>
+              <assign name="setOutput">
+                <copy>
+                  <from variable="order" query="/ord:order"/>
+                  <to variable="outputVariable" part="payload"
+                      query="/client:setPaymentReceivedResponse/ord:order"/>
+                </copy>
+              </assign>
+              <reply name="replyOutput" partnerLink="client"
+                     portType="client:SetPaymentReceived"
+                     operation="setPaymentReceived" variable="outputVariable"/>
+            </sequence>
+          </scope>
+        </sequence>
+      </case>
+      <otherwise>
+        <sequence name="Sequence_4">
+          <assign name="setInvalidAction">
+            <copy>
+              <from expression="'CODE'"/>
+              <to variable="invalidActionFault" part="payload"
+                  query="/ns4:fault/ns4:code"/>
+            </copy>
+            <copy>
+              <from expression="'Invalid Action'"/>
+              <to variable="invalidActionFault" part="payload"
+                  query="/ns4:fault/ns4:summary"/>
+            </copy>
+            <copy>
+              <from expression="concat('Invalid Action: Next step is ', bpws:getVariableData('order','/ord:order/ord:orderDetail/ord:nextAction'))"/>
+              <to variable="invalidActionFault" part="payload"
+                  query="/ns4:fault/ns4:detail"/>
+            </copy>
+          </assign>
+          <throw name="invalidAction" faultName="client:invalidAction"
+                 faultVariable="invalidActionFault"/>
+        </sequence>
+      </otherwise>
+    </switch>
+  </sequence>
+</process>

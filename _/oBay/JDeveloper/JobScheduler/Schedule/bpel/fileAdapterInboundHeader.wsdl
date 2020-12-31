@@ -1,0 +1,29 @@
+<definitions
+     name="fileAdapter"
+     targetNamespace="http://xmlns.oracle.com/pcbpel/adapter/file/" 
+     xmlns:tns="http://xmlns.oracle.com/pcbpel/adapter/file/"   
+     xmlns="http://schemas.xmlsoap.org/wsdl/" >
+
+    <types>
+        <schema attributeFormDefault="qualified" elementFormDefault="qualified" 
+                targetNamespace="http://xmlns.oracle.com/pcbpel/adapter/file/"
+                xmlns="http://www.w3.org/2001/XMLSchema" 
+                xmlns:FILEAPP="http://xmlns.oracle.com/pcbpel/adapter/file/">
+          <element name="InboundFileHeaderType">
+                <complexType>
+                    <sequence>
+                        <element name="fileName" type="string"/>
+                        <element name="directory" type="string"/>
+                    </sequence>
+                </complexType>
+            </element> 
+        </schema>
+    </types>
+   
+    <!-- Header Message --> 
+    <message name="InboundHeader_msg"> 
+      <part element="tns:InboundFileHeaderType" name="inboundHeader"/> 
+   </message> 
+
+</definitions>
+

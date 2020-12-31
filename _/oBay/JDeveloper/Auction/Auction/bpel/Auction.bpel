@@ -1,0 +1,441 @@
+<?xml version = "1.0" encoding = "UTF-8" ?>
+<!--
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  Oracle JDeveloper BPEL Designer 
+  
+  Created: Fri Jan 30 17:26:21 EST 2009
+  Author:  mswright
+  Purpose: Asynchronous BPEL Process
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+-->
+<process name="Auction"
+         targetNamespace="http://xmlns.packtpub.com/obay/bs/Auction"
+         xmlns="http://schemas.xmlsoap.org/ws/2003/03/business-process/"
+         xmlns:xp20="http://www.oracle.com/XSL/Transform/java/oracle.tip.pc.services.functions.Xpath20"
+         xmlns:bpws="http://schemas.xmlsoap.org/ws/2003/03/business-process/"
+         xmlns:ns4="http://xmlns.packtpub.com/obay/bs/Auction/correlationset"
+         xmlns:ids="http://xmlns.oracle.com/bpel/services/IdentityService/xpath"
+         xmlns:ldap="http://schemas.oracle.com/xpath/extension/ldap"
+         xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+         xmlns:ns5="http://xmlns.packtpub.com/obay/Auction"
+         xmlns:client="http://xmlns.packtpub.com/obay/bs/Auction"
+         xmlns:ora="http://schemas.oracle.com/xpath/extension"
+         xmlns:xref="http://www.oracle.com/XSL/Transform/java/oracle.tip.xref.xpath.XRefXPathFunctions"
+         xmlns:hwf="http://xmlns.oracle.com/bpel/workflow/xpath"
+         xmlns:ns1="http://xmlns.packtpub.com/obay/bs/Auction/DecisionService"
+         xmlns:ehdr="http://www.oracle.com/XSL/Transform/java/oracle.tip.esb.server.headers.ESBHeaderFunctions"
+         xmlns:ns3="http://xmlns.packtpub.com/obay/bs/Auction/AuctionDecisionService"
+         xmlns:ns2="http://xmlns.oracle.com/bpel"
+         xmlns:bpelx="http://schemas.oracle.com/bpel/extension"
+         xmlns:auc="http://schemas.packtpub.com/obay/auc"
+         xmlns:orcl="http://www.oracle.com/XSL/Transform/java/oracle.tip.pc.services.functions.ExtFunc">
+    <!-- 
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        PARTNERLINKS                                                      
+        List of services participating in this BPEL process               
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    -->
+    <partnerLinks>
+        <!-- 
+      The 'client' role represents the requester of this service. It is 
+      used for callback. The location and correlation information associated
+      with the client role are automatically set using WS-Addressing.
+    -->
+        <partnerLink name="client" partnerLinkType="client:Auction"
+                     myRole="AuctionProvider" partnerRole="AuctionRequester"/>
+        <partnerLink name="AuctionDecisionServicePL"
+                     partnerRole="IDecisionService_Role"
+                     partnerLinkType="ns3:IDecisionService_PL"/>
+    </partnerLinks>
+    <!-- 
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        VARIABLES                                                        
+        List of messages and XML documents used within this BPEL process 
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    -->
+    <variables>
+        <!-- Reference to the message passed as input during initiation -->
+        <!-- Reference to the message that will be sent back to the requester during callback -->
+        <variable name="initiateAuctionInput"
+                  messageType="client:initiateAuction"/>
+        <variable name="returnAuctionResult"
+                  messageType="client:returnAuctionResult"/>
+        <variable name="submitBidInput" messageType="client:submitBid"/>
+        <variable name="returnBidResult" messageType="client:returnBidResult"/>
+        <variable name="auction" element="auc:auction"/>
+        <variable name="curBidNo" type="xsd:int"/>
+        <variable name="auctionComplete" type="xsd:boolean"/>
+    </variables>
+    <correlationSets>
+        <correlationSet name="auctionIdCS" properties="ns4:auctionId"/>
+    </correlationSets>
+    <!-- 
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+       ORCHESTRATION LOGIC                                               
+       Set of activities coordinating the flow of messages across the    
+       services integrated within this business process                  
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    -->
+    <sequence name="main">
+        <!-- Receive input from requestor. (Note: This maps to operation defined in Auction.wsdl) -->
+        <receive name="initiateAuction" partnerLink="client"
+                 portType="client:Auction" operation="initiateAuction"
+                 variable="initiateAuctionInput" createInstance="yes">
+            <correlations>
+                <correlation initiate="yes" set="auctionIdCS"/>
+            </correlations>
+        </receive>
+        <!-- 
+          Asynchronous callback to the requester. (Note: the callback location and correlation id is transparently handled using WS-addressing.)
+        -->
+        <scope name="initialise">
+            <sequence name="Sequence_3">
+                <assign name="setAuction">
+                    <copy>
+                        <from variable="initiateAuctionInput" part="payload"
+                              query="/client:initiateAuction/auc:auctionId"/>
+                        <to variable="auction"
+                            query="/auc:auction/auc:auctionId"/>
+                    </copy>
+                    <copy>
+                        <from variable="initiateAuctionInput" part="payload"
+                              query="/client:initiateAuction/auc:auctionType"/>
+                        <to variable="auction"
+                            query="/auc:auction/auc:auctionItem/auc:auctionType"/>
+                    </copy>
+                    <copy>
+                        <from variable="initiateAuctionInput" part="payload"
+                              query="/client:initiateAuction/auc:startTime"/>
+                        <to variable="auction"
+                            query="/auc:auction/auc:auctionItem/auc:startTime"/>
+                    </copy>
+                    <copy>
+                        <from variable="initiateAuctionInput" part="payload"
+                              query="/client:initiateAuction/auc:endTime"/>
+                        <to variable="auction"
+                            query="/auc:auction/auc:auctionItem/auc:endTime"/>
+                    </copy>
+                    <copy>
+                        <from variable="initiateAuctionInput" part="payload"
+                              query="/client:initiateAuction/auc:startingPrice"/>
+                        <to variable="auction"
+                            query="/auc:auction/auc:auctionItem/auc:startingPrice"/>
+                    </copy>
+                    <copy>
+                        <from variable="initiateAuctionInput" part="payload"
+                              query="/client:initiateAuction/auc:reservePrice"/>
+                        <to variable="auction"
+                            query="/auc:auction/auc:auctionItem/auc:reservePrice"/>
+                    </copy>
+                    <copy>
+                        <from expression="'0.00'"/>
+                        <to variable="auction"
+                            query="/auc:auction/auc:auctionItem/auc:winningPrice"/>
+                    </copy>
+                    <copy>
+                        <from expression="'Live'"/>
+                        <to variable="auction"
+                            query="/auc:auction/auc:auctionStatus"/>
+                    </copy>
+                    <copy>
+                        <from expression="0"/>
+                        <to variable="curBidNo"/>
+                    </copy>
+                    <copy>
+                        <from expression="false()"/>
+                        <to variable="auctionComplete"/>
+                    </copy>
+                </assign>
+            </sequence>
+        </scope>
+        <while name="While_1"
+               condition="bpws:getVariableData('auctionComplete') = false()">
+            <pick name="Pick_1">
+                <onMessage portType="client:Auction" operation="submitBid"
+                           variable="submitBidInput" partnerLink="client">
+                    <correlations>
+                        <correlation initiate="no" set="auctionIdCS"/>
+                    </correlations>
+                    <sequence name="Sequence_1">
+                        <scope name="processBid">
+                            <variables>
+                                <variable name="bids" element="auc:bids"/>
+                            </variables>
+                            <sequence name="Sequence_5">
+                                <assign name="setBids">
+                                    <copy>
+                                        <from expression="bpws:getVariableData('curBidNo') + 1"/>
+                                        <to variable="curBidNo"/>
+                                    </copy>
+                                    <copy>
+                                        <from variable="curBidNo"/>
+                                        <to variable="bids"
+                                            query="/auc:bids/auc:bid/auc:bidNo"/>
+                                    </copy>
+                                    <copy>
+                                        <from variable="submitBidInput"
+                                              part="payload"
+                                              query="/client:submitBid/auc:bidderId"/>
+                                        <to variable="bids"
+                                            query="/auc:bids/auc:bid/auc:bidderId"/>
+                                    </copy>
+                                    <copy>
+                                        <from expression="xp20:current-dateTime()"/>
+                                        <to variable="bids"
+                                            query="/auc:bids/auc:bid/auc:bidtime"/>
+                                    </copy>
+                                    <copy>
+                                        <from variable="submitBidInput"
+                                              part="payload"
+                                              query="/client:submitBid/auc:maxAmount"/>
+                                        <to variable="bids"
+                                            query="/auc:bids/auc:bid/auc:maxAmount"/>
+                                    </copy>
+                                    <copy>
+                                        <from expression="0"/>
+                                        <to variable="bids"
+                                            query="/auc:bids/auc:bid/auc:bidAmount"/>
+                                    </copy>
+                                    <copy>
+                                        <from expression="'NEW'"/>
+                                        <to variable="bids"
+                                            query="/auc:bids/auc:bid/auc:status"/>
+                                    </copy>
+                                </assign>
+                                <scope name="Auction">
+                                    <bpelx:annotation>
+                                        <bpelx:pattern patternName="bpelx:decide"></bpelx:pattern>
+                                    </bpelx:annotation>
+                                    <variables>
+                                        <variable name="com_packtpub_schemas_obay_auc_AuctionItem_i"
+                                                  element="auc:auctionItem"/>
+                                        <variable name="com_packtpub_schemas_obay_auc_Bids_i"
+                                                  element="auc:bids"/>
+                                        <variable name="com_packtpub_schemas_obay_auc_AuctionItem_o"
+                                                  element="auc:auctionItem"/>
+                                        <variable name="dsIn"
+                                                  messageType="ns3:assertExecuteWatchStatelessMessage"/>
+                                        <variable name="dsOut"
+                                                  messageType="ns3:assertExecuteWatchStatelessDecisionMessage"/>
+                                    </variables>
+                                    <sequence name="Sequence_6">
+                                        <assign name="BPEL_Var_To_Rule_Facts">
+                                            <copy>
+                                                <from variable="auction"
+                                                      query="/auc:auction/auc:auctionItem"/>
+                                                <to variable="com_packtpub_schemas_obay_auc_AuctionItem_i"
+                                                    query="/auc:auctionItem"/>
+                                            </copy>
+                                            <copy>
+                                                <from variable="bids"
+                                                      query="/auc:bids"/>
+                                                <to variable="com_packtpub_schemas_obay_auc_Bids_i"
+                                                    query="/auc:bids"/>
+                                            </copy>
+                                        </assign>
+                                        <assign name="Facts_To_Rule_Service">
+                                            <copy>
+                                                <from variable="com_packtpub_schemas_obay_auc_AuctionItem_i"/>
+                                                <to variable="dsIn"
+                                                    part="payload"
+                                                    query="/ns3:assertExecuteWatchStateless/ns3:assertList/auc:auctionItem"/>
+                                            </copy>
+                                            <copy>
+                                                <from variable="com_packtpub_schemas_obay_auc_Bids_i"/>
+                                                <to variable="dsIn"
+                                                    part="payload"
+                                                    query="/ns3:assertExecuteWatchStateless/ns3:assertList/auc:bids"/>
+                                            </copy>
+                                        </assign>
+                                        <assign name="BPEL_Header">
+                                            <copy>
+                                                <from expression="'AuctionDecisionService'"/>
+                                                <to variable="dsIn"
+                                                    part="payload"
+                                                    query="/ns3:assertExecuteWatchStateless/@name"/>
+                                            </copy>
+                                            <copy>
+                                                <from expression="concat(ora:getProcessURL(), '/decisionservices.decs')"/>
+                                                <to variable="dsIn"
+                                                    part="payload"
+                                                    query="/ns3:assertExecuteWatchStateless/ns3:configURL"/>
+                                            </copy>
+                                            <copy>
+                                                <from expression="ora:getProcessId()"/>
+                                                <to variable="dsIn"
+                                                    part="payload"
+                                                    query="/ns3:assertExecuteWatchStateless/ns3:bpelInstance/ns2:processId"/>
+                                            </copy>
+                                            <copy>
+                                                <from expression="ora:getProcessVersion()"/>
+                                                <to variable="dsIn"
+                                                    part="payload"
+                                                    query="/ns3:assertExecuteWatchStateless/ns3:bpelInstance/ns2:processVersion"/>
+                                            </copy>
+                                            <copy>
+                                                <from expression="ora:getDomainId()"/>
+                                                <to variable="dsIn"
+                                                    part="payload"
+                                                    query="/ns3:assertExecuteWatchStateless/ns3:bpelInstance/ns2:domainId"/>
+                                            </copy>
+                                            <copy>
+                                                <from expression="ora:getProcessURL()"/>
+                                                <to variable="dsIn"
+                                                    part="payload"
+                                                    query="/ns3:assertExecuteWatchStateless/ns3:bpelInstance/ns2:processURL"/>
+                                            </copy>
+                                            <copy>
+                                                <from expression="ora:getInstanceId()"/>
+                                                <to variable="dsIn"
+                                                    part="payload"
+                                                    query="/ns3:assertExecuteWatchStateless/ns3:bpelInstance/ns2:instanceId"/>
+                                            </copy>
+                                        </assign>
+                                        <invoke name="Invoke"
+                                                partnerLink="AuctionDecisionServicePL"
+                                                portType="ns3:IDecisionService"
+                                                operation="assertExecuteWatchStateless"
+                                                inputVariable="dsIn"
+                                                outputVariable="dsOut"/>
+                                        <assign name="Rule_Service_To_Facts">
+                                            <copy>
+                                                <from variable="dsOut"
+                                                      part="payload"
+                                                      query="/ns3:assertExecuteWatchStatelessDecision/ns3:resultList/auc:auctionItem"/>
+                                                <to variable="com_packtpub_schemas_obay_auc_AuctionItem_o"/>
+                                            </copy>
+                                        </assign>
+                                        <assign name="Facts_To_BPEL_Var">
+                                            <copy>
+                                                <from variable="com_packtpub_schemas_obay_auc_AuctionItem_o"
+                                                      query="/auc:auctionItem"/>
+                                                <to variable="auction"
+                                                    query="/auc:auction/auc:auctionItem"/>
+                                            </copy>
+                                        </assign>
+                                    </sequence>
+                                </scope>
+                                <switch name="SetBidResult">
+                                    <case condition="bpws:getVariableData('auction','/auc:auction/auc:auctionItem/auc:winningBid/auc:bidNo') = bpws:getVariableData('curBidNo')">
+                                        <sequence name="Sequence_7">
+                                            <assign name="setWinningBid">
+                                                <copy>
+                                                    <from variable="submitBidInput"
+                                                          part="payload"
+                                                          query="/client:submitBid/auc:bidId"/>
+                                                    <to variable="returnBidResult"
+                                                        part="payload"
+                                                        query="/client:returnBidResult/auc:bidId"/>
+                                                </copy>
+                                                <copy>
+                                                    <from variable="auction"
+                                                          query="/auc:auction/auc:auctionItem/auc:winningBid"/>
+                                                    <to variable="returnBidResult"
+                                                        part="payload"
+                                                        query="/client:returnBidResult/auc:bid"/>
+                                                </copy>
+                                                <copy>
+                                                    <from variable="auction"
+                                                          query="/auc:auction"/>
+                                                    <to variable="returnBidResult"
+                                                        part="payload"
+                                                        query="/client:returnBidResult/auc:auction"/>
+                                                </copy>
+                                            </assign>
+                                        </sequence>
+                                    </case>
+                                    <otherwise>
+                                        <assign name="setLosingBid">
+                                            <copy>
+                                                <from variable="submitBidInput"
+                                                      part="payload"
+                                                      query="/client:submitBid/auc:bidId"/>
+                                                <to variable="returnBidResult"
+                                                    part="payload"
+                                                    query="/client:returnBidResult/auc:bidId"/>
+                                            </copy>
+                                            <copy>
+                                                <from expression="bpws:getVariableData('auction', '/auc:auction')/auc:auctionItem/auc:bidHistory/auc:bid[./auc:bidNo=bpws:getVariableData('curBidNo')]"/>
+                                                <to variable="returnBidResult"
+                                                    query="/client:returnBidResult/auc:bid"
+                                                    part="payload"/>
+                                            </copy>
+                                            <copy>
+                                                <from variable="auction"
+                                                      query="/auc:auction"/>
+                                                <to variable="returnBidResult"
+                                                    part="payload"
+                                                    query="/client:returnBidResult/auc:auction"/>
+                                            </copy>
+                                        </assign>
+                                    </otherwise>
+                                </switch>
+                            </sequence>
+                        </scope>
+                        <invoke name="returnBidResult" partnerLink="client"
+                                portType="client:AuctionCallback"
+                                operation="returnBidResult"
+                                inputVariable="returnBidResult"/>
+                    </sequence>
+                </onMessage>
+                <onAlarm for="'PT3M'">
+                    <scope name="closeAuction">
+                        <sequence name="Sequence_8">
+                            <switch name="CheckIfSold">
+                                <case condition="bpws:getVariableData('auction','/auc:auction/auc:auctionItem/auc:winningPrice') > 0 and bpws:getVariableData('auction','/auc:auction/auc:auctionItem/auc:winningPrice') >= bpws:getVariableData('auction','/auc:auction/auc:auctionItem/auc:reservePrice')">
+                                    <assign name="setSold">
+                                        <copy>
+                                            <from expression="'SOLD'"/>
+                                            <to variable="auction"
+                                                query="/auc:auction/auc:auctionStatus"/>
+                                        </copy>
+                                    </assign>
+                                </case>
+                                <otherwise>
+                                    <assign name="SetNotSold">
+                                        <copy>
+                                            <from expression="'NOTSOLD'"/>
+                                            <to variable="auction"
+                                                query="/auc:auction/auc:auctionStatus"/>
+                                        </copy>
+                                    </assign>
+                                </otherwise>
+                            </switch>
+                            <assign name="setAuctionResult">
+                                <copy>
+                                    <from expression="true()"/>
+                                    <to variable="auctionComplete"/>
+                                </copy>
+                                <copy>
+                                    <from variable="auction"
+                                          query="/auc:auction/auc:auctionId"/>
+                                    <to variable="returnAuctionResult"
+                                        part="payload"
+                                        query="/client:returnAuctionResult/auc:auctionId"/>
+                                </copy>
+                                <copy>
+                                    <from variable="auction"
+                                          query="/auc:auction/auc:auctionStatus"/>
+                                    <to variable="returnAuctionResult"
+                                        part="payload"
+                                        query="/client:returnAuctionResult/auc:auctionStatus"/>
+                                </copy>
+                                <copy>
+                                    <from variable="auction"
+                                          query="/auc:auction/auc:auctionItem/auc:winningBid"/>
+                                    <to variable="returnAuctionResult"
+                                        part="payload"
+                                        query="/client:returnAuctionResult/auc:winningBid"/>
+                                </copy>
+                            </assign>
+                        </sequence>
+                    </scope>
+                </onAlarm>
+            </pick>
+        </while>
+        <invoke name="returnAuctionResult" partnerLink="client"
+                portType="client:AuctionCallback"
+                operation="returnAuctionResult"
+                inputVariable="returnAuctionResult"/>
+    </sequence>
+</process>

@@ -1,0 +1,16 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<BPELSuitcase>
+   <BPELProcess id="GetPurchasedItems" src="GetPurchasedItems.bpel">
+      <partnerLinkBindings>
+         <partnerLinkBinding name="client">
+            <property name="wsdlLocation">GetPurchasedItems.wsdl</property>
+         </partnerLinkBinding>
+         <partnerLinkBinding name="TaskQueryService">
+            <property name="wsdlLocation">TaskQueryServiceRef.wsdl</property>
+         </partnerLinkBinding>
+      </partnerLinkBindings>
+    <faultPolicyBindings>
+      <process faultPolicy="HWFAPIPolicy"/>
+    </faultPolicyBindings>
+   </BPELProcess>
+</BPELSuitcase>

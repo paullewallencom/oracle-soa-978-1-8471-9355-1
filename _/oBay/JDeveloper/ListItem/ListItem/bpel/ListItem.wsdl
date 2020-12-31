@@ -1,0 +1,90 @@
+<definitions
+     name="ListItem"
+     targetNamespace="http://xmlns.packtpub.com/ListItem"
+     xmlns="http://schemas.xmlsoap.org/wsdl/"
+     xmlns:flt="http://schemas.packtpub.com/obay/flt"
+     xmlns:lst="http://schemas.packtpub.com/obay/lst"
+     xmlns:tns="http://xmlns.packtpub.com/ListItem"
+     xmlns:bpws="http://schemas.xmlsoap.org/ws/2003/03/business-process/"
+     xmlns:plnk="http://schemas.xmlsoap.org/ws/2003/05/partner-link/"
+     xmlns:pns1="http://xmlns.packtpub.com/ListItem/correlationset"
+     xmlns:usr="http://schemas.packtpub.com/obay/usr"
+    >
+    <import namespace="http://xmlns.packtpub.com/ListItem/correlationset" location="ListItem_Properties.wsdl"/>
+    <types>
+        <schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://xmlns.packtpub.com/ListItem">
+            <import namespace="http://schemas.packtpub.com/obay/usr" schemaLocation="http://localhost/orabpel/xmllib/obay/User_v1_0.xsd"/>
+            <import namespace="http://schemas.packtpub.com/obay/lst" schemaLocation="http://localhost/orabpel/xmllib/obay/Listing_v1_0.xsd"/>
+            <import namespace="http://schemas.packtpub.com/obay/flt" schemaLocation="http://localhost/orabpel/xmllib/obay/Fault_v1_0.xsd"/>
+            <element name="submitItemListing" type="tns:tSubmitItemListing"/>
+            <element name="submitItemListingResponse" type="tns:tSubmitItemListingResponse"/>
+            <element name="confirmItemListing" type="tns:tConfirmItemListing"/>
+            <element name="confirmItemListingResponse" type="tns:tConfirmItemListingResponse"/>
+            <complexType name="tSubmitItemListing">
+                <sequence>
+                    <element ref="usr:userId"/>
+                    <element ref="lst:item"/>
+                    <element ref="lst:startTime"/>
+                    <element ref="lst:duration"/>
+                    <element ref="lst:paymentMethod"/>
+                    <element ref="lst:listingFormat"/>
+                </sequence>
+            </complexType>
+            <complexType name="tSubmitItemListingResponse">
+                <sequence>
+                    <element ref="lst:listingId"/>
+                    <element ref="lst:listingStatus"/>
+                    <element ref="lst:listingFee"/>
+                </sequence>
+            </complexType>
+            <complexType name="tConfirmItemListing">
+                <sequence>
+                    <element ref="lst:listingId"/>
+                </sequence>
+            </complexType>
+            <complexType name="tConfirmItemListingResponse">
+                <sequence>
+                    <element ref="lst:listingId"/>
+                </sequence>
+            </complexType>
+        </schema>
+    </types>
+    <message name="submitItemListing">
+        <part name="payload" element="tns:submitItemListing"/>
+    </message>
+    <message name="submitItemListingResponse">
+        <part name="payload" element="tns:submitItemListingResponse"/>
+    </message>
+    <message name="suspectItemFault">
+        <part name="payload" element="flt:fault"/>
+    </message>
+    <message name="invalidListingFault">
+        <part name="payload" element="flt:fault"/>
+    </message>
+    <message name="confirmItemListing">
+        <part name="payload" element="tns:confirmItemListing"/>
+    </message>
+    <message name="confirmItemListingResponse">
+        <part name="payload" element="tns:confirmItemListingResponse"/>
+    </message>
+    <portType name="ListItem">
+        <operation name="submitItemListing">
+            <input message="tns:submitItemListing"/>
+            <output message="tns:submitItemListingResponse"/>
+            <fault name="suspectItemFault" message="tns:suspectItemFault"/>
+            <fault name="invalidListing" message="tns:invalidListingFault"/>
+        </operation>
+        <operation name="confirmItemListing">
+            <input message="tns:confirmItemListing"/>
+            <output message="tns:confirmItemListingResponse"/>
+        </operation>
+    </portType>
+    <plnk:partnerLinkType name="ListItem">
+        <plnk:role name="ListItemProvider">
+            <plnk:portType name="tns:ListItem"/>
+        </plnk:role>
+    </plnk:partnerLinkType>
+    <bpws:propertyAlias propertyName="pns1:listingId" messageType="tns:confirmItemListing" part="payload" query="/tns:confirmItemListing/lst:listingId"/>
+    <bpws:propertyAlias propertyName="pns1:listingId" messageType="tns:submitItemListingResponse" part="payload"
+         query="/tns:submitItemListingResponse/lst:listingId"/>
+</definitions>

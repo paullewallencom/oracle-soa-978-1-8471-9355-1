@@ -1,0 +1,43 @@
+<definitions
+     name="LeaveApproval"
+     targetNamespace="http://xmlns.packtpub.com/LeaveApproval"
+     xmlns="http://schemas.xmlsoap.org/wsdl/"
+     xmlns:ns1="http://schemas.packtpub.com/LeaveRequest"
+     xmlns:plnk="http://schemas.xmlsoap.org/ws/2003/05/partner-link/"
+     xmlns:client="http://xmlns.packtpub.com/LeaveApproval"
+    >
+    <types>
+        <schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:ns1="http://schemas.packtpub.com/LeaveRequest"
+             xmlns:plnk="http://schemas.xmlsoap.org/ws/2003/05/partner-link/" xmlns:client="http://xmlns.packtpub.com/LeaveApproval">
+            <import namespace="http://schemas.packtpub.com/LeaveRequest" schemaLocation="LeaveRequest.xsd"/>
+        </schema>
+        <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns1="http://schemas.packtpub.com/LeaveRequest"
+             xmlns:plnk="http://schemas.xmlsoap.org/ws/2003/05/partner-link/" xmlns:client="http://xmlns.packtpub.com/LeaveApproval">
+            <xsd:import namespace="http://schemas.packtpub.com/LeaveRequest" schemaLocation="rules/xsd/LeaveRequest.xsd"/>
+        </xsd:schema>
+    </types>
+    <message name="LeaveApprovalResponseMessage">
+        <part name="payload" element="ns1:leaveRequest"/>
+    </message>
+    <message name="LeaveApprovalRequestMessage">
+        <part name="payload" element="ns1:leaveRequest"/>
+    </message>
+    <portType name="LeaveApprovalCallback">
+        <operation name="onResult">
+            <input message="client:LeaveApprovalResponseMessage"/>
+        </operation>
+    </portType>
+    <portType name="LeaveApproval">
+        <operation name="initiate">
+            <input message="client:LeaveApprovalRequestMessage"/>
+        </operation>
+    </portType>
+    <plnk:partnerLinkType name="LeaveApproval">
+        <plnk:role name="LeaveApprovalProvider">
+            <plnk:portType name="client:LeaveApproval"/>
+        </plnk:role>
+        <plnk:role name="LeaveApprovalRequester">
+            <plnk:portType name="client:LeaveApprovalCallback"/>
+        </plnk:role>
+    </plnk:partnerLinkType>
+</definitions>

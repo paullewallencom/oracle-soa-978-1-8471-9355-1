@@ -1,0 +1,218 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<jpr:project xmlns:jpr="http://xmlns.oracle.com/ide/project">
+   <hash n="component-versions">
+      <value n="oracle.adf.dt.migration.ProjectMigrator" v="10.1.3.4.0"/>
+      <value n="oracle.adfdt.controller.jsf.addin.JSFProjectMigrator" v="10.1.3.4.0"/>
+      <value n="oracle.adfdt.controller.struts.addin.db.ADFStrutsProjectMigrator" v="10.1.3.4.0"/>
+      <value n="oracle.adfdt.controller.struts.addin.StrutsProjectMigrator" v="10.1.3.4.0"/>
+      <value n="oracle.adfdtinternal.model.portlet.migration.WebCenterProjectMigrator" v="10.1.3.4.0"/>
+      <value n="oracle.adfdtinternal.view.faces.addin.ADFFacesLibraryMigrator" v="10.1.3.4.0"/>
+      <value n="oracle.bm.commonIde.ProjectUpgrader" v="10.1.3.4.0"/>
+      <value n="oracle.ide.model.Project" v="10.1.3.4.0"/>
+      <value n="oracle.ide.model.ResourcePathsMigrator" v="10.1.3.4.0"/>
+      <value n="oracle.jbo.dt.jclient.migrator.JCProjectMigrator" v="10.1.3.4.0"/>
+      <value n="oracle.jbo.dt.jdevx.ui.appnav.APProjectMigrator" v="10.1.3.4.0"/>
+      <value n="oracle.jdeveloper.dbmodeler.migration.ProjectMigratorHelper" v="10.1.3.4.0"/>
+      <value n="oracle.jdeveloper.ejb.EjbMigrator" v="10.1.3.4.0"/>
+      <value n="oracle.jdeveloper.offlinedb.migration.OfflineDBProjectMigrator" v="10.1.3.4.0"/>
+      <value n="oracle.jdevimpl.jsp.JsfLibraryMigrator" v="10.1.3.4.0"/>
+      <value n="oracle.jdevimpl.jsp.JspMigrator" v="10.1.3.1.0"/>
+      <value n="oracle.jdevimpl.runner.RunConfigurationsMigrator" v="10.1.3.4.0"/>
+      <value n="oracle.jdevimpl.webservices.WebServicesMigratorHelper" v="10.1.3.4.0"/>
+      <value n="oracle.tip.tools.ide.pm.addin.PMProjectMigrator" v="10.1.3.4.0"/>
+      <value n="oracle.toplink.addin.migration.TopLinkProjectMigrator" v="10.1.3.1.0"/>
+   </hash>
+   <list n="contentSets">
+      <string v="oracle.jdeveloper.model.PathsConfiguration/javaContentSet"/>
+      <string v="oracle.ide.model.ResourcePaths/resourcesContentSet"/>
+      <string v="oracle.jdeveloper.offlinedb.model.OfflineDBProjectSettings/offlineDBContentSet"/>
+      <string v="oracle.jdeveloper.model.J2eeSettings/webContentSet"/>
+      <string v="oracle.toplink.addin.TopLinkProjectSettings/toplinkContentSet"/>
+      <string v="oracle.bm.commonIde.data.project.ModelerProjectSettings/modelersContentSet"/>
+      <string v="oracle.tip.tools.ide.pm.addin.PMProjectSettings/Integration_Content"/>
+   </list>
+   <hash n="CustomFolderMapping">
+      <value n="PayrollDatabaseService" v="PayrollDatabaseService"/>
+      <value n="PayrollDeliveryFtpService" v="PayrollDeliveryFtpService"/>
+      <value n="PayrollInputFileService" v="PayrollInputFileService"/>
+   </hash>
+   <hash n="CustomFolderMgr">
+      <value n="PayrollDatabaseService" v="oracle.tip.tools.ide.pm.customfolder.ServiceCustomFolder"/>
+      <value n="PayrollDeliveryFtpService" v="oracle.tip.tools.ide.pm.customfolder.ServiceCustomFolder"/>
+      <value n="PayrollInputFileService" v="oracle.tip.tools.ide.pm.customfolder.ServiceCustomFolder"/>
+   </hash>
+   <value n="defaultPackage" v="BusinessProcess"/>
+   <value n="Namespace" v="http://soasuite.book/Chapter3"/>
+   <hash n="oracle.bm.commonIde.data.project.ModelerProjectSettings">
+      <hash n="modelersContentSet">
+         <list n="url-path">
+            <url path="model/"/>
+         </list>
+      </hash>
+   </hash>
+   <hash n="oracle.ide.model.ResourcePaths">
+      <hash n="resourcesContentSet">
+         <list n="pattern-filters">
+            <string v="+*"/>
+         </list>
+         <list n="url-path">
+            <url path="."/>
+         </list>
+      </hash>
+   </hash>
+   <hash n="oracle.ide.model.TechnologyScopeConfiguration">
+      <list n="technologyScope">
+         <string v="Java"/>
+         <string v="Integration"/>
+         <string v="XML"/>
+         <string v="WebServices"/>
+         <string v="General"/>
+         <string v="Database"/>
+      </list>
+   </hash>
+   <hash n="oracle.jdeveloper.compiler.OjcConfiguration">
+      <list n="copyRes">
+         <string v=".gif"/>
+         <string v=".jpg"/>
+         <string v=".jpeg"/>
+         <string v=".png"/>
+         <string v=".properties"/>
+         <string v="-apf.xml"/>
+         <string v=".ejx"/>
+         <string v=".xcfg"/>
+         <string v=".cpx"/>
+         <string v=".dcx"/>
+         <string v=".wsdl"/>
+         <string v=".ini"/>
+         <string v=".tld"/>
+         <string v=".tag"/>
+      </list>
+      <value n="internalEncoding" v="Cp1252"/>
+   </hash>
+   <hash n="oracle.jdeveloper.model.J2eeSettings">
+      <value n="j2eeWebAppName" v="SOASuiteDevelopersGuide-Chapter3-webapp"/>
+      <value n="j2eeWebContextRoot" v="SOASuiteDevelopersGuide-Chapter3-context-root"/>
+      <hash n="webContentSet">
+         <list n="url-path">
+            <url path="public_html/"/>
+         </list>
+      </hash>
+   </hash>
+   <hash n="oracle.jdeveloper.model.PathsConfiguration">
+      <hash n="javaContentSet">
+         <list n="pattern-filters">
+            <string v="+**"/>
+         </list>
+         <list n="url-path">
+            <url path="src/"/>
+         </list>
+      </hash>
+   </hash>
+   <hash n="oracle.jdeveloper.offlinedb.model.OfflineDBProjectSettings">
+      <hash n="offlineDBContentSet">
+         <list n="constituent-sets">
+            <hash>
+               <list n="pattern-filters">
+                  <string v="+PAYROLLITEM.table"/>
+                  <string v="+EMPLOYEE.table"/>
+                  <string v="+BATCH.table"/>
+               </list>
+               <list n="url-path">
+                  <url path="../../../../JDeveloper/mywork/SOASuiteBook10g/SOASuiteBook10g/Chapter3/database/SOABOOK/"/>
+               </list>
+            </hash>
+         </list>
+         <list n="pattern-filters">
+            <string v="+**"/>
+         </list>
+         <list n="url-path">
+            <url path="database/"/>
+         </list>
+      </hash>
+      <hash n="offlineDBDataTypesSet">
+         <value n="sourceKey" v="oracle.javatools.db.ora.Oracle10gR2XE"/>
+      </hash>
+      <value n="offlineDBSchema" v="SOABOOK"/>
+   </hash>
+   <hash n="oracle.jdeveloper.runner.RunConfigurations">
+      <hash n="runConfigurationDefinitions">
+         <hash n="Default">
+            <value n="custom" v="false"/>
+            <value n="name" v="Default"/>
+         </hash>
+      </hash>
+      <list n="runConfigurationList">
+         <string v="Default"/>
+      </list>
+   </hash>
+   <hash n="oracle.jdevimpl.config.JProjectLibraries">
+      <list n="libraryReferences">
+         <hash>
+            <url n="id" path="../Coherence.library"/>
+            <value n="isJDK" v="false"/>
+         </hash>
+         <hash>
+            <value n="id" v="TopLink"/>
+            <value n="isJDK" v="false"/>
+         </hash>
+         <hash>
+            <value n="id" v="Oracle XML Parser v2"/>
+            <value n="isJDK" v="false"/>
+         </hash>
+      </list>
+   </hash>
+   <hash n="oracle.jdevimpl.config.JProjectPaths">
+      <url n="outputDirectory" path="output"/>
+   </hash>
+   <hash n="oracle.tip.tools.ide.pm.addin.PMProjectSettings">
+      <hash n="Integration_Content">
+         <list n="pattern-filters">
+            <string v="+**"/>
+         </list>
+         <list n="url-path">
+            <url path="bpel/"/>
+         </list>
+      </hash>
+   </hash>
+   <hash n="oracle.toplink.addin.TopLinkProjectSettings">
+      <hash n="toplinkContentSet">
+         <list n="pattern-filters">
+            <string v="+**"/>
+         </list>
+         <list n="url-path">
+            <url path="toplink/"/>
+         </list>
+      </hash>
+      <hash n="topLinkGenerateStatusReport">
+         <value n="PayrollDatabaseService" v="true"/>
+      </hash>
+      <hash n="topLinkMapsLocations">
+         <value n="PayrollDatabaseService" v="PayrollDatabaseService/PayrollDatabaseService.mwp"/>
+      </hash>
+      <hash n="topLinkQualifyTableNames">
+         <value n="PayrollDatabaseService" v="false"/>
+      </hash>
+   </hash>
+   <hash n="PayrollDatabaseService">
+      <value n="ServiceFile0" v="PayrollDatabaseService.wsdl"/>
+      <value n="ServiceFile1" v="PayrollDatabaseService_table.xsd"/>
+      <value n="ServiceFile2" v="PayrollDatabaseService_toplink_mappings.xml"/>
+      <value n="ServiceIcon" v="palette/adapterservice/db_adapter_palette.png"/>
+      <value n="ServiceName" v="PayrollDatabaseService"/>
+   </hash>
+   <hash n="PayrollDeliveryFtpService">
+      <value n="ServiceFile0" v="PayrollDeliveryFtpService.wsdl"/>
+      <value n="ServiceFile1" v="ftpAdapterOutboundHeader.wsdl"/>
+      <value n="ServiceIcon" v="palette/adapterservice/ftp_adapter_palette.png"/>
+      <value n="ServiceName" v="PayrollDeliveryFtpService"/>
+   </hash>
+   <hash n="PayrollInputFileService">
+      <value n="ServiceFile0" v="PayrollInputFileService.wsdl"/>
+      <value n="ServiceFile1" v="fileAdapterInboundHeader.wsdl"/>
+      <value n="ServiceIcon" v="palette/adapterservice/file_adapter_palette.png"/>
+      <value n="ServiceName" v="PayrollInputFileService"/>
+   </hash>
+   <value n="ProcessName" v="Chapter3"/>
+   <value n="Template" v="BPEL_EMPTY_PROCESS"/>
+   <value n="Version"/>
+</jpr:project>

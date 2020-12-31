@@ -1,0 +1,474 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions 
+        name="TaskService" 
+        targetNamespace="http://xmlns.oracle.com/bpel/workflow/taskService"
+        xmlns:tns="http://xmlns.oracle.com/bpel/workflow/taskService"
+        xmlns:bpws="http://schemas.xmlsoap.org/ws/2003/03/business-process/"
+        xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" 
+        xmlns:format="http://schemas.xmlsoap.org/wsdl/formatbinding/"
+        xmlns:java="http://schemas.xmlsoap.org/wsdl/java/"
+        xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+        xmlns:taskservice="http://xmlns.oracle.com/bpel/workflow/taskService"
+        xmlns:task="http://xmlns.oracle.com/bpel/workflow/task"
+        xmlns:routingslip="http://xmlns.oracle.com/bpel/workflow/routingSlip"
+        xmlns="http://schemas.xmlsoap.org/wsdl/">
+  <documentation>
+    Service used to model user interactions with the task service
+  </documentation>
+
+  <import namespace="http://xmlns.oracle.com/bpel/workflow/taskService" 
+          location="TaskServiceInterface.wsdl"/>
+  
+  <!-- Binding declarations. Task service uses local Java bindings defined in WSIF -->
+  <binding name="TaskServiceWSIFBinding" type="tns:TaskService">
+    <java:binding/>
+    <format:typeMapping encoding="Java" style="Java">
+      <format:typeMap typeName="routingslip:routingSlip" formatType="org.w3c.dom.Element"/>
+      <format:typeMap typeName="task:task" formatType="org.w3c.dom.Element"/>
+      <format:typeMap typeName="taskservice:initiateTask" formatType="org.w3c.dom.Element"/>
+      <format:typeMap typeName="taskservice:initiateTaskResponse" formatType="org.w3c.dom.Element"/>
+      <format:typeMap typeName="taskservice:reinitiateTask" formatType="org.w3c.dom.Element"/>
+      <format:typeMap typeName="taskservice:reinitiateTaskResponse" formatType="org.w3c.dom.Element"/>
+      <format:typeMap typeName="taskservice:acquireTask" formatType="org.w3c.dom.Element"/>
+      <format:typeMap typeName="taskservice:escalateTask" formatType="org.w3c.dom.Element"/>
+      <format:typeMap typeName="taskservice:faultMessage" formatType="org.w3c.dom.Element"/>
+      <format:typeMap typeName="taskservice:getApprovers" formatType="org.w3c.dom.Element"/>
+      <format:typeMap typeName="taskservice:getFutureParticipants" formatType="org.w3c.dom.Element"/>
+      <format:typeMap typeName="taskservice:getUsersToRequestInfoForTask" formatType="org.w3c.dom.Element"/>
+      <format:typeMap typeName="taskservice:listOfUserIds" formatType="org.w3c.dom.Element"/>
+      <format:typeMap typeName="taskservice:overrideRoutingSlip" formatType="org.w3c.dom.Element"/>
+      <format:typeMap typeName="taskservice:reassignTask" formatType="org.w3c.dom.Element"/>
+      <format:typeMap typeName="taskservice:releaseTask" formatType="org.w3c.dom.Element"/>
+      <format:typeMap typeName="taskservice:renewTask" formatType="org.w3c.dom.Element"/>
+      <format:typeMap typeName="taskservice:requestInfoForTask" formatType="org.w3c.dom.Element"/>
+      <format:typeMap typeName="taskservice:requestInfoForTaskWithReapproval" formatType="org.w3c.dom.Element"/>
+      <format:typeMap typeName="taskservice:resumeTask" formatType="org.w3c.dom.Element"/>
+      <format:typeMap typeName="taskservice:skipCurrentAssignment" formatType="org.w3c.dom.Element"/>
+      <format:typeMap typeName="taskservice:subTaskUpdatedMessage" formatType="org.w3c.dom.Element"/>
+      <format:typeMap typeName="taskservice:submitInfoForTask" formatType="org.w3c.dom.Element"/>
+      <format:typeMap typeName="taskservice:suspendTask" formatType="org.w3c.dom.Element"/>
+      <format:typeMap typeName="taskservice:taskAssignedMessage" formatType="org.w3c.dom.Element"/>
+      <format:typeMap typeName="taskservice:taskUpdatedMessage" formatType="org.w3c.dom.Element"/>
+      <format:typeMap typeName="taskservice:updateTask" formatType="org.w3c.dom.Element"/>
+      <format:typeMap typeName="taskservice:mergeAndUpdateTask" formatType="org.w3c.dom.Element"/>
+      <format:typeMap typeName="taskservice:withdrawTasks" formatType="org.w3c.dom.Element"/>
+      <format:typeMap typeName="taskservice:suspendTasks" formatType="org.w3c.dom.Element"/>
+      <format:typeMap typeName="taskservice:suspendTasks" formatType="org.w3c.dom.Element"/>
+      <format:typeMap typeName="taskservice:acquireTasks" formatType="org.w3c.dom.Element"/>
+      <format:typeMap typeName="taskservice:releaseTasks" formatType="org.w3c.dom.Element"/>
+      <format:typeMap typeName="taskservice:updateTaskOutcome" formatType="org.w3c.dom.Element"/>
+      <format:typeMap typeName="taskservice:updateTaskOutcomeAndRoute" formatType="org.w3c.dom.Element"/>
+      <format:typeMap typeName="taskservice:withdrawTask" formatType="org.w3c.dom.Element"/>
+      <format:typeMap typeName="taskservice:routeTask" formatType="org.w3c.dom.Element"/>
+      <format:typeMap typeName="taskservice:pushBackTask" formatType="org.w3c.dom.Element"/>
+      <format:typeMap typeName="taskservice:delegateTask" formatType="org.w3c.dom.Element"/>
+      <format:typeMap typeName="taskservice:errorTask" formatType="org.w3c.dom.Element"/>
+      <format:typeMap typeName="taskservice:addComment" formatType="org.w3c.dom.Element"/>
+      <format:typeMap typeName="taskservice:addAttachment" formatType="org.w3c.dom.Element"/>
+      <format:typeMap typeName="taskservice:removeAttachment" formatType="org.w3c.dom.Element"/>
+      <format:typeMap typeName="taskservice:taskIds" formatType="org.w3c.dom.Element"/>
+      <format:typeMap typeName="taskservice:updateOutcomeOfTasks" formatType="org.w3c.dom.Element"/>
+      <format:typeMap typeName="taskservice:bulkOperationOutput" formatType="org.w3c.dom.Element"/>
+    </format:typeMapping>
+
+    <operation name="initiateTask">
+      <java:operation
+         methodName="initiateTask"
+         parameterOrder="payload"
+         methodType="static"
+         returnPart="payload"/>
+      <input name="initiateTaskInput"/>
+      <output name="initiateTaskOutput"/>
+    </operation>
+
+    <operation name="reinitiateTask">
+      <java:operation
+         methodName="reinitiateTask"
+         parameterOrder="payload"
+         methodType="static"
+         returnPart="payload"/>
+      <input name="reinitiateTaskInput"/>
+      <output name="reinitiateTaskOutput"/>
+    </operation>
+
+    <operation name="skipCurrentAssignment">
+      <java:operation
+         methodName="skipCurrentAssignment"
+         parameterOrder="payload"
+         methodType="static"
+         returnPart="payload"/>
+      <input name="skipCurrentAssignmentInput"/>
+      <output name="skipCurrentAssignmentOutput"/>
+    </operation>
+
+    <operation name="overrideRoutingSlip">
+      <java:operation
+         methodName="overrideRoutingSlip"
+         parameterOrder="payload"
+         methodType="static"
+         returnPart="payload"/>
+      <input name="overrideRoutingSlipInput"/>
+      <output name="overrideRoutingSlipOutput"/>
+    </operation>
+
+    <operation name="updateTask">
+      <java:operation
+         methodName="updateTask"
+         parameterOrder="payload"
+         methodType="static"
+         returnPart="payload"/>
+      <input name="updateTaskInput"/>
+      <output name="updateTaskOutput"/>
+    </operation>
+
+    <operation name="mergeAndUpdateTask">
+      <java:operation
+         methodName="mergeAndUpdateTask"
+         parameterOrder="payload"
+         methodType="static"
+         returnPart="payload"/>
+      <input name="mergeAndUpdateTaskInput"/>
+      <output name="mergeAndUpdateTaskOutput"/>
+    </operation>
+
+    <operation name="submitInfoForTask">
+      <java:operation
+         methodName="submitInfoForTask"
+         parameterOrder="payload"
+         methodType="static"
+         returnPart="payload"/>
+      <input name="submitInfoForTaskInput"/>
+      <output name="submitInfoForTaskOutput"/>
+    </operation>
+
+    <operation name="getUsersToRequestInfoForTask">
+      <java:operation
+         methodName="getUsersToRequestInfoForTask"
+         parameterOrder="payload"
+         methodType="static"
+         returnPart="payload"/>
+      <input name="getUsersToRequestInfoForTaskInput"/>
+      <output name="getUsersToRequestInfoForTaskOutput"/>
+    </operation>
+
+    <operation name="getFutureParticipants">
+      <java:operation
+         methodName="getFutureParticipants"
+         parameterOrder="payload"
+         methodType="static"
+         returnPart="payload"/>
+      <input name="getFutureParticipantsInput"/>
+      <output name="getFutureParticipantsOutput"/>
+    </operation>
+
+    <operation name="getApprovers">
+      <java:operation
+         methodName="getApprovers"
+         parameterOrder="payload"
+         methodType="static"
+         returnPart="payload"/>
+      <input name="getApproversInput"/>
+      <output name="getApproversOutput"/>
+    </operation>
+
+    <operation name="escalateTask">
+      <java:operation
+         methodName="escalateTask"
+         parameterOrder="payload"
+         methodType="static"
+         returnPart="payload"/>
+      <input name="escalateTaskInput"/>
+      <output name="escalateTaskOutput"/>
+    </operation>
+
+    <operation name="withdrawTask">
+      <java:operation
+         methodName="withdrawTask"
+         parameterOrder="payload"
+         methodType="static"
+         returnPart="payload"/>
+      <input name="withdrawTaskInput"/>
+      <output name="withdrawTaskOutput"/>
+    </operation>
+
+    <operation name="withdrawTasks">
+      <java:operation
+         methodName="withdrawTasks"
+         parameterOrder="payload"
+         methodType="static"
+         returnPart="payload"/>
+      <input name="withdrawTasksInput"/>
+      <output name="withdrawTasksOutput"/>
+    </operation>
+
+    <operation name="suspendTask">
+      <java:operation
+         methodName="suspendTask"
+         parameterOrder="payload"
+         methodType="static"
+         returnPart="payload"/>
+      <input name="suspendTaskInput"/>
+      <output name="suspendTaskOutput"/>
+    </operation>
+
+    <operation name="suspendTasks">
+      <java:operation
+         methodName="suspendTasks"
+         parameterOrder="payload"
+         methodType="static"
+         returnPart="payload"/>
+      <input name="suspendTasksInput"/>
+      <output name="suspendTasksOutput"/>
+    </operation>
+
+    <operation name="resumeTask">
+      <java:operation
+         methodName="resumeTask"
+         parameterOrder="payload"
+         methodType="static"
+         returnPart="payload"/>
+      <input name="resumeTaskInput"/>
+      <output name="resumeTaskOutput"/>
+    </operation>
+
+    <operation name="resumeTasks">
+      <java:operation
+         methodName="resumeTasks"
+         parameterOrder="payload"
+         methodType="static"
+         returnPart="payload"/>
+      <input name="resumeTasksInput"/>
+      <output name="resumeTasksOutput"/>
+    </operation>
+
+    <operation name="acquireTask">
+      <java:operation
+         methodName="acquireTask"
+         parameterOrder="payload"
+         methodType="static"
+         returnPart="payload"/>
+      <input name="acquireTaskInput"/>
+      <output name="acquireTaskOutput"/>
+    </operation>
+
+    <operation name="acquireTasks">
+      <java:operation
+         methodName="acquireTasks"
+         parameterOrder="payload"
+         methodType="static"
+         returnPart="payload"/>
+      <input name="acquireTasksInput"/>
+      <output name="acquireTasksOutput"/>
+    </operation>
+
+    <operation name="releaseTask">
+      <java:operation
+         methodName="releaseTask"
+         parameterOrder="payload"
+         methodType="static"
+         returnPart="payload"/>
+      <input name="releaseTaskInput"/>
+      <output name="releaseTaskOutput"/>
+    </operation>
+
+    <operation name="releaseTasks">
+      <java:operation
+         methodName="releaseTasks"
+         parameterOrder="payload"
+         methodType="static"
+         returnPart="payload"/>
+      <input name="releaseTasksInput"/>
+      <output name="releaseTasksOutput"/>
+    </operation>
+
+    <operation name="reassignTask">
+      <java:operation
+         methodName="reassignTask"
+         parameterOrder="payload"
+         methodType="static"
+         returnPart="payload"/>
+      <input name="reassignTaskInput"/>
+      <output name="reassignTaskOutput"/>
+    </operation>
+
+    <operation name="routeTask">
+      <java:operation
+         methodName="routeTask"
+         parameterOrder="payload"
+         methodType="static"
+         returnPart="payload"/>
+      <input name="routeTaskInput"/>
+      <output name="routeTaskOutput"/>
+    </operation>
+
+    <operation name="pushBackTask">
+      <java:operation
+         methodName="pushBackTask"
+         parameterOrder="payload"
+         methodType="static"
+         returnPart="payload"/>
+      <input name="pushBackTaskInput"/>
+      <output name="pushBackTaskOutput"/>
+    </operation>
+
+    <operation name="delegateTask">
+      <java:operation
+         methodName="delegateTask"
+         parameterOrder="payload"
+         methodType="static"
+         returnPart="payload"/>
+      <input name="delegateTaskInput"/>
+      <output name="delegateTaskOutput"/>
+    </operation>
+
+    <operation name="errorTask">
+      <java:operation
+         methodName="errorTask"
+         parameterOrder="payload"
+         methodType="static"
+         returnPart="payload"/>
+      <input name="errorTaskInput"/>
+      <output name="errorTaskOutput"/>
+    </operation>
+
+    <operation name="addComment">
+      <java:operation
+         methodName="addComment"
+         parameterOrder="payload"
+         methodType="static"
+         returnPart="payload"/>
+      <input name="addCommentInput"/>
+      <output name="addCommentOutput"/>
+    </operation>
+
+    <operation name="addAttachment">
+      <java:operation
+         methodName="addAttachment"
+         parameterOrder="payload"
+         methodType="static"
+         returnPart="payload"/>
+      <input name="addAttachmentInput"/>
+      <output name="addAttachmentOutput"/>
+    </operation>
+
+    <operation name="removeAttachment">
+      <java:operation
+         methodName="removeAttachment"
+         parameterOrder="payload"
+         methodType="static"
+         returnPart="payload"/>
+      <input name="removeAttachmentInput"/>
+      <output name="removeAttachmentOutput"/>
+    </operation>
+
+    <operation name="renewTask">
+      <java:operation
+         methodName="renewTask"
+         parameterOrder="payload"
+         methodType="static"
+         returnPart="payload"/>
+      <input name="renewTaskInput"/>
+      <output name="renewTaskOutput"/>
+    </operation>
+
+    <operation name="updateTaskOutcome">
+      <java:operation
+         methodName="updateTaskOutcome"
+         parameterOrder="payload"
+         methodType="static"
+         returnPart="payload"/>
+      <input name="updateTaskOutcomeInput"/>
+      <output name="updateTaskOutcomeOutput"/>
+    </operation>
+
+    <operation name="updateOutcomeOfTasks">
+      <java:operation
+         methodName="updateOutcomeOfTasks"
+         parameterOrder="payload"
+         methodType="static"
+         returnPart="payload"/>
+      <input name="updateOutcomeOfTasksInput"/>
+      <output name="updateOutcomeOfTasksOutput"/>
+    </operation>
+
+    <operation name="updateTaskOutcomeAndRoute">
+      <java:operation
+         methodName="updateTaskOutcomeAndRoute"
+         parameterOrder="payload"
+         methodType="static"
+         returnPart="payload"/>
+      <input name="updateTaskOutcomeAndRouteInput"/>
+      <output name="updateTaskOutcomeAndRouteOutput"/>
+    </operation>
+
+    <operation name="requestInfoForTask">
+      <java:operation
+         methodName="requestInfoForTask"
+         parameterOrder="payload"
+         methodType="static"
+         returnPart="payload"/>
+      <input name="requestInfoForTaskInput"/>
+      <output name="requestInfoForTaskOutput"/>
+    </operation>
+
+    <operation name="requestInfoForTaskWithReapproval">
+      <java:operation
+         methodName="requestInfoForTaskWithReapproval"
+         parameterOrder="payload"
+         methodType="static"
+         returnPart="payload"/>
+      <input name="requestInfoForTaskWithReapprovalInput"/>
+      <output name="requestInfoForTaskWithReapprovalOutput"/>
+    </operation>
+
+  </binding>
+
+  <!-- To be deleted later - this is overcome an engine bug -->
+  <binding name="TaskServiceCallbackBinding" type="tns:TaskServiceCallback">
+     <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/> 
+     <operation name="onTaskCompleted">
+       <soap:operation style="document" soapAction="onTaskCompleted"/> 
+       <input>
+         <soap:header message="tns:WSARelatesToHeader" part="RelatesTo" use="literal" encodingStyle=""/> 
+         <soap:body use="literal"/> 
+       </input>
+     </operation>
+     <operation name="onTaskAssigned">
+       <soap:operation style="document" soapAction="onTaskAssigned"/> 
+       <input>
+         <soap:header message="tns:WSARelatesToHeader" part="RelatesTo" use="literal" encodingStyle=""/> 
+         <soap:body use="literal"/> 
+       </input>
+     </operation>
+     <operation name="onTaskUpdated">
+       <soap:operation style="document" soapAction="onTaskUpdated"/> 
+       <input>
+         <soap:header message="tns:WSARelatesToHeader" part="RelatesTo" use="literal" encodingStyle=""/> 
+         <soap:body use="literal"/> 
+       </input>
+     </operation>
+     <operation name="onSubTaskUpdated">
+       <soap:operation style="document" soapAction="onSubTaskUpdated"/> 
+       <input>
+         <soap:header message="tns:WSARelatesToHeader" part="RelatesTo" use="literal" encodingStyle=""/> 
+         <soap:body use="literal"/> 
+       </input>
+     </operation>
+  </binding>
+  <!-- To be deleted later - this is overcome an engine bug -->
+  <service name="TaskServiceCallbackService">
+    <port name="TaskServiceCallbackPort" binding="tns:TaskServiceCallbackBinding">
+      <soap:address location="http://set.by.caller"/> 
+    </port>
+  </service>
+
+  <!-- Service declarations. All services uses local Java bindings defined in WSIF -->
+  <service name="TaskServiceService">
+    <port name="TaskServicePort" binding="tns:TaskServiceWSIFBinding">
+      <java:address className="oracle.bpel.services.workflow.task.impl.TaskServiceWSIF"/>
+    </port>
+  </service>
+
+</definitions>
+
+

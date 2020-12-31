@@ -1,0 +1,248 @@
+<definitions
+     name="DecisionService"
+     targetNamespace="http://xmlns.packtpub.com/obay/bs/Auction/DecisionService"
+     xmlns="http://schemas.xmlsoap.org/wsdl/"
+     xmlns:tns="http://xmlns.packtpub.com/obay/bs/Auction/DecisionService"
+     xmlns:java="http://schemas.xmlsoap.org/wsdl/java/"
+     xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/"
+     xmlns:plt="http://schemas.xmlsoap.org/ws/2003/05/partner-link/"
+     xmlns:plnk="http://schemas.xmlsoap.org/ws/2003/05/partner-link/"
+     xmlns:rules="http://xmlns.oracle.com/bpel/rules"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+     xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+     xmlns:format="http://schemas.xmlsoap.org/wsdl/formatbinding/"
+    >
+    <types>
+        <schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://xmlns.packtpub.com/obay/bs/Auction/DecisionService"
+             attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:tns="http://xmlns.packtpub.com/obay/bs/Auction/DecisionService"
+             xmlns:bpelpm="http://xmlns.oracle.com/bpel">
+            <include schemaLocation="DecisionServiceTypes.xsd"/>
+        </schema>
+        <schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://xmlns.packtpub.com/obay/bs/Auction/DecisionService"
+             attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:tns="http://xmlns.packtpub.com/obay/bs/Auction/DecisionService"
+             xmlns:bpelpm="http://xmlns.oracle.com/bpel" xmlns:ns1="http://schemas.packtpub.com/obay/auc">
+            <import namespace="http://schemas.packtpub.com/obay/auc" schemaLocation="rules/xsd/Auction_v1_0.xsd"/>
+            <import namespace="http://xmlns.oracle.com/bpel"/>
+            <element name="assert">
+                <complexType>
+                    <sequence>
+                        <element name="configURL" type="string" minOccurs="1" maxOccurs="1"/>
+                        <element name="bpelInstance" type="bpelpm:tBpelProcess" minOccurs="0" maxOccurs="1"/>
+                        <element name="assertList" minOccurs="1" maxOccurs="1">
+                            <complexType>
+                                <sequence>
+                                    <element ref="ns1:auctionItem"/>
+                                    <element ref="ns1:bids"/>
+                                </sequence>
+                            </complexType>
+                        </element>
+                    </sequence>
+                    <attribute name="name" type="NCName" use="required"/>
+                </complexType>
+            </element>
+            <element name="assertExecute">
+                <complexType>
+                    <sequence>
+                        <element name="configURL" type="string" minOccurs="1" maxOccurs="1"/>
+                        <element name="bpelInstance" type="bpelpm:tBpelProcess" minOccurs="0" maxOccurs="1"/>
+                        <element name="assertList" minOccurs="1" maxOccurs="1">
+                            <complexType>
+                                <sequence>
+                                    <element ref="ns1:auctionItem"/>
+                                    <element ref="ns1:bids"/>
+                                </sequence>
+                            </complexType>
+                        </element>
+                    </sequence>
+                    <attribute name="name" type="NCName" use="required"/>
+                </complexType>
+            </element>
+            <element name="assertExecuteWatchStateful">
+                <complexType>
+                    <sequence>
+                        <element name="configURL" type="string" minOccurs="1" maxOccurs="1"/>
+                        <element name="bpelInstance" type="bpelpm:tBpelProcess" minOccurs="0" maxOccurs="1"/>
+                        <element name="assertList" minOccurs="1" maxOccurs="1">
+                            <complexType>
+                                <sequence>
+                                    <element ref="ns1:auctionItem"/>
+                                    <element ref="ns1:bids"/>
+                                </sequence>
+                            </complexType>
+                        </element>
+                    </sequence>
+                    <attribute name="name" type="NCName" use="required"/>
+                </complexType>
+            </element>
+            <element name="assertExecuteWatchStatefulDecision">
+                <complexType>
+                    <sequence>
+                        <element name="resultList" minOccurs="1" maxOccurs="1">
+                            <complexType>
+                                <sequence>
+                                    <element ref="ns1:auctionItem"/>
+                                </sequence>
+                            </complexType>
+                        </element>
+                    </sequence>
+                </complexType>
+            </element>
+            <element name="assertExecuteWatchStateless">
+                <complexType>
+                    <sequence>
+                        <element name="configURL" type="string" minOccurs="1" maxOccurs="1"/>
+                        <element name="bpelInstance" type="bpelpm:tBpelProcess" minOccurs="0" maxOccurs="1"/>
+                        <element name="assertList" minOccurs="1" maxOccurs="1">
+                            <complexType>
+                                <sequence>
+                                    <element ref="ns1:auctionItem"/>
+                                    <element ref="ns1:bids"/>
+                                </sequence>
+                            </complexType>
+                        </element>
+                    </sequence>
+                    <attribute name="name" type="NCName" use="required"/>
+                </complexType>
+            </element>
+            <element name="assertExecuteWatchStatelessDecision">
+                <complexType>
+                    <sequence>
+                        <element name="resultList" minOccurs="1" maxOccurs="1">
+                            <complexType>
+                                <sequence>
+                                    <element ref="ns1:auctionItem"/>
+                                </sequence>
+                            </complexType>
+                        </element>
+                    </sequence>
+                </complexType>
+            </element>
+            <element name="watch">
+                <complexType>
+                    <sequence>
+                        <element name="configURL" type="string" minOccurs="1" maxOccurs="1"/>
+                        <element name="bpelInstance" type="bpelpm:tBpelProcess" minOccurs="0" maxOccurs="1"/>
+                    </sequence>
+                    <attribute name="name" type="NCName" use="required"/>
+                </complexType>
+            </element>
+            <element name="watchDecision">
+                <complexType>
+                    <sequence>
+                        <element name="resultList" minOccurs="1" maxOccurs="1">
+                            <complexType>
+                                <sequence>
+                                    <element ref="ns1:auctionItem"/>
+                                </sequence>
+                            </complexType>
+                        </element>
+                    </sequence>
+                </complexType>
+            </element>
+        </schema>
+    </types>
+    <message name="assertMessage">
+        <part name="payload" element="tns:assert"/>
+    </message>
+    <message name="assertExecuteMessage">
+        <part name="payload" element="tns:assertExecute"/>
+    </message>
+    <message name="assertExecuteWatchStatefulMessage">
+        <part name="payload" element="tns:assertExecuteWatchStateful"/>
+    </message>
+    <message name="assertExecuteWatchStatefulDecisionMessage">
+        <part name="payload" element="tns:assertExecuteWatchStatefulDecision"/>
+    </message>
+    <message name="decisionServiceError">
+        <part name="payload" element="tns:errorInfo"/>
+    </message>
+    <message name="assertExecuteWatchStatelessMessage">
+        <part name="payload" element="tns:assertExecuteWatchStateless"/>
+    </message>
+    <message name="assertExecuteWatchStatelessDecisionMessage">
+        <part name="payload" element="tns:assertExecuteWatchStatelessDecision"/>
+    </message>
+    <message name="watchMessage">
+        <part name="payload" element="tns:watch"/>
+    </message>
+    <message name="watchDecisionMessage">
+        <part name="payload" element="tns:watchDecision"/>
+    </message>
+    <portType name="IDecisionService">
+        <operation name="assert">
+            <input name="assertInput" message="tns:assertMessage"/>
+        </operation>
+        <operation name="assertExecute">
+            <input name="assertExecuteInput" message="tns:assertExecuteMessage"/>
+        </operation>
+        <operation name="assertExecuteWatchStateful">
+            <input name="assertExecuteWatchStatefulInput" message="tns:assertExecuteWatchStatefulMessage"/>
+            <output name="assertExecuteWatchStatefulOutput" message="tns:assertExecuteWatchStatefulDecisionMessage"/>
+            <fault name="operationErroredFault" message="tns:decisionServiceError"/>
+        </operation>
+        <operation name="assertExecuteWatchStateless">
+            <input name="assertExecuteWatchStatelessInput" message="tns:assertExecuteWatchStatelessMessage"/>
+            <output name="assertExecuteWatchStatelessOutput" message="tns:assertExecuteWatchStatelessDecisionMessage"/>
+            <fault name="operationErroredFault" message="tns:decisionServiceError"/>
+        </operation>
+        <operation name="watch">
+            <input name="watchInput" message="tns:watchMessage"/>
+            <output name="watchOutput" message="tns:watchDecisionMessage"/>
+            <fault name="operationErroredFault" message="tns:decisionServiceError"/>
+        </operation>
+    </portType>
+    <binding name="DecisionServiceWSIFBinding" type="tns:IDecisionService">
+        <format:typeMapping encoding="Java" style="Java">
+            <format:typeMap elementName="tns:assert" formatType="org.w3c.dom.Element"/>
+            <format:typeMap elementName="tns:assertExecute" formatType="org.w3c.dom.Element"/>
+            <format:typeMap elementName="tns:assertExecuteWatchStateful" formatType="org.w3c.dom.Element"/>
+            <format:typeMap elementName="tns:assertExecuteWatchStatefulDecision" formatType="org.w3c.dom.Element"/>
+            <format:typeMap elementName="tns:assertExecuteWatchStateless" formatType="org.w3c.dom.Element"/>
+            <format:typeMap elementName="tns:assertExecuteWatchStatelessDecision" formatType="org.w3c.dom.Element"/>
+            <format:typeMap elementName="tns:watch" formatType="org.w3c.dom.Element"/>
+            <format:typeMap elementName="tns:watchDecision" formatType="org.w3c.dom.Element"/>
+        </format:typeMapping>
+        <java:binding/>
+        <operation name="assert">
+            <java:operation methodName="_assert" methodType="instance" parameterOrder="payload"/>
+            <input name="assertInput"/>
+        </operation>
+        <operation name="assertExecute">
+            <java:operation methodName="assertExecute" methodType="instance" parameterOrder="payload"/>
+            <input name="assertExecuteInput"/>
+        </operation>
+        <operation name="assertExecuteWatchStateful">
+            <java:operation methodName="assertExecuteWatchStateful" methodType="instance" parameterOrder="payload"
+                 returnPart="payload"/>
+            <input name="assertExecuteWatchStatefulInput"/>
+            <output name="assertExecuteWatchStatefulOutput"/>
+            <fault name="operationErroredFault">
+            </fault>
+        </operation>
+        <operation name="assertExecuteWatchStateless">
+            <java:operation methodName="assertExecuteWatchStateless" methodType="instance" parameterOrder="payload"
+                 returnPart="payload"/>
+            <input name="assertExecuteWatchStatelessInput"/>
+            <output name="assertExecuteWatchStatelessOutput"/>
+            <fault name="operationErroredFault">
+            </fault>
+        </operation>
+        <operation name="watch">
+            <java:operation methodName="watch" methodType="instance" parameterOrder="payload" returnPart="payload"/>
+            <input name="watchInput"/>
+            <output name="watchOutput"/>
+            <fault name="operationErroredFault">
+            </fault>
+        </operation>
+    </binding>
+    <service name="IDecisionService">
+        <port name="DecisionServicePort" binding="tns:DecisionServiceWSIFBinding">
+            <java:address className="oracle.bpel.services.rules.impl.DecisionServiceImpl" classLoader="default"/>
+        </port>
+    </service>
+    <plnk:partnerLinkType name="IDecisionService_PL">
+        <plnk:role name="IDecisionService_Role">
+            <plnk:portType name="tns:IDecisionService"/>
+        </plnk:role>
+    </plnk:partnerLinkType>
+</definitions>

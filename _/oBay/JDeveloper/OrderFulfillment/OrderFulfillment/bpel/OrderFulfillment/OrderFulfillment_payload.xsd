@@ -1,0 +1,10 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<schema targetNamespace="http://xmlns.oracle.com/bpel/workflow/task" xmlns:tns="http://xmlns.oracle.com/bpel/workflow/task" attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:ns0="http://schemas.packtpub.com/obay/ord">
+   <import namespace="http://schemas.packtpub.com/obay/ord" schemaLocation="../Order_v1_0.xsd"/>
+   <complexType name="payloadType">
+      <sequence>
+         <element ref="ns0:order"/>
+      </sequence>
+   </complexType>
+   <element name="payload" type="tns:payloadType"/>
+</schema>

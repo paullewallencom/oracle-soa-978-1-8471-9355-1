@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions name="MasterCard"
+             targetNamespace="http://xmlns.packtpub.com/MasterCard"
+             xmlns="http://schemas.xmlsoap.org/wsdl/"
+             xmlns:client="http://xmlns.packtpub.com/MasterCard"
+             xmlns:plnk="http://schemas.xmlsoap.org/ws/2003/05/partner-link/">
+
+    <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    TYPE DEFINITION - List of services participating in this BPEL process
+    The default output of the BPEL designer uses strings as input and 
+    output to the BPEL Process. But you can define or import any XML 
+    Schema type and use them as part of the message types.
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->   
+    <types>
+        <schema attributeFormDefault="unqualified"
+                elementFormDefault="qualified"
+                targetNamespace="http://xmlns.packtpub.com/MasterCard" 
+                xmlns="http://www.w3.org/2001/XMLSchema">
+                 
+            <element name="debitMasterCard"          type="client:tDebitMasterCard"/>
+            <element name="debitMasterCardResponse"  type="client:tDebitMasterCardResponse"/>
+            <element name="verifyMasterCard"         type="client:tVerifyMasterCard"/>
+            <element name="verifyMasterCardResponse" type="client:tVerifyMasterCardResponse"/>
+            <element name="declined"                 type="client:tDeclined"/>
+            <element name="invalid"              type="client:tInvalid"/>
+
+            <complexType name="tDebitMasterCard">
+                <sequence>
+                    <element name="Transaction">
+                        <complexType>
+                            <sequence>  
+                                <element name="clientId"   type="string"/>
+                                <element name="clientName" type="string"/>
+                                <element name="amount"     type="client:tAmount" />
+                                <element name="date"       type="date" />
+                                <element name="desc"       type="string" />
+                                <element name="masterCard">
+                                    <complexType>
+                                        <sequence>  
+                                            <element name="cardHolderName"    type="string"/>
+                                            <element name="cardNumber"        type="string"/> 
+                                            <element name="expiryMonth"       type="string"/>
+                                            <element name="expiryYear"        type="string"/>
+                                            <element name="securityNo"        type="string"/>        
+                                        </sequence>
+                                    </complexType>
+                                </element>
+                            </sequence>
+                        </complexType>
+                    </element>
+                </sequence>
+            </complexType>
+            
+            <complexType name="tDebitMasterCardResponse">
+                <sequence>
+                    <element name="masterCardNumber"         type="string"/>
+                    <element name="masterCardAuthCode"           type="string"/>
+                </sequence>
+            </complexType>
+
+            <complexType name="tVerifyMasterCard">
+                <sequence>
+                    <element name="clientId"   type="string"/>
+                    <element name="clientName" type="string"/>
+                    <element name="masterCard">
+                        <complexType>
+                            <sequence>  
+                                <element name="cardHolderName"    type="string"/>
+                                <element name="cardNumber"        type="string"/> 
+                                <element name="expiryMonth"       type="string"/>
+                                <element name="expiryYear"        type="string"/>
+                                <element name="securityNo"        type="string"/>        
+                            </sequence>
+                        </complexType>
+                    </element>
+                </sequence>
+            </complexType>
+            
+            <complexType name="tVerifyMasterCardResponse">
+                <sequence>
+                    <element name="masterCardNumber"         type="string"/>
+                    <element name="masterCardAuthCode"       type="string"/>
+                </sequence>
+            </complexType>
+            
+            <complexType name="tDeclined">
+                <sequence>
+                    <element name="code" type="string"/>
+                    <element name="desc" type="string"/>
+                </sequence>
+            </complexType>
+                        
+            <complexType name="tInvalid">
+                <sequence>
+                    <element name="code" type="string"/>
+                    <element name="desc" type="string"/>
+                </sequence>
+            </complexType>
+            
+            <simpleType name = "tAmount">
+                <restriction base="decimal">
+                    <totalDigits value="10"/>
+                    <fractionDigits value= "2"/>
+                </restriction>
+            </simpleType>
+
+        </schema>
+    </types>
+
+    <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    MESSAGE TYPE DEFINITION - Definition of the message types used as 
+    part of the port type defintions
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->      
+    <message name="debitMasterCard">
+            <part name="payload" element="client:debitMasterCard" />
+    </message>
+    <message name="debitMasterCardResponse">
+            <part name="payload" element="client:debitMasterCardResponse" />
+    </message>
+    <message name="verifyMasterCard">
+            <part name="payload" element="client:verifyMasterCard" />
+    </message>
+    <message name="verifyMasterCardResponse">
+            <part name="payload" element="client:verifyMasterCardResponse" />
+    </message>
+    <message name="declinedFault">
+            <part name="payload" element="client:declined" />
+    </message>
+    <message name="invalidFault">
+            <part name="payload" element="client:invalid" />
+    </message>
+    
+    <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    PORT TYPE DEFINITION - A port type groups a set of operations into
+    a logical service unit.
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+
+    <!-- portType implemented by the MasterCard BPEL process -->
+    <portType name="MasterCard">
+        <operation name="debitMasterCard">
+            <input  message="client:debitMasterCard" />
+            <output message="client:debitMasterCardResponse"/>
+            <fault  name="declined" message="client:declinedFault"/>
+            <fault  name="invalid"  message="client:invalidFault"/>
+        </operation>
+        <operation name="verifyMasterCard">
+            <input  message="client:verifyMasterCard" />
+            <output message="client:verifyMasterCardResponse"/>
+            <fault  name="declined" message="client:declinedFault"/>
+            <fault  name="invalid"  message="client:invalidFault"/>
+        </operation>
+    </portType>
+
+    <plnk:partnerLinkType name="MasterCard_PL">
+        <plnk:role name="MasterCard_Role">
+            <plnk:portType name="client:MasterCard"/>
+        </plnk:role>
+    </plnk:partnerLinkType>
+</definitions>

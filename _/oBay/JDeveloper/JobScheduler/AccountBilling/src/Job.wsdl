@@ -1,0 +1,40 @@
+<definitions name="Job"
+             targetNamespace="http://xmlns.packtpub.com/obay/bs/Job" 
+             xmlns="http://schemas.xmlsoap.org/wsdl/" 
+             xmlns:tns="http://xmlns.packtpub.com/obay/bs/Job" 
+             xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+             xmlns:plnk="http://schemas.xmlsoap.org/ws/2003/05/partner-link/"
+             xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/">
+             
+  <types>
+    <xsd:schema>
+      <xsd:import namespace="http://xmlns.packtpub.com/obay/xsd/sch" 
+              schemaLocation="../schedule.xsd"/>
+
+      <xsd:element name="executeJob" type="tns:tExecuteJob"/>
+
+      <xsd:complexType name="tExecuteJob">
+        <xsd:sequence>
+          <xsd:element name="job" type="sch:Job"/>
+        </xsd:sequence>
+      </xsd:complexType>
+    </xsd:schema>
+  </types>
+
+  <message name="executeJob">
+    <part name="payload" element="tns:executeJob"/>
+  </message>
+
+  <portType name="Job">
+    <operation name="executeJob">
+      <input message="tns:executeJob"/>
+    </operation>
+  </portType>
+
+  <plnk:partnerLinkType name="Job_PL">
+    <plnk:role name="Job_Role">
+      <plnk:portType name="tns:Job"/>
+    </plnk:role>
+  </plnk:partnerLinkType>
+             
+</definitions>

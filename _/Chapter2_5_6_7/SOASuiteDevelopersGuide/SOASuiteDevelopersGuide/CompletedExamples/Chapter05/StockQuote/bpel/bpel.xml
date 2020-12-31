@@ -1,0 +1,16 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<BPELSuitcase>
+   <BPELProcess id="StockQuote" src="StockQuote.bpel">
+      <partnerLinkBindings>
+         <partnerLinkBinding name="client">
+            <property name="wsdlLocation">StockQuote.wsdl</property>
+         </partnerLinkBinding>
+         <partnerLinkBinding name="XigniteQuotes">
+            <property name="wsdlLocation">XigniteQuotesRef.wsdl</property>
+         </partnerLinkBinding>
+         <partnerLinkBinding name="webserviceX.NET">
+            <property name="wsdlLocation">CurrencyConvertorRef.wsdl</property>
+         </partnerLinkBinding>
+      </partnerLinkBindings>
+   </BPELProcess>
+</BPELSuitcase>

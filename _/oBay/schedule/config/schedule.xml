@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<sch:schedule xmlns:sch="http://schemas.packtpub.com/obay/sch">
+  <sch:startTime>01:00:00</sch:startTime> 
+  <sch:scheduleFile>schedule.xml</sch:scheduleFile> 
+  <sch:schedulerExecuteDir>D:\Soa1013\schedule\execute</sch:schedulerExecuteDir> 
+  <sch:schedulerConfigDir>D:\Soa1013\schedule\config</sch:schedulerConfigDir>
+   <sch:job>
+      <sch:endpoint>http://localhost/orabpel/obay/AccountBilling/1.0</sch:endpoint>
+      <sch:startTime>21:00:00</sch:startTime>
+      <sch:jobDetail>
+		<acc:accountBalance xmlns:acc="http://schemas.packtpub.com/obay/acc">-1.00</acc:accountBalance>
+	</sch:jobDetail>
+   </sch:job>
+</sch:schedule>

@@ -1,0 +1,32 @@
+<?xml version='1.0' encoding='windows-1252'?>
+
+<web-app>
+  <description>Template web xml for form applications</description>
+  <!-- security roles -->
+  <security-role>
+      <description>PCBPEL Public role </description>
+      <role-name>PUBLIC</role-name>
+  </security-role>
+
+  <mime-mapping>
+    <extension>html</extension>
+    <mime-type>text/html</mime-type>
+  </mime-mapping>
+  <mime-mapping>
+    <extension>txt</extension>
+    <mime-type>text/plain</mime-type>
+  </mime-mapping>
+  <mime-mapping>
+    <extension>xml</extension>
+    <mime-type>text/xml</mime-type>
+  </mime-mapping>
+  <mime-mapping>
+    <extension>wsdl</extension>
+    <mime-type>text/xml</mime-type>
+  </mime-mapping>
+  <mime-mapping>
+    <extension>xsd</extension>
+    <mime-type>text/xml</mime-type>
+  </mime-mapping>
+</web-app>
+

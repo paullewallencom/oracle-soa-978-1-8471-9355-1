@@ -1,0 +1,403 @@
+<?xml version = "1.0" encoding = "UTF-8" ?>
+<!--
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  Oracle JDeveloper BPEL Designer 
+  
+  Created: Tue Feb 10 10:52:05 EST 2009
+  Author:  mswright
+  Purpose: Asynchronous BPEL Process
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+-->
+<process name="AuctionItem"
+         targetNamespace="http://xmlns.packtpub.com/obay/bp/AuctionItem"
+         xmlns="http://schemas.xmlsoap.org/ws/2003/03/business-process/"
+         xmlns:xp20="http://www.oracle.com/XSL/Transform/java/oracle.tip.pc.services.functions.Xpath20"
+         xmlns:bpws="http://schemas.xmlsoap.org/ws/2003/03/business-process/"
+         xmlns:ns4="http://xmlns.packtpub.com/obay/bs/UserManagement"
+         xmlns:ord="http://schemas.packtpub.com/obay/ord"
+         xmlns:ids="http://xmlns.oracle.com/bpel/services/IdentityService/xpath"
+         xmlns:ldap="http://schemas.oracle.com/xpath/extension/ldap"
+         xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+         xmlns:ns5="http://schemas.packtpub.com/obay/usr"
+         xmlns:cmn="http://schemas.packtpub.com/obay/cmn"
+         xmlns:client="http://xmlns.packtpub.com/obay/bp/AuctionItem"
+         xmlns:ns6="http://schemas.packtpub.com/obay/acc"
+         xmlns:ora="http://schemas.oracle.com/xpath/extension"
+         xmlns:xref="http://www.oracle.com/XSL/Transform/java/oracle.tip.xref.xpath.XRefXPathFunctions"
+         xmlns:lst="http://schemas.packtpub.com/obay/lst"
+         xmlns:hwf="http://xmlns.oracle.com/bpel/workflow/xpath"
+         xmlns:ns1="http://xmlns.packtpub.com/obay/bs/AuctionProxy"
+         xmlns:ehdr="http://www.oracle.com/XSL/Transform/java/oracle.tip.esb.server.headers.ESBHeaderFunctions"
+         xmlns:ns3="http://xmlns.packtpub.com/obay/bp/OrderFulfillment"
+         xmlns:ns2="http://xmlns.packtpub.com/obay/ivs/Listing"
+         xmlns:bpelx="http://schemas.oracle.com/bpel/extension"
+         xmlns:auc="http://schemas.packtpub.com/obay/auc"
+         xmlns:orcl="http://www.oracle.com/XSL/Transform/java/oracle.tip.pc.services.functions.ExtFunc">
+    <!-- 
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        PARTNERLINKS                                                      
+        List of services participating in this BPEL process               
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    -->
+    <partnerLinks>
+        <!-- 
+      The 'client' role represents the requester of this service. It is 
+      used for callback. The location and correlation information associated
+      with the client role are automatically set using WS-Addressing.
+    -->
+        <partnerLink name="client" partnerLinkType="client:AuctionItem"
+                     myRole="AuctionItemProvider"
+                     partnerRole="AuctionItemRequester"/>
+        <partnerLink myRole="AuctionProxyRequester" name="AuctionProxy"
+                     partnerRole="AuctionProxyProvider"
+                     partnerLinkType="ns1:AuctionProxy"/>
+        <partnerLink myRole="OrderFulfillmentRequester" name="OrderFulfillment"
+                     partnerRole="OrderFulfillmentProvider"
+                     partnerLinkType="ns3:OrderFulfillment"/>
+        <partnerLink name="Listing" partnerRole="Listing_Role"
+                     partnerLinkType="ns2:Listing_PL"/>
+        <partnerLink name="userManagement" partnerRole="userManagement_Role"
+                     partnerLinkType="ns4:userManagement_PL"/>
+    </partnerLinks>
+    <!-- 
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        VARIABLES                                                        
+        List of messages and XML documents used within this BPEL process 
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    -->
+    <variables>
+        <!-- Reference to the message passed as input during initiation -->
+        <!-- Reference to the message that will be sent back to the requester during callback -->
+        <variable name="inputVariable" messageType="client:auctionItem"/>
+        <variable name="outputVariable" messageType="client:auctionItemResult"/>
+        <variable name="returnAuctionResult"
+                  messageType="ns1:returnAuctionResult"/>
+        <variable name="listing" element="lst:listing"/>
+    </variables>
+    <!-- 
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+       ORCHESTRATION LOGIC                                               
+       Set of activities coordinating the flow of messages across the    
+       services integrated within this business process                  
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    -->
+    <sequence name="main">
+        <!-- Receive input from requestor. (Note: This maps to operation defined in AuctionItem.wsdl) -->
+        <receive name="receiveInput" partnerLink="client"
+                 portType="client:AuctionItem" operation="auctionItem"
+                 variable="inputVariable" createInstance="yes"/>
+        <!-- 
+          Asynchronous callback to the requester. (Note: the callback location and correlation id is transparently handled using WS-addressing.)
+        -->
+        <assign name="setListing">
+            <copy>
+                <from variable="inputVariable" part="payload"
+                      query="/client:auctionItem/lst:listing"/>
+                <to variable="listing" query="/lst:listing"/>
+            </copy>
+        </assign>
+        <scope name="auctionItem">
+            <variables>
+                <variable name="initiateAuctionInput"
+                          messageType="ns1:initiateAuction"/>
+            </variables>
+            <sequence name="Sequence_3">
+                <assign name="setInitiateAuctionInput">
+                    <bpelx:annotation>
+                        <bpelx:pattern>transformation</bpelx:pattern>
+                    </bpelx:annotation>
+                    <copy>
+                        <from expression="ora:processXSLT('setAuctionInput.xsl',bpws:getVariableData('inputVariable','payload'))"/>
+                        <to variable="initiateAuctionInput" part="payload"/>
+                    </copy>
+                </assign>
+                <invoke name="initiateAuction" partnerLink="AuctionProxy"
+                        portType="ns1:AuctionProxy" operation="initiateAuction"
+                        inputVariable="initiateAuctionInput"/>
+                <receive name="receiveAuctionResult" partnerLink="AuctionProxy"
+                         portType="ns1:AuctionProxyCallback"
+                         operation="returnAuctionResult"
+                         variable="returnAuctionResult" createInstance="no"/>
+                <scope name="UpdateListingStatus">
+                    <variables>
+                        <variable name="updateListingStatusInput"
+                                  messageType="ns2:updateListingStatus"/>
+                        <variable name="updateListingStatusOutput"
+                                  messageType="ns2:updateListingStatusResponse"/>
+                    </variables>
+                    <sequence name="Sequence_4">
+                        <assign name="updateItemStatus">
+                            <copy>
+                                <from variable="returnAuctionResult"
+                                      part="payload"
+                                      query="/ns1:returnAuctionResult/auc:auctionStatus"/>
+                                <to variable="listing"
+                                    query="/lst:listing/lst:listingDetail/lst:listingStatus"/>
+                            </copy>
+                            <copy>
+                                <from variable="listing"
+                                      query="/lst:listing/lst:listingId"/>
+                                <to variable="updateListingStatusInput"
+                                    part="payload"
+                                    query="/ns2:updateListingStatus/lst:listingId"/>
+                            </copy>
+                            <copy>
+                                <from variable="listing"
+                                      query="/lst:listing/lst:listingDetail/lst:listingStatus"/>
+                                <to variable="updateListingStatusInput"
+                                    part="payload"
+                                    query="/ns2:updateListingStatus/lst:listingStatus"/>
+                            </copy>
+                        </assign>
+                        <invoke name="UpdateListingStatus" partnerLink="Listing"
+                                portType="ns2:Listing"
+                                operation="updateListingStatus"
+                                inputVariable="updateListingStatusInput"
+                                outputVariable="updateListingStatusOutput"/>
+                    </sequence>
+                </scope>
+            </sequence>
+        </scope>
+        <switch name="FulfillOrder">
+            <case condition="bpws:getVariableData('listing','/lst:listing/lst:listingDetail/lst:listingStatus') = 'SOLD'">
+                <sequence name="Sequence_1">
+                    <scope name="FulfillOrder">
+                        <variables>
+                            <variable name="fulfillOrderInput"
+                                      messageType="ns3:fulfillOrder"/>
+                            <variable name="receiveFulfillOrderResult"
+                                      messageType="ns3:fulfillOrderResult"/>
+                        </variables>
+                        <sequence name="Sequence_2">
+                            <assign name="setFulfillOrderInput">
+                                <copy>
+                                    <from variable="listing"
+                                          query="/lst:listing/lst:listingDetail/lst:item/lst:title"/>
+                                    <to variable="fulfillOrderInput"
+                                        part="payload"
+                                        query="/ns3:fulfillOrder/ord:orderDesc"/>
+                                </copy>
+                                <copy>
+                                    <from variable="listing"
+                                          query="/lst:listing/lst:listingId"/>
+                                    <to variable="fulfillOrderInput"
+                                        part="payload"
+                                        query="/ns3:fulfillOrder/ord:itemId"/>
+                                </copy>
+                                <copy>
+                                    <from variable="listing"
+                                          query="/lst:listing/lst:listingDetail/lst:sellerId"/>
+                                    <to variable="fulfillOrderInput"
+                                        part="payload"
+                                        query="/ns3:fulfillOrder/ord:sellerId"/>
+                                </copy>
+                                <copy>
+                                    <from variable="returnAuctionResult"
+                                          part="payload"
+                                          query="/ns1:returnAuctionResult/auc:winningBid/auc:bidderId"/>
+                                    <to variable="fulfillOrderInput"
+                                        part="payload"
+                                        query="/ns3:fulfillOrder/ord:buyerId"/>
+                                </copy>
+                                <copy>
+                                    <from expression="1"/>
+                                    <to variable="fulfillOrderInput"
+                                        part="payload"
+                                        query="/ns3:fulfillOrder/ord:quantity"/>
+                                </copy>
+                                <copy>
+                                    <from variable="returnAuctionResult"
+                                          part="payload"
+                                          query="/ns1:returnAuctionResult/auc:winningBid/auc:bidAmount"/>
+                                    <to variable="fulfillOrderInput"
+                                        part="payload"
+                                        query="/ns3:fulfillOrder/ord:itemPrice"/>
+                                </copy>
+                                <copy>
+                                    <from variable="returnAuctionResult"
+                                          part="payload"
+                                          query="/ns1:returnAuctionResult/auc:winningBid/auc:bidAmount"/>
+                                    <to variable="listing"
+                                        query="/lst:listing/lst:listingDetail/lst:currentPrice"/>
+                                </copy>
+                            </assign>
+                            <invoke name="fullfillOrder"
+                                    partnerLink="OrderFulfillment"
+                                    portType="ns3:OrderFulfillment"
+                                    operation="fulfillOrder"
+                                    inputVariable="fulfillOrderInput"/>
+                            <receive name="receiveFulfillOrderResult"
+                                     partnerLink="OrderFulfillment"
+                                     portType="ns3:OrderFulfillmentCallback"
+                                     operation="fulfillOrderResult"
+                                     variable="receiveFulfillOrderResult"
+                                     createInstance="no"/>
+                            <assign name="setListingStatus">
+                                <copy>
+                                    <from variable="receiveFulfillOrderResult"
+                                          part="payload"
+                                          query="/ns3:fulfillOrderResult/ord:order/ord:orderDetail/ord:orderStatus"/>
+                                    <to variable="listing"
+                                        query="/lst:listing/lst:listingDetail/lst:listingStatus"/>
+                                </copy>
+                            </assign>
+                        </sequence>
+                    </scope>
+                </sequence>
+            </case>
+            <otherwise/>
+        </switch>
+        <switch name="ChargeSellersFee">
+            <case condition="bpws:getVariableData('listing','/lst:listing/lst:listingDetail/lst:listingStatus') = 'FULFILLED'">
+                <scope name="CollectSalesFee">
+                    <sequence name="Sequence_5">
+                        <scope name="CalcSaleFee">
+                            <variables>
+                                <variable name="saleFee" element="lst:saleFee"/>
+                            </variables>
+                            <sequence name="Sequence_8">
+                                <assign name="calcSaleFee">
+                                    <bpelx:annotation>
+                                        <bpelx:pattern>transformation</bpelx:pattern>
+                                    </bpelx:annotation>
+                                    <copy>
+                                        <from expression="ora:processXSLT('calcSaleFee.xsl',bpws:getVariableData('listing'))"/>
+                                        <to variable="saleFee"/>
+                                    </copy>
+                                </assign>
+                                <assign name="setSaleFee">
+                                    <copy>
+                                        <from variable="saleFee"
+                                              query="/lst:saleFee"/>
+                                        <to variable="listing"
+                                            query="/lst:listing/lst:listingDetail/lst:saleFee"/>
+                                    </copy>
+                                </assign>
+                            </sequence>
+                        </scope>
+                        <scope name="UpdateSaleFee">
+                            <variables>
+                                <variable name="updateSaleFeeInput"
+                                          messageType="ns2:updateSaleFee"/>
+                                <variable name="updateSaleFeeResponse"
+                                          messageType="ns2:updateSaleFeeResponse"/>
+                            </variables>
+                            <sequence name="Sequence_6">
+                                <assign name="setUpdateSaleFeeInput">
+                                    <copy>
+                                        <from variable="listing"
+                                              query="/lst:listing/lst:listingId"/>
+                                        <to variable="updateSaleFeeInput"
+                                            part="payload"
+                                            query="/ns2:updateSaleFee/lst:listingId"/>
+                                    </copy>
+                                    <copy>
+                                        <from variable="listing"
+                                              query="/lst:listing/lst:listingDetail/lst:saleFee"/>
+                                        <to variable="updateSaleFeeInput"
+                                            part="payload"
+                                            query="/ns2:updateSaleFee/lst:saleFee"/>
+                                    </copy>
+                                    <copy>
+                                        <from variable="listing"
+                                              query="/lst:listing/lst:listingDetail/lst:listingStatus"/>
+                                        <to variable="updateSaleFeeInput"
+                                            part="payload"
+                                            query="/ns2:updateSaleFee/lst:listingStatus"/>
+                                    </copy>
+                                </assign>
+                                <invoke name="updateSaleFee"
+                                        partnerLink="Listing"
+                                        portType="ns2:Listing"
+                                        operation="updateSaleFee"
+                                        inputVariable="updateSaleFeeInput"
+                                        outputVariable="updateSaleFeeResponse"/>
+                            </sequence>
+                        </scope>
+                        <scope name="debitSaleFee">
+                            <variables>
+                                <variable name="debitUserAccountInput"
+                                          messageType="ns4:debitUserAccount"/>
+                                <variable name="debitUserAccountOutput"
+                                          messageType="ns4:debitUserAccountResponse"/>
+                            </variables>
+                            <sequence name="Sequence_7">
+                                <assign name="setDebitUserAccountInput">
+                                    <copy>
+                                        <from variable="listing"
+                                              query="/lst:listing/lst:listingDetail/lst:sellerId"/>
+                                        <to variable="debitUserAccountInput"
+                                            part="payload"
+                                            query="/ns4:debitUserAccount/ns5:userId"/>
+                                    </copy>
+                                    <copy>
+                                        <from variable="listing"
+                                              query="/lst:listing/lst:listingDetail/lst:saleFee"/>
+                                        <to variable="debitUserAccountInput"
+                                            part="payload"
+                                            query="/ns4:debitUserAccount/ns6:trnAmount"/>
+                                    </copy>
+                                    <copy>
+                                        <from expression="concat('Sale fee for listing: ', bpws:getVariableData('listing','/lst:listing/lst:listingId'))"/>
+                                        <to variable="debitUserAccountInput"
+                                            part="payload"
+                                            query="/ns4:debitUserAccount/ns6:trnDesc"/>
+                                    </copy>
+                                </assign>
+                                <invoke name="debitUserAccount"
+                                        partnerLink="userManagement"
+                                        portType="ns4:userManagement"
+                                        operation="debitUserAccount"
+                                        inputVariable="debitUserAccountInput"
+                                        outputVariable="debitUserAccountOutput"/>
+                            </sequence>
+                        </scope>
+                    </sequence>
+                </scope>
+            </case>
+            <otherwise>
+                <scope name="UpdateListingStatus">
+                    <variables>
+                        <variable name="updateListingStatusInput"
+                                  messageType="ns2:updateListingStatus"/>
+                        <variable name="updateListingStatusOutput"
+                                  messageType="ns2:updateListingStatusResponse"/>
+                    </variables>
+                    <sequence name="Sequence_4">
+                        <assign name="setUpdateListingStatusInput">
+                            <copy>
+                                <from variable="listing"
+                                      query="/lst:listing/lst:listingId"/>
+                                <to variable="updateListingStatusInput"
+                                    part="payload"
+                                    query="/ns2:updateListingStatus/lst:listingId"/>
+                            </copy>
+                            <copy>
+                                <from variable="listing"
+                                      query="/lst:listing/lst:listingDetail/lst:listingStatus"/>
+                                <to variable="updateListingStatusInput"
+                                    part="payload"
+                                    query="/ns2:updateListingStatus/lst:listingStatus"/>
+                            </copy>
+                        </assign>
+                        <invoke name="UpdateListingStatus" partnerLink="Listing"
+                                portType="ns2:Listing"
+                                operation="updateListingStatus"
+                                inputVariable="updateListingStatusInput"
+                                outputVariable="updateListingStatusOutput"/>
+                    </sequence>
+                </scope>
+            </otherwise>
+        </switch>
+        <assign name="setOutputVariable">
+            <copy>
+                <from variable="listing" query="/lst:listing"/>
+                <to variable="outputVariable" part="payload"
+                    query="/client:auctionItemResult/lst:listing"/>
+            </copy>
+        </assign>
+        <invoke name="callbackClient" partnerLink="client"
+                portType="client:AuctionItemCallback"
+                operation="auctionItemResult" inputVariable="outputVariable"/>
+    </sequence>
+</process>

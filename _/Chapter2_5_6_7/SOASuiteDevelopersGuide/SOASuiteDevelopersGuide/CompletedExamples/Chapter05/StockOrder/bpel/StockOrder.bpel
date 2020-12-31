@@ -1,0 +1,194 @@
+<?xml version = "1.0" encoding = "UTF-8" ?>
+<!--
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  Oracle JDeveloper BPEL Designer 
+  
+  Created: Sun Nov 23 09:43:29 EST 2008
+  Author:  mswright
+  Purpose: Asynchronous BPEL Process
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+-->
+<process name="StockOrder"
+         targetNamespace="http://xmlns.packtpub.com/StockOrder"
+         xmlns="http://schemas.xmlsoap.org/ws/2003/03/business-process/"
+         xmlns:bpws="http://schemas.xmlsoap.org/ws/2003/03/business-process/"
+         xmlns:xp20="http://www.oracle.com/XSL/Transform/java/oracle.tip.pc.services.functions.Xpath20"
+         xmlns:ids="http://xmlns.oracle.com/bpel/services/IdentityService/xpath"
+         xmlns:ldap="http://schemas.oracle.com/xpath/extension/ldap"
+         xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+         xmlns:client="http://xmlns.packtpub.com/StockOrder"
+         xmlns:ora="http://schemas.oracle.com/xpath/extension"
+         xmlns:xref="http://www.oracle.com/XSL/Transform/java/oracle.tip.xref.xpath.XRefXPathFunctions"
+         xmlns:hwf="http://xmlns.oracle.com/bpel/workflow/xpath"
+         xmlns:ns1="http://xmlns.packtpub.com/xml/StockService"
+         xmlns:ehdr="http://www.oracle.com/XSL/Transform/java/oracle.tip.esb.server.headers.ESBHeaderFunctions"
+         xmlns:ns2="http://xmlns.packtpub.com/StockQuote"
+         xmlns:bpelx="http://schemas.oracle.com/bpel/extension"
+         xmlns:orcl="http://www.oracle.com/XSL/Transform/java/oracle.tip.pc.services.functions.ExtFunc">
+    <!-- 
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        PARTNERLINKS                                                      
+        List of services participating in this BPEL process               
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    -->
+    <partnerLinks>
+        <!-- 
+      The 'client' role represents the requester of this service. It is 
+      used for callback. The location and correlation information associated
+      with the client role are automatically set using WS-Addressing.
+    -->
+        <partnerLink name="client" partnerLinkType="client:StockOrder"
+                     myRole="StockOrderProvider"
+                     partnerRole="StockOrderRequester"/>
+        <partnerLink name="StockQuote" partnerRole="StockQuoteProvider"
+                     partnerLinkType="ns2:StockQuote"/>
+    </partnerLinks>
+    <!-- 
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        VARIABLES                                                        
+        List of messages and XML documents used within this BPEL process 
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    -->
+    <variables>
+        <!-- Reference to the message passed as input during initiation -->
+        <!-- Reference to the message that will be sent back to the requester during callback -->
+        <variable name="inputVariable"
+                  messageType="client:StockOrderRequestMessage"/>
+        <variable name="outputVariable"
+                  messageType="client:StockOrderResponseMessage"/>
+        <variable name="tradeFullfilled" type="xsd:boolean"/>
+        <variable name="StockQuoteInput"
+                  messageType="ns2:StockQuoteRequestMessage"/>
+        <variable name="StockQuoteOutput"
+                  messageType="ns2:StockQuoteResponseMessage"/>
+    </variables>
+    <!-- 
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+       ORCHESTRATION LOGIC                                               
+       Set of activities coordinating the flow of messages across the    
+       services integrated within this business process                  
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    -->
+    <sequence name="main">
+        <!-- Receive input from requestor. (Note: This maps to operation defined in StockOrder.wsdl) -->
+        <receive name="receiveInput" partnerLink="client"
+                 portType="client:StockOrder" operation="initiate"
+                 variable="inputVariable" createInstance="yes"/>
+        <!-- 
+          Asynchronous callback to the requester. (Note: the callback location and correlation id is transparently handled using WS-addressing.)
+        -->
+        <assign name="setTradeFullfilled">
+            <copy>
+                <from expression="false()"/>
+                <to variable="tradeFullfilled"/>
+            </copy>
+        </assign>
+        <while name="While_1"
+               condition="bpws:getVariableData('tradeFullfilled') = false()">
+            <sequence name="Sequence_1">
+                <assign name="setStockQuoteInput">
+                    <copy>
+                        <from variable="inputVariable" part="payload"
+                              query="/ns1:placeOrder/ns1:currency"/>
+                        <to variable="StockQuoteInput" part="payload"
+                            query="/ns1:getQuote/ns1:currency"/>
+                    </copy>
+                    <copy>
+                        <from variable="inputVariable" part="payload"
+                              query="/ns1:placeOrder/ns1:stockSymbol"/>
+                        <to variable="StockQuoteInput" part="payload"
+                            query="/ns1:getQuote/ns1:stockSymbol"/>
+                    </copy>
+                </assign>
+                <invoke name="stockQuote" partnerLink="StockQuote"
+                        portType="ns2:StockQuote" operation="process"
+                        inputVariable="StockQuoteInput"
+                        outputVariable="StockQuoteOutput"/>
+                <switch name="CheckQuote">
+                    <case condition="bpws:getVariableData('inputVariable','payload','/ns1:placeOrder/ns1:buySell') = 'Sell' and bpws:getVariableData ('inputVariable', 'payload', '/ns1:placeOrder/ns1:bidPrice') &lt;= bpws:getVariableData('StockQuoteOutput','payload','/ns1:getQuoteResponse/ns1:amount')">
+                        <assign name="setSellOutput">
+                            <copy>
+                                <from variable="inputVariable" part="payload"
+                                      query="/ns1:placeOrder/ns1:currency"/>
+                                <to variable="outputVariable" part="payload"
+                                    query="/ns1:placeOrderResponse/ns1:currency"/>
+                            </copy>
+                            <copy>
+                                <from variable="inputVariable" part="payload"
+                                      query="/ns1:placeOrder/ns1:stockSymbol"/>
+                                <to variable="outputVariable" part="payload"
+                                    query="/ns1:placeOrderResponse/ns1:stockSymbol"/>
+                            </copy>
+                            <copy>
+                                <from variable="inputVariable" part="payload"
+                                      query="/ns1:placeOrder/ns1:buySell"/>
+                                <to variable="outputVariable" part="payload"
+                                    query="/ns1:placeOrderResponse/ns1:buySell"/>
+                            </copy>
+                            <copy>
+                                <from variable="inputVariable" part="payload"
+                                      query="/ns1:placeOrder/ns1:quantity"/>
+                                <to variable="outputVariable" part="payload"
+                                    query="/ns1:placeOrderResponse/ns1:quantity"/>
+                            </copy>
+                            <copy>
+                                <from variable="StockQuoteOutput" part="payload"
+                                      query="/ns1:getQuoteResponse/ns1:amount"/>
+                                <to variable="outputVariable" part="payload"
+                                    query="/ns1:placeOrderResponse/ns1:actualPrice"/>
+                            </copy>
+                            <copy>
+                                <from expression="true()"/>
+                                <to variable="tradeFullfilled"/>
+                            </copy>
+                        </assign>
+                    </case>
+                    <case condition="bpws:getVariableData('inputVariable','payload','/ns1:placeOrder/ns1:buySell') = 'Buy' and bpws:getVariableData ('inputVariable', 'payload', '/ns1:placeOrder/ns1:bidPrice') >= bpws:getVariableData('StockQuoteOutput','payload','/ns1:getQuoteResponse/ns1:amount')">
+                        <assign name="setBuyOutput">
+                            <copy>
+                                <from variable="inputVariable" part="payload"
+                                      query="/ns1:placeOrder/ns1:currency"/>
+                                <to variable="outputVariable" part="payload"
+                                    query="/ns1:placeOrderResponse/ns1:currency"/>
+                            </copy>
+                            <copy>
+                                <from variable="inputVariable" part="payload"
+                                      query="/ns1:placeOrder/ns1:stockSymbol"/>
+                                <to variable="outputVariable" part="payload"
+                                    query="/ns1:placeOrderResponse/ns1:stockSymbol"/>
+                            </copy>
+                            <copy>
+                                <from variable="inputVariable" part="payload"
+                                      query="/ns1:placeOrder/ns1:buySell"/>
+                                <to variable="outputVariable" part="payload"
+                                    query="/ns1:placeOrderResponse/ns1:buySell"/>
+                            </copy>
+                            <copy>
+                                <from variable="inputVariable" part="payload"
+                                      query="/ns1:placeOrder/ns1:quantity"/>
+                                <to variable="outputVariable" part="payload"
+                                    query="/ns1:placeOrderResponse/ns1:quantity"/>
+                            </copy>
+                            <copy>
+                                <from variable="StockQuoteOutput" part="payload"
+                                      query="/ns1:getQuoteResponse/ns1:amount"/>
+                                <to variable="outputVariable" part="payload"
+                                    query="/ns1:placeOrderResponse/ns1:actualPrice"/>
+                            </copy>
+                            <copy>
+                                <from expression="true()"/>
+                                <to variable="tradeFullfilled"/>
+                            </copy>
+                        </assign>
+                    </case>
+                    <otherwise>
+                        <wait name="Wait" for="'PT1M'"/>
+                    </otherwise>
+                </switch>
+            </sequence>
+        </while>
+        <invoke name="callbackClient" partnerLink="client"
+                portType="client:StockOrderCallback" operation="onResult"
+                inputVariable="outputVariable"/>
+    </sequence>
+</process>

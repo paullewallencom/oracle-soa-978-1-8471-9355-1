@@ -1,0 +1,22 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<BPELSuitcase>
+   <BPELProcess id="Schedule" src="Schedule.bpel">
+      <partnerLinkBindings>
+         <partnerLinkBinding name="ScheduleFileAdapter">
+            <property name="wsdlLocation">ScheduleFileAdapter.wsdl</property>
+         </partnerLinkBinding>
+         <partnerLinkBinding name="JobService">
+            <property name="wsdlLocation">http://localhost:80/orabpel/obay/JobServices/JobServices?wsdl</property>
+         </partnerLinkBinding>
+         <partnerLinkBinding name="MoveFileService">
+            <property name="wsdlLocation">MoveFileService.wsdl</property>
+         </partnerLinkBinding>
+      </partnerLinkBindings>
+      <activationAgents>
+         <activationAgent className="oracle.tip.adapter.fw.agent.jca.JCAActivationAgent" partnerLink="ScheduleFileAdapter">
+            <property name="schedulerExecuteDir" type="LogicalDirectory">D:\Soa1013\schedule\execute</property>
+            <property name="portType">ReadScheduleFile_ptt</property>
+         </activationAgent>
+      </activationAgents>
+   </BPELProcess>
+</BPELSuitcase>

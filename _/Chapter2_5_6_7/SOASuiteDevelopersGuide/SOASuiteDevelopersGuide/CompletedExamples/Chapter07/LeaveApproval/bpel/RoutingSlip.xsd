@@ -1,0 +1,406 @@
+<?xml version="1.0"?>
+<schema targetNamespace="http://xmlns.oracle.com/bpel/workflow/routingSlip"
+        xmlns:tns="http://xmlns.oracle.com/bpel/workflow/routingSlip"
+        attributeFormDefault="unqualified" elementFormDefault="qualified"
+        xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+        xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" 
+        jaxb:version="1.0"
+        xmlns="http://www.w3.org/2001/XMLSchema">
+
+  <annotation>
+     <appinfo>
+        <jaxb:schemaBindings>
+           <jaxb:package name="oracle.bpel.services.workflow.metadata.routingslip.model"/>
+        </jaxb:schemaBindings>
+     </appinfo>
+  </annotation>
+
+  <element name="routingSlip">
+     <complexType>
+       <sequence>
+         <element name="globalConfiguration" type="tns:globalConfigurationType"
+                  minOccurs="0" maxOccurs="1"/>
+         <element name="assignmentService" type="tns:assignmentServiceType"
+                  minOccurs="0" maxOccurs="1"/>
+         <element name="participants" type="tns:participantsType" 
+                  minOccurs="0" maxOccurs="1"/>
+         <element name="onErrorParticipant" type="tns:onErrorParticipantType"
+                  minOccurs="0" maxOccurs="1"/>
+         <element name="notification" type="tns:notificationType" 
+                  minOccurs="0" maxOccurs="1"/>
+       </sequence>
+       <attribute name="targetNamespace" type="xsd:string" use="optional"/>
+       <attribute name="numberOfTimesModified" type="xsd:integer" use="optional"/>
+       <attribute name="taskId" type="xsd:string" use="optional"/>
+       <attribute name="systemAttributeCurrentAssignmentTime" type="xsd:dateTime" use="optional"/>
+     </complexType>
+  </element>
+
+  <element name="participants" type="tns:participantsType"/>
+
+  <complexType name="globalConfigurationType">
+    <sequence>
+      <element name="identityContext" type="xsd:string" 
+                  minOccurs="0" maxOccurs="1"/>
+      <element name="owner" type="xsd:string" 
+                  minOccurs="0" maxOccurs="1"/>
+      <element name="expirationDuration" type="tns:expirationDurationType"
+                  minOccurs="0" maxOccurs="1"/>
+      <choice minOccurs="0" maxOccurs="1">
+        <element name="escalationPolicy" type="tns:escalationPolicyType"/>
+        <element name="renewalPolicy" type="tns:renewalPolicyType"/>
+      </choice>
+      <element name="earlyCompletion" type="tns:earlyCompletionType"
+                  minOccurs="0" maxOccurs="1"/>
+      <element name="onTaskAssignedCallback" type="tns:callbackType" 
+                  minOccurs="0" maxOccurs="unbounded"/>
+      <element name="onTaskCompletedCallback" type="tns:callbackType" 
+                  minOccurs="0" maxOccurs="unbounded"/>
+      <element name="onTaskUpdatedCallback" type="tns:callbackType" 
+                  minOccurs="0" maxOccurs="unbounded"/>
+      <element name="onSubTaskUpdatedCallback" type="tns:callbackType" 
+                  minOccurs="0" maxOccurs="unbounded"/>
+      <element name="escalationFunction" type="xsd:string" 
+                  minOccurs="0" maxOccurs="1"/>
+    </sequence>
+  </complexType>
+  <complexType name="escalationPolicyType">
+    <all>
+      <element name="numberOfTimesEscalated" type="tns:parameterType"
+               minOccurs="0" maxOccurs="1"/>
+      <element name="titleOfLastUser" type="tns:parameterType" 
+               minOccurs="0" maxOccurs="1"/>
+    </all>
+    <attribute name="renewalDuration" type="xsd:string" 
+               use="required"/>
+  </complexType>
+  <complexType name="renewalPolicyType">
+    <all>
+      <element name="numberOfTimesRenewed" type="tns:parameterType"
+               minOccurs="1" maxOccurs="1"/>
+    </all>
+    <attribute name="renewalDuration" type="xsd:string" 
+               use="required"/>
+  </complexType>
+  <complexType name="expirationDurationType">
+    <sequence/>
+    <attribute name="type" type="tns:valueType" use="required"/>
+    <attribute name="duration" type="xsd:string" use="required"/>
+  </complexType>
+  <complexType name="earlyCompletionType">
+    <sequence>
+      <element name="outcome" type="xsd:string"
+               minOccurs="0" maxOccurs="unbounded"/>
+    </sequence>
+    <attribute name="condition" type="xsd:string" use="optional"/>
+  </complexType>
+  <complexType name="callbackType">
+    <simpleContent>
+      <extension base="xsd:string">
+        <attribute name="type" type="tns:callbackTypeType" use="required"/>
+      </extension>
+    </simpleContent>
+  </complexType>
+  <element name="resource" type="tns:resourceType"/>
+  <complexType name="resourceType">
+    <simpleContent>
+      <extension base="xsd:string">
+        <attribute name="type" type="tns:valueType" use="required"/>
+        <attribute name="isGroup" type="xsd:boolean" use="required"/>
+      </extension>
+    </simpleContent>
+  </complexType>
+  <complexType name="participantType">
+    <sequence>
+      <element name="resource" type="tns:resourceType"
+               minOccurs="0" maxOccurs="unbounded"/>
+      <element name="acquiredBy" type="tns:parameterType" 
+               minOccurs="0" maxOccurs="1"/>
+    </sequence>
+    <attribute name="name" type="xsd:string" use="required"/>
+    <attribute name="skipCondition" type="xsd:string" use="optional"/>
+    <attribute name="expirationDuration" type="xsd:string" use="optional"/>
+    <attribute name="systemStatus" type="xsd:string" use="optional"/>
+  </complexType>
+  <complexType name="sequentialParticipantType">
+    <sequence>
+      <element name="resource" type="tns:resourceType"
+               minOccurs="1" maxOccurs="unbounded"/>
+    </sequence>
+    <attribute name="name" type="xsd:string" use="required"/>
+    <attribute name="skipCondition" type="xsd:string" use="optional"/>
+    <attribute name="expirationDuration" type="xsd:string" use="optional"/>
+    <attribute name="systemStatus" type="xsd:string" use="optional"/>
+  </complexType>
+  <complexType name="adhocType">
+    <sequence>
+    </sequence>
+    <attribute name="name" type="xsd:string" use="required"/>
+    <attribute name="skipCondition" type="xsd:string" use="optional"/>
+    <attribute name="expirationDuration" type="xsd:string" use="optional"/>
+    <attribute name="systemStatus" type="xsd:string" use="optional"/>
+  </complexType>
+  <complexType name="managementChainType">
+    <sequence>
+      <element name="resource" type="tns:resourceType"
+               minOccurs="0" maxOccurs="unbounded"/>
+      <element name="acquiredBy" type="tns:parameterType" 
+               minOccurs="0" maxOccurs="1"/>
+      <element name="levels" type="tns:parameterType"
+               minOccurs="1" maxOccurs="1"/>
+      <element name="title" type="tns:parameterType"
+               minOccurs="0" maxOccurs="1"/>
+    </sequence>
+    <attribute name="name" type="xsd:string" use="required"/>
+    <attribute name="skipCondition" type="xsd:string" use="optional"/>
+    <attribute name="expirationDuration" type="xsd:string" use="optional"/>
+    <attribute name="systemStatus" type="xsd:string" use="optional"/>
+  </complexType>
+  <complexType name="parallelType">
+    <sequence>
+      <choice>
+        <element name="firstResponder" type="tns:firstResponderType"/>
+        <element name="allResponders" type="tns:parallelCompletionCriteriaType"/>
+        <element name="vote" type="tns:parallelCompletionCriteriaType"/>
+      </choice>
+      <choice maxOccurs="unbounded">
+        <element ref="tns:resource"/>
+        <element ref="tns:routingSlip"/>
+      </choice>
+    </sequence>
+    <attribute name="name" type="xsd:string" use="required"/>
+    <attribute name="skipCondition" type="xsd:string" use="optional"/>
+    <attribute name="expirationDuration" type="xsd:string" use="optional"/>
+    <attribute name="collaboration" type="xsd:boolean" use="optional"/>
+    <attribute name="systemStatus" type="xsd:string" use="optional"/>
+  </complexType>
+  <complexType name="parallelCompletionCriteriaType">
+    <sequence>
+      <element name="defaultOutcome" type="tns:parameterType"
+               minOccurs="1" maxOccurs="1"/>
+      <element name="percentageOfOutcome" type="tns:parameterType"
+               minOccurs="1" maxOccurs="1"/>
+    </sequence>
+  </complexType>
+  <complexType name="firstResponderType">
+    <sequence/>
+  </complexType>
+  <complexType name="fyiType">
+    <sequence>
+      <element name="resource" type="tns:resourceType"
+               minOccurs="0" maxOccurs="unbounded"/>
+      <element name="acquiredBy" type="tns:parameterType" 
+               minOccurs="0" maxOccurs="1"/>
+    </sequence>
+    <attribute name="name" type="xsd:string" use="required"/>
+    <attribute name="skipCondition" type="xsd:string" use="optional"/>
+    <attribute name="systemStatus" type="xsd:string" use="optional"/>
+  </complexType>
+  <complexType name="notifyType">
+    <sequence>
+      <choice maxOccurs="unbounded">
+        <element name="user" type="tns:parameterType"
+                 minOccurs="0" maxOccurs="unbounded"/>
+        <element name="group" type="tns:parameterType"
+                 minOccurs="0" maxOccurs="unbounded"/>
+        <element name="address" type="tns:addressType"
+                 minOccurs="0" maxOccurs="unbounded"/>
+      </choice>
+      <choice minOccurs="1" maxOccurs="1">
+        <element name="email" type="tns:emailType"/>
+        <element name="voice" type="tns:voiceType"/>
+        <element name="sms" type="tns:smsType"/>
+        <element name="fax" type="tns:faxType"/>
+        <element name="pager" type="tns:pagerType"/>
+      </choice>
+    </sequence>
+    <attribute name="name" type="xsd:string" use="required"/>
+    <attribute name="skipCondition" type="xsd:string" use="optional"/>
+  </complexType>
+  <complexType name="emailType">
+    <sequence>
+      <element name="subject" type="xsd:string"
+               minOccurs="1" maxOccurs="1"/>
+      <element name="body" type="xsd:string"
+               minOccurs="1" maxOccurs="1"/>
+    </sequence>
+  </complexType>
+  <complexType name="voiceType">
+    <sequence>
+      <element name="body" type="xsd:string"
+               minOccurs="1" maxOccurs="1"/>
+    </sequence>
+  </complexType>
+  <complexType name="smsType">
+    <sequence>
+      <element name="subject" type="xsd:string"
+               minOccurs="1" maxOccurs="1"/>
+      <element name="body" type="xsd:string"
+               minOccurs="1" maxOccurs="1"/>
+    </sequence>
+  </complexType>
+  <complexType name="pagerType">
+    <sequence>
+      <element name="body" type="xsd:string"
+               minOccurs="1" maxOccurs="1"/>
+    </sequence>
+  </complexType>
+  <complexType name="faxType">
+    <sequence>
+      <element name="coverPageName" type="xsd:string"
+               minOccurs="1" maxOccurs="1"/>
+      <element name="body" type="xsd:string"
+               minOccurs="1" maxOccurs="1"/>
+    </sequence>
+  </complexType>
+  <complexType name="assignmentServiceType">
+    <sequence>
+      <element name="property" type="tns:assignmentServicePropertyType"
+               minOccurs="0" maxOccurs="unbounded"/>
+    </sequence>
+    <attribute name="impl" type="xsd:string" use="required"/>
+  </complexType>
+  <complexType name="assignmentServicePropertyType">
+    <simpleContent>
+      <extension base="xsd:string">
+        <attribute name="name" type="xsd:string" use="required"/>
+        <attribute name="type" type="tns:valueType" use="required"/>
+      </extension>
+    </simpleContent>
+  </complexType>
+  <complexType name="participantsType">
+    <sequence maxOccurs="unbounded">
+      <choice minOccurs="0" maxOccurs="unbounded">
+        <element name="participant" type="tns:participantType"/>
+        <element name="sequentialParticipant" type="tns:sequentialParticipantType"/>
+        <element name="adhoc" type="tns:adhocType"/>
+        <element name="managementChain" type="tns:managementChainType"/>
+        <element name="parallel" type="tns:parallelType"/>
+        <element name="fyi" type="tns:fyiType"/>
+        <element name="notify" type="tns:notifyType"/>
+      </choice>
+    </sequence>
+    <attribute name="isAdhocRoutingSupported" type="xsd:boolean" use="optional"/>
+  </complexType>
+  <complexType name="onErrorParticipantType">
+    <sequence>
+      <element name="resource" type="tns:resourceType"
+               minOccurs="0" maxOccurs="unbounded"/>
+      <element name="acquiredBy" type="tns:parameterType" 
+               minOccurs="0" maxOccurs="1"/>
+    </sequence>
+    <attribute name="name" type="xsd:string" use="optional"/>
+    <attribute name="systemStatus" type="xsd:string" use="optional"/>
+  </complexType>
+  <complexType name="actionType">
+    <simpleContent>
+      <extension base="xsd:string">
+        <attribute name="name" type="tns:actionNameType" use="required"/>
+        <attribute name="recipient" type="tns:recipientType" use="required"/>
+        <attribute name="wordMLXSLT" type="xsd:string" use="optional"/>
+        <attribute name="xslt" type="xsd:string" use="optional"/>
+      </extension>
+    </simpleContent>
+  </complexType>
+  <simpleType name="recipientType">
+    <restriction base="xsd:string">
+      <enumeration value="ASSIGNEES"/>
+      <enumeration value="CREATOR"/>
+      <enumeration value="APPROVERS"/>
+      <enumeration value="OWNER"/>
+    </restriction>
+  </simpleType>
+  <simpleType name="actionNameType">
+    <restriction base="xsd:string">
+       <enumeration value="ASSIGN"/>
+       <enumeration value="COMPLETE"/>
+       <enumeration value="ERROR"/>
+       <enumeration value="EXPIRE"/>
+       <enumeration value="INFO_REQUEST"/>
+       <enumeration value="OUTCOME_UPDATE"/>
+       <enumeration value="SUSPEND"/>
+       <enumeration value="WITHDRAW"/>
+       <enumeration value="RESUME"/>
+       <enumeration value="UPDATE"/>
+       <enumeration value="ALL_OTHER_ACTIONS"/>
+    </restriction>
+  </simpleType>
+  <complexType name="notificationType">
+    <sequence>
+      <element name="reminder" type="tns:reminderType" 
+               minOccurs="0" maxOccurs="1"/>
+      <element name="action" type="tns:actionType" 
+               minOccurs="0" maxOccurs="unbounded"/>
+      <element name="wordMLXSLT" type="xsd:string" 
+               minOccurs="0" maxOccurs="1"/>
+      <element name="xslt" type="xsd:string" 
+               minOccurs="0" maxOccurs="1"/>
+    </sequence>
+    <attribute name="actionable" type="xsd:boolean" use="required"/>
+    <attribute name="includeTaskAttachments" type="xsd:boolean" use="optional"/>
+    <attribute name="secureNotifications" type="xsd:boolean" use="optional"/>
+  </complexType>
+  <complexType name="reminderType">
+    <sequence/>
+    <attribute name="reminderDuration" type="xsd:string" use="required"/>
+    <attribute name="recurrence" type="tns:recurrenceType" use="required"/>
+    <attribute name="relativeDate" type="tns:relativeDateType" use="required"/>
+  </complexType>
+  <simpleType name="recurrenceType">
+    <restriction base="xsd:string">
+      <enumeration value="NEVER"/>
+      <enumeration value="1"/>
+      <enumeration value="2"/>
+      <enumeration value="3"/>
+      <enumeration value="4"/>
+      <enumeration value="5"/>
+      <enumeration value="6"/>
+      <enumeration value="7"/>
+      <enumeration value="8"/>
+      <enumeration value="9"/>
+      <enumeration value="10"/>
+      <enumeration value="EVERY"/>
+    </restriction>
+  </simpleType>
+  <simpleType name="relativeDateType">
+    <restriction base="xsd:string">
+      <enumeration value="ASSIGNED"/>
+      <enumeration value="EXPIRATION"/>
+    </restriction>
+  </simpleType>
+  <complexType name="addressType">
+    <simpleContent>
+      <extension base="xsd:string">
+        <attribute name="type" type="tns:addressTypeType" use="required"/>
+      </extension>
+    </simpleContent>
+  </complexType>
+  <complexType name="parameterType">
+    <simpleContent>
+      <extension base="xsd:string">
+        <attribute name="type" type="tns:valueType" use="required"/>
+      </extension>
+    </simpleContent>
+  </complexType>
+  <simpleType name="addressTypeType">
+    <restriction base="xsd:string">
+      <enumeration value="EMAIL"/>
+      <enumeration value="FAX"/>
+      <enumeration value="PAGER"/>
+      <enumeration value="PHONE"/>
+      <enumeration value="SMS"/>
+    </restriction>
+  </simpleType>
+  <simpleType name="valueType">
+    <restriction base="xsd:string">
+      <enumeration value="XPATH"/>
+      <enumeration value="STATIC"/>
+    </restriction>
+  </simpleType>
+  <simpleType name="callbackTypeType">
+    <restriction base="xsd:string">
+      <enumeration value="PL_SQL"/>
+      <enumeration value="JAVA"/>
+    </restriction>
+  </simpleType>
+</schema>

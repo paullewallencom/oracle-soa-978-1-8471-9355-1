@@ -1,0 +1,180 @@
+<?xml version = "1.0" encoding = "UTF-8" ?>
+<!--
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  Oracle JDeveloper BPEL Designer 
+  
+  Created: Mon Feb 02 21:17:05 EST 2009
+  Author:  mswright
+  Purpose: Asynchronous BPEL Process
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+-->
+<process name="AuctionProxy"
+         targetNamespace="http://xmlns.packtpub.com/obay/bs/AuctionProxy"
+         xmlns="http://schemas.xmlsoap.org/ws/2003/03/business-process/"
+         xmlns:bpws="http://schemas.xmlsoap.org/ws/2003/03/business-process/"
+         xmlns:xp20="http://www.oracle.com/XSL/Transform/java/oracle.tip.pc.services.functions.Xpath20"
+         xmlns:ids="http://xmlns.oracle.com/bpel/services/IdentityService/xpath"
+         xmlns:ldap="http://schemas.oracle.com/xpath/extension/ldap"
+         xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+         xmlns:client="http://xmlns.packtpub.com/obay/bs/AuctionProxy"
+         xmlns:ora="http://schemas.oracle.com/xpath/extension"
+         xmlns:xref="http://www.oracle.com/XSL/Transform/java/oracle.tip.xref.xpath.XRefXPathFunctions"
+         xmlns:hwf="http://xmlns.oracle.com/bpel/workflow/xpath"
+         xmlns:ns1="http://xmlns.packtpub.com/obay/bs/Auction"
+         xmlns:ehdr="http://www.oracle.com/XSL/Transform/java/oracle.tip.esb.server.headers.ESBHeaderFunctions"
+         xmlns:ns3="http://xmlns.packtpub.com/AuctionProxy/correlationset"
+         xmlns:ns2="http://schemas.packtpub.com/obay/auc"
+         xmlns:bpelx="http://schemas.oracle.com/bpel/extension"
+         xmlns:orcl="http://www.oracle.com/XSL/Transform/java/oracle.tip.pc.services.functions.ExtFunc">
+    <!-- 
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        PARTNERLINKS                                                      
+        List of services participating in this BPEL process               
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    -->
+    <partnerLinks>
+        <!-- 
+      The 'client' role represents the requester of this service. It is 
+      used for callback. The location and correlation information associated
+      with the client role are automatically set using WS-Addressing.
+    -->
+        <partnerLink name="client" partnerLinkType="client:AuctionProxy"
+                     myRole="AuctionProxyProvider"
+                     partnerRole="AuctionProxyRequester"/>
+        <partnerLink myRole="AuctionRequester" name="Auction"
+                     partnerRole="AuctionProvider"
+                     partnerLinkType="ns1:Auction"/>
+    </partnerLinks>
+    <!-- 
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        VARIABLES                                                        
+        List of messages and XML documents used within this BPEL process 
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    -->
+    <variables>
+        <!-- Reference to the message passed as input during initiation -->
+        <!-- Reference to the message that will be sent back to the requester during callback -->
+        <variable name="initiateAuctionInput"
+                  messageType="client:initiateAuction"/>
+        <variable name="submitBidInput" messageType="client:submitBid"/>
+        <variable name="initiateAuctionAuctionInput"
+                  messageType="ns1:initiateAuction"/>
+        <variable name="submitBidAuctionInput" messageType="ns1:submitBid"/>
+        <variable name="recieveAuctionResult"
+                  messageType="ns1:returnAuctionResult"/>
+        <variable name="recieveBidResult" messageType="ns1:returnBidResult"/>
+        <variable name="returnAuctionResult"
+                  messageType="client:returnAuctionResult"/>
+        <variable name="returnBidResult" messageType="client:returnBidResult"/>
+    </variables>
+    <correlationSets>
+        <correlationSet name="bidIdCS" properties="ns3:bidId"/>
+    </correlationSets>
+    <!-- 
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+       ORCHESTRATION LOGIC                                               
+       Set of activities coordinating the flow of messages across the    
+       services integrated within this business process                  
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    -->
+    <sequence name="main">
+        <!-- Receive input from requestor. (Note: This maps to operation defined in AuctionProxy.wsdl) -->
+        <pick name="Pick_1" createInstance="yes">
+            <onMessage portType="client:AuctionProxy"
+                       operation="initiateAuction"
+                       variable="initiateAuctionInput" partnerLink="client">
+                <sequence name="Sequence_1">
+                    <assign name="setInitiateAuctionInput">
+                        <copy>
+                            <from variable="initiateAuctionInput" part="payload"
+                                  query="/client:initiateAuction"/>
+                            <to variable="initiateAuctionAuctionInput"
+                                part="payload" query="/ns1:initiateAuction"/>
+                        </copy>
+                    </assign>
+                    <invoke name="initiateAuction" partnerLink="Auction"
+                            portType="ns1:Auction" operation="initiateAuction"
+                            inputVariable="initiateAuctionAuctionInput"/>
+                    <receive name="recieveAuctionResult" partnerLink="Auction"
+                             portType="ns1:AuctionCallback"
+                             operation="returnAuctionResult"
+                             variable="recieveAuctionResult"
+                             createInstance="no"/>
+                    <assign name="setInitiateAuctionResult">
+                        <copy>
+                            <from variable="recieveAuctionResult" part="payload"
+                                  query="/ns1:returnAuctionResult"/>
+                            <to variable="returnAuctionResult" part="payload"
+                                query="/client:returnAuctionResult"/>
+                        </copy>
+                    </assign>
+                    <invoke name="returnAuctionResult" partnerLink="client"
+                            portType="client:AuctionProxyCallback"
+                            operation="returnAuctionResult"
+                            inputVariable="returnAuctionResult"/>
+                </sequence>
+            </onMessage>
+            <onMessage portType="client:AuctionProxy" operation="submitBid"
+                       variable="submitBidInput" partnerLink="client">
+                <sequence name="Sequence_2">
+                    <assign name="setSubmitBidInput">
+                        <copy>
+                            <from variable="submitBidInput" part="payload"
+                                  query="/client:submitBid/ns2:auctionId"/>
+                            <to variable="submitBidAuctionInput" part="payload"
+                                query="/ns1:submitBid/ns2:auctionId"/>
+                        </copy>
+                        <copy>
+                            <from expression="ora:generateGUID()"/>
+                            <to variable="submitBidAuctionInput" part="payload"
+                                query="/ns1:submitBid/ns2:bidId"/>
+                        </copy>
+                        <copy>
+                            <from variable="submitBidInput" part="payload"
+                                  query="/client:submitBid/ns2:bidderId"/>
+                            <to variable="submitBidAuctionInput" part="payload"
+                                query="/ns1:submitBid/ns2:bidderId"/>
+                        </copy>
+                        <copy>
+                            <from variable="submitBidInput" part="payload"
+                                  query="/client:submitBid/ns2:maxAmount"/>
+                            <to variable="submitBidAuctionInput" part="payload"
+                                query="/ns1:submitBid/ns2:maxAmount"/>
+                        </copy>
+                    </assign>
+                    <invoke name="submitBid" partnerLink="Auction"
+                            portType="ns1:Auction" operation="submitBid"
+                            inputVariable="submitBidAuctionInput">
+                        <correlations>
+                            <correlation initiate="yes" set="bidIdCS"
+                                         pattern="out"/>
+                        </correlations>
+                    </invoke>
+                    <receive name="recieveBidResult" partnerLink="Auction"
+                             portType="ns1:AuctionCallback"
+                             operation="returnBidResult"
+                             variable="recieveBidResult" createInstance="no">
+                        <correlations>
+                            <correlation initiate="no" set="bidIdCS"/>
+                        </correlations>
+                    </receive>
+                    <assign name="setSubmitBidResult">
+                        <copy>
+                            <from variable="recieveBidResult" part="payload"
+                                  query="/ns1:returnBidResult"/>
+                            <to variable="returnBidResult" part="payload"
+                                query="/client:returnBidResult"/>
+                        </copy>
+                    </assign>
+                    <invoke name="returnBidResult" partnerLink="client"
+                            portType="client:AuctionProxyCallback"
+                            operation="returnBidResult"
+                            inputVariable="returnBidResult"/>
+                </sequence>
+            </onMessage>
+        </pick>
+        <!-- 
+          Asynchronous callback to the requester. (Note: the callback location and correlation id is transparently handled using WS-addressing.)
+        -->
+    </sequence>
+</process>

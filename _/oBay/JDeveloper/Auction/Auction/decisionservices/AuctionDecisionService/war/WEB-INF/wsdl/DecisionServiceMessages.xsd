@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema blockDefault="#all" 
+            attributeFormDefault="unqualified" 
+            elementFormDefault="qualified"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns="http://xmlns.packtpub.com/obay/bs/Auction/AuctionDecisionService"
+            xmlns:tns="http://xmlns.packtpub.com/obay/bs/Auction/AuctionDecisionService"
+            targetNamespace="http://xmlns.packtpub.com/obay/bs/Auction/AuctionDecisionService">
+
+  <!--
+    Import common definitions
+  -->
+  <xsd:include schemaLocation="DecisionService.xsd"/>
+
+  <!-- 
+    Top level elements to follow here
+  -->
+  <xsd:element name="assert" type="tns:tAssertPattern">
+    <xsd:annotation>
+      <xsd:documentation>
+        BPEL Decision Service input parameter element assert
+      </xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+
+  <xsd:element name="assertExecute" type="tns:tAssertExecutePattern">
+    <xsd:annotation>
+      <xsd:documentation>
+        BPEL Decision Service input parameter element assertExecute
+      </xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+
+  <xsd:element name="watch" type="tns:tWatchPattern">
+    <xsd:annotation>
+      <xsd:documentation>
+        BPEL Decision Service input parameter element watch
+      </xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+
+  <xsd:element name="assertExecuteWatchStateless" type="tns:tAssertExecuteWatchStatelessPattern">
+    <xsd:annotation>
+      <xsd:documentation>
+        BPEL Decision Service input parameter element assertExecuteWatchStateless
+      </xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+
+  <xsd:element name="assertExecuteWatchStateful" type="tns:tAssertExecuteWatchStatefulPattern">
+    <xsd:annotation>
+      <xsd:documentation>
+        BPEL Decision Service input parameter element assertExecuteWatchStateful
+      </xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+
+  <xsd:element name="callFunctionStateless" type="tns:tCallFunctionStatelessPattern">
+    <xsd:annotation>
+      <xsd:documentation>
+        BPEL Decision Service input parameter element callFunctionStateless
+      </xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+
+  <xsd:element name="callFunctionStateful" type="tns:tCallFunctionStatefulPattern">
+    <xsd:annotation>
+      <xsd:documentation>
+        BPEL Decision Service input parameter element callFunctionStateless
+      </xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+
+
+  <!--
+  Output messages to follow here
+  -->
+  <xsd:element name="watchDecision" type="tns:tWatchDecision">
+    <xsd:annotation>
+      <xsd:documentation>
+        BPEL Decision Service output parameter element watchDecision
+      </xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+
+  <xsd:element name="assertExecuteWatchStatelessDecision" 
+               type="tns:tAssertExecuteWatchStatelessDecision">
+    <xsd:annotation>
+      <xsd:documentation>
+        BPEL Decision Service output parameter element assertExecuteWatchStatelessDecision
+      </xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+
+  <xsd:element name="assertExecuteWatchStatefulDecision" 
+               type="tns:tAssertExecuteWatchStatefulDecision">
+    <xsd:annotation>
+      <xsd:documentation>
+        BPEL Decision Service output parameter element assertExecuteWatchStatefulDecision
+      </xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+
+  <xsd:element name="callFunctionStatelessDecision" 
+               type="tns:tCallFunctionStatelessDecision">
+    <xsd:annotation>
+      <xsd:documentation>
+        BPEL Decision Service output parameter element callFunctionStatelessDecision
+      </xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+
+  <xsd:element name="callFunctionStatefulDecision" 
+               type="tns:tCallFunctionStatefulDecision">
+    <xsd:annotation>
+      <xsd:documentation>
+        BPEL Decision Service output parameter element callFunctionStatefulDecision
+      </xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+
+</xsd:schema>
+

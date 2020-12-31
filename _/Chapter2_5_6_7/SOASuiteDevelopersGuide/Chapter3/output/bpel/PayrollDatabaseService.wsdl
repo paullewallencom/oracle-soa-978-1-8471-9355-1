@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions 
+    name="PayrollDatabaseService"
+    targetNamespace="http://xmlns.oracle.com/pcbpel/adapter/db/PayrollDatabaseService/"
+    xmlns:tns="http://xmlns.oracle.com/pcbpel/adapter/db/PayrollDatabaseService/"
+    xmlns:plt="http://schemas.xmlsoap.org/ws/2003/05/partner-link/"
+    xmlns:jca="http://xmlns.oracle.com/pcbpel/wsdl/jca/"
+    xmlns:pc="http://xmlns.oracle.com/pcbpel/"
+    xmlns:top="http://xmlns.oracle.com/pcbpel/adapter/db/top/PayrollDatabaseService"
+    xmlns:hdr="http://xmlns.oracle.com/pcbpel/adapter/db/"
+    xmlns="http://schemas.xmlsoap.org/wsdl/">
+
+    <import namespace="http://xmlns.oracle.com/pcbpel/adapter/db/" location="DBAdapterOutboundHeader.wsdl"/>
+
+    <types>
+        <schema xmlns="http://www.w3.org/2001/XMLSchema">
+            <import namespace="http://xmlns.oracle.com/pcbpel/adapter/db/top/PayrollDatabaseService"
+                schemaLocation="PayrollDatabaseService_table.xsd"/>
+        </schema>
+    </types>
+
+    <message name="PayrollitemCollection_msg">
+        <part name="PayrollitemCollection" element="top:PayrollitemCollection"/>
+    </message>
+
+    <message name="PayrollDatabaseServiceSelect_inparameters">
+        <part name="PayrollDatabaseServiceSelect_inparameters" element="top:PayrollDatabaseServiceSelectInputParameters"/>
+    </message>
+    <message name="Payrollitem_msg">
+        <part name="Payrollitem" element="top:Payrollitem"/>
+    </message>
+
+    <portType name="PayrollDatabaseService_ptt">
+        <operation name="merge">
+            <input message="tns:PayrollitemCollection_msg"/>
+        </operation>
+        <operation name="write">
+            <input message="tns:PayrollitemCollection_msg"/>
+        </operation>
+        <operation name="delete">
+            <input message="tns:PayrollitemCollection_msg"/>
+        </operation>
+        <operation name="insert">
+            <input message="tns:PayrollitemCollection_msg"/>
+        </operation>
+        <operation name="update">
+            <input message="tns:PayrollitemCollection_msg"/>
+        </operation>
+        <operation name="PayrollDatabaseServiceSelect">
+            <input message="tns:PayrollDatabaseServiceSelect_inparameters"/>
+            <output message="tns:PayrollitemCollection_msg"/>
+        </operation>
+        <operation name="queryByExample">
+            <input message="tns:Payrollitem_msg"/>
+            <output message="tns:PayrollitemCollection_msg"/>
+        </operation>
+    </portType>
+
+    <binding name="PayrollDatabaseService_binding" type="tns:PayrollDatabaseService_ptt">
+        <jca:binding />
+        <operation name="merge">
+            <jca:operation
+                InteractionSpec="oracle.tip.adapter.db.DBWriteInteractionSpec"
+
+                DescriptorName="PayrollDatabaseService.Payrollitem"
+                DmlType="merge"
+                DetectOmissions="true"
+                OptimizeMerge="true"
+                MappingsMetaDataURL="PayrollDatabaseService_toplink_mappings.xml" />
+            <input>
+                <jca:header message="hdr:OutboundHeader_msg" part="outboundHeader"/>
+            </input>
+        </operation>
+        <operation name="write">
+            <jca:operation
+                InteractionSpec="oracle.tip.adapter.db.DBWriteInteractionSpec"
+
+                DescriptorName="PayrollDatabaseService.Payrollitem"
+                DmlType="write"
+                MappingsMetaDataURL="PayrollDatabaseService_toplink_mappings.xml" />
+            <input>
+                <jca:header message="hdr:OutboundHeader_msg" part="outboundHeader"/>
+            </input>
+        </operation>
+        <operation name="delete">
+            <jca:operation
+                InteractionSpec="oracle.tip.adapter.db.DBWriteInteractionSpec"
+
+                DescriptorName="PayrollDatabaseService.Payrollitem"
+                DmlType="delete"
+                DetectOmissions="true"
+                OptimizeMerge="true"
+                MappingsMetaDataURL="PayrollDatabaseService_toplink_mappings.xml" />
+            <input>
+                <jca:header message="hdr:OutboundHeader_msg" part="outboundHeader"/>
+            </input>
+        </operation>
+        <operation name="insert">
+            <jca:operation
+                InteractionSpec="oracle.tip.adapter.db.DBWriteInteractionSpec"
+
+                DescriptorName="PayrollDatabaseService.Payrollitem"
+                DmlType="insert"
+                DetectOmissions="true"
+                OptimizeMerge="true"
+                MappingsMetaDataURL="PayrollDatabaseService_toplink_mappings.xml" />
+            <input>
+                <jca:header message="hdr:OutboundHeader_msg" part="outboundHeader"/>
+            </input>
+        </operation>
+        <operation name="update">
+            <jca:operation
+                InteractionSpec="oracle.tip.adapter.db.DBWriteInteractionSpec"
+
+                DescriptorName="PayrollDatabaseService.Payrollitem"
+                DmlType="update"
+                DetectOmissions="true"
+                OptimizeMerge="true"
+                MappingsMetaDataURL="PayrollDatabaseService_toplink_mappings.xml" />
+            <input>
+                <jca:header message="hdr:OutboundHeader_msg" part="outboundHeader"/>
+            </input>
+        </operation>
+        <operation name="PayrollDatabaseServiceSelect">
+            <jca:operation
+                InteractionSpec="oracle.tip.adapter.db.DBReadInteractionSpec"
+
+                DescriptorName="PayrollDatabaseService.Payrollitem"
+                QueryName="PayrollDatabaseServiceSelect"
+                ReturnSingleResultSet="false"
+                MappingsMetaDataURL="PayrollDatabaseService_toplink_mappings.xml" />
+            <input>
+                <jca:header message="hdr:OutboundHeader_msg" part="outboundHeader"/>
+            </input>
+        </operation>
+        <operation name="queryByExample">
+            <jca:operation
+                InteractionSpec="oracle.tip.adapter.db.DBReadInteractionSpec"
+
+                DescriptorName="PayrollDatabaseService.Payrollitem"
+                IsQueryByExample="true"
+                MappingsMetaDataURL="PayrollDatabaseService_toplink_mappings.xml" />
+            <input>
+                <jca:header message="hdr:OutboundHeader_msg" part="outboundHeader"/>
+            </input>
+        </operation>
+    </binding>
+
+    <!-- Your runtime connection is declared in
+        J2EE_HOME/application-deployments/default/DbAdapter/oc4j-ra.xml
+        These 'mcf' properties here are from your design time connection and 
+        save you from having to edit that file and restart the application server
+        if eis/DB/SoaBookDS is missing.
+        These 'mcf' properties are safe to remove.
+    -->
+    <service name="PayrollDatabaseService">
+        <port name="PayrollDatabaseService_pt" binding="tns:PayrollDatabaseService_binding">
+            <jca:address location="eis/DB/SoaBookDS"
+                UIConnectionName="SoaBookDS"
+                ManagedConnectionFactory="oracle.tip.adapter.db.DBManagedConnectionFactory"
+                mcf.DriverClassName="oracle.jdbc.OracleDriver"
+                mcf.PlatformClassName="oracle.toplink.platform.database.oracle.OraclePlatform"
+                mcf.ConnectionString="jdbc:oracle:thin:@w2k3:1521:XE"
+                mcf.UserName="soabook"
+                mcf.Password="B73D4B26B2A50F7AE5E2D8E5B96EBFFA"
+            />
+        </port>
+    </service>
+
+    <plt:partnerLinkType name="PayrollDatabaseService_plt" >
+        <plt:role name="PayrollDatabaseService_role" >
+            <plt:portType name="tns:PayrollDatabaseService_ptt" />
+        </plt:role>
+    </plt:partnerLinkType>
+
+</definitions>

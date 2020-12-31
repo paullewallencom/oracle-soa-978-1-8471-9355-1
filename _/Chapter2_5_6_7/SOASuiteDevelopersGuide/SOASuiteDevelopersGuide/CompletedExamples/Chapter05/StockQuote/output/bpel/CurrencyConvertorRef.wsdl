@@ -1,0 +1,26 @@
+<definitions
+    
+     targetNamespace="http://www.webserviceX.NET/"
+     xmlns="http://schemas.xmlsoap.org/wsdl/"
+     xmlns:tns="http://www.webserviceX.NET/"
+     xmlns:bpws="http://schemas.xmlsoap.org/ws/2003/03/business-process/"
+     xmlns:plnk="http://schemas.xmlsoap.org/ws/2003/05/partner-link/"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    >
+    <import namespace="http://www.webserviceX.NET/" location="CurrencyConvertor.wsdl"/>
+    <plnk:partnerLinkType name="CurrencyConvertorHttpPost_PL">
+        <plnk:role name="CurrencyConvertorHttpPost_Role">
+            <plnk:portType name="tns:CurrencyConvertorHttpPost"/>
+        </plnk:role>
+    </plnk:partnerLinkType>
+    <plnk:partnerLinkType name="CurrencyConvertorHttpGet_PL">
+        <plnk:role name="CurrencyConvertorHttpGet_Role">
+            <plnk:portType name="tns:CurrencyConvertorHttpGet"/>
+        </plnk:role>
+    </plnk:partnerLinkType>
+    <plnk:partnerLinkType name="CurrencyConvertorSoap_PL">
+        <plnk:role name="CurrencyConvertorSoap_Role">
+            <plnk:portType name="tns:CurrencyConvertorSoap"/>
+        </plnk:role>
+    </plnk:partnerLinkType>
+</definitions>

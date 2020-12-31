@@ -1,0 +1,22 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<BPELSuitcase>
+   <BPELProcess id="UserRegistration" src="UserRegistration.bpel">
+      <partnerLinkBindings>
+         <partnerLinkBinding name="client">
+            <property name="wsdlLocation">UserRegistration.wsdl</property>
+         </partnerLinkBinding>
+         <partnerLinkBinding name="ValidateEmailAddress">
+            <property name="wsdlLocation">http://localhost:80/orabpel/obay/ValidateEmailAddress/ValidateEmailAddress?wsdl</property>
+         </partnerLinkBinding>
+         <partnerLinkBinding name="Schematron">
+            <property name="wsdlLocation">validation.wsdl</property>
+         </partnerLinkBinding>
+         <partnerLinkBinding name="UserManagement">
+            <property name="wsdlLocation">UserManagement.wsdl</property>
+         </partnerLinkBinding>
+         <partnerLinkBinding name="CreditCard">
+            <property name="wsdlLocation">CreditCard.wsdl</property>
+         </partnerLinkBinding>
+      </partnerLinkBindings>
+   </BPELProcess>
+</BPELSuitcase>

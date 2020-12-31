@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="windows-1252"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns="http://schemas.packtpub.com/obay/sch"
+            targetNamespace="http://schemas.packtpub.com/obay/sch"
+            elementFormDefault="qualified">
+
+    <xsd:element name="schedule"            type="tSchedule"/>
+    <xsd:element name="job"                 type="tJob"/>
+    
+    <xsd:complexType name="tSchedule">
+        <xsd:sequence>
+            <xsd:element name="startTime"           type="xsd:time"/>
+            <xsd:element name="scheduleFile"        type="xsd:string"/>
+            <xsd:element name="schedulerExecuteDir" type="xsd:string"/>
+            <xsd:element name="schedulerConfigDir"  type="xsd:string"/>
+            <xsd:element ref="job" minOccurs="1" 
+                                   maxOccurs="unbounded"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="tJob"> 
+        <xsd:sequence>
+            <xsd:element name="endpoint"  type="xsd:string" /> 
+            <xsd:element name="startTime" type="xsd:time"/>
+            <xsd:element name="jobDetail" type="xsd:anyType"/>  
+        </xsd:sequence>
+    </xsd:complexType>
+     
+</xsd:schema>

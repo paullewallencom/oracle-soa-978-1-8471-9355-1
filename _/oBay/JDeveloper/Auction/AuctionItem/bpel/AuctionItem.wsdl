@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions name="AuctionItem"
+             targetNamespace="http://xmlns.packtpub.com/obay/bp/AuctionItem"
+             xmlns="http://schemas.xmlsoap.org/wsdl/"
+             xmlns:client="http://xmlns.packtpub.com/obay/bp/AuctionItem"
+             xmlns:flt="http://schemas.packtpub.com/obay/flt"
+             xmlns:lst="http://schemas.packtpub.com/obay/lst"
+             xmlns:usr="http://schemas.packtpub.com/obay/usr"
+             xmlns:plnk="http://schemas.xmlsoap.org/ws/2003/05/partner-link/">
+
+	<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	TYPE DEFINITION - List of services participating in this BPEL process
+	The default output of the BPEL designer uses strings as input and 
+	output to the BPEL Process. But you can define or import any XML 
+	Schema type and use them as part of the message types.
+	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->   
+    <types>
+        <schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://xmlns.packtpub.com/obay/bp/AuctionItem">
+            <import namespace="http://schemas.packtpub.com/obay/usr" schemaLocation="http://localhost/orabpel/xmllib/obay/User_v1_0.xsd"/>
+            <import namespace="http://schemas.packtpub.com/obay/lst" schemaLocation="http://localhost/orabpel/xmllib/obay/Listing_v1_0.xsd"/>
+            <import namespace="http://schemas.packtpub.com/obay/flt" schemaLocation="http://localhost/orabpel/xmllib/obay/Fault_v1_0.xsd"/>
+            
+            <element name="auctionItem" type="client:tAuctionItem"/>
+            <element name="auctionItemResult" type="client:tAuctionItemResult"/>
+
+            <complexType name="tAuctionItem">
+                <sequence>
+                    <element ref="lst:listing"/>
+                </sequence>
+            </complexType>
+            <complexType name="tAuctionItemResult">
+                <sequence>
+                    <element ref="lst:listing"/>
+                </sequence>
+            </complexType>
+        </schema>
+    </types>
+
+	<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	MESSAGE TYPE DEFINITION - Definition of the message types used as 
+	part of the port type defintions
+	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->      
+        <message name="auctionItem">
+            <part name="payload" element="client:auctionItem"/>
+        </message>
+        <message name="auctionItemResult">
+            <part name="payload" element="client:auctionItemResult"/>
+        </message>
+
+	<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	PORT TYPE DEFINITION - A port type groups a set of operations into
+	a logical service unit.
+	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+	<!-- portType implemented by the AuctionItem BPEL process -->
+	<portType name="AuctionItem">
+		<operation name="auctionItem">
+			<input message="client:auctionItem"/>
+		</operation>
+	</portType>
+
+	<!-- portType implemented by the requester of AuctionItem BPEL process
+	for asynchronous callback purposes
+	-->
+	<portType name="AuctionItemCallback">
+		<operation name="auctionItemResult">
+			<input message="client:auctionItemResult"/>
+		</operation>
+	</portType>
+
+	<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	PARTNER LINK TYPE DEFINITION
+	the AuctionItem partnerLinkType binds the provider and
+	requester portType into an asynchronous conversation.
+	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+	<plnk:partnerLinkType name="AuctionItem">
+		<plnk:role name="AuctionItemProvider">
+			<plnk:portType name="client:AuctionItem"/>
+		</plnk:role>
+		<plnk:role name="AuctionItemRequester">
+			<plnk:portType name="client:AuctionItemCallback"/>
+		</plnk:role>
+	</plnk:partnerLinkType>
+</definitions>

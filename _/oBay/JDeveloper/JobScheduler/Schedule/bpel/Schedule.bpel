@@ -1,0 +1,162 @@
+<?xml version = "1.0" encoding = "UTF-8" ?>
+<!--
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  Oracle JDeveloper BPEL Designer 
+  
+  Created: Wed Feb 18 12:21:56 EST 2009
+  Author:  mswright
+  Purpose: Empty BPEL Process
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+-->
+<process name="Schedule"
+         targetNamespace="http://xmlns.packtpub.com/obay/bp/Schedule"
+         xmlns="http://schemas.xmlsoap.org/ws/2003/03/business-process/"
+         xmlns:xp20="http://www.oracle.com/XSL/Transform/java/oracle.tip.pc.services.functions.Xpath20"
+         xmlns:bpws="http://schemas.xmlsoap.org/ws/2003/03/business-process/"
+         xmlns:ns4="http://xmlns.oracle.com/pcbpel/adapter/file/"
+         xmlns:ids="http://xmlns.oracle.com/bpel/services/IdentityService/xpath"
+         xmlns:sch="http://schemas.packtpub.com/obay/sch"
+         xmlns:ldap="http://schemas.oracle.com/xpath/extension/ldap"
+         xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+         xmlns:client="http://xmlns.packtpub.com/obay/bp/Schedule"
+         xmlns:ora="http://schemas.oracle.com/xpath/extension"
+         xmlns:xref="http://www.oracle.com/XSL/Transform/java/oracle.tip.xref.xpath.XRefXPathFunctions"
+         xmlns:hwf="http://xmlns.oracle.com/bpel/workflow/xpath"
+         xmlns:ns1="http://xmlns.oracle.com/pcbpel/adapter/file/ScheduleFileAdapter/"
+         xmlns:job="http://xmlns.packtpub.com/obay/bs/Job"
+         xmlns:ehdr="http://www.oracle.com/XSL/Transform/java/oracle.tip.esb.server.headers.ESBHeaderFunctions"
+         xmlns:ns3="http://xmlns.oracle.com/pcbpel/adapter/file/MoveFileService/"
+         xmlns:ns2="http://schemas.xmlsoap.org/ws/2003/03/addressing"
+         xmlns:bpelx="http://schemas.oracle.com/bpel/extension"
+         xmlns:orcl="http://www.oracle.com/XSL/Transform/java/oracle.tip.pc.services.functions.ExtFunc">
+  <!-- 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      PARTNERLINKS                                                      
+      List of services participating in this BPEL process               
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  -->
+  <partnerLinks>
+    <partnerLink myRole="ReadScheduleFile_role" name="ScheduleFileAdapter"
+                 partnerLinkType="ns1:ReadScheduleFile_plt"/>
+    <partnerLink name="JobService" partnerRole="Job_Role"
+                 partnerLinkType="job:Job_PL"/>
+    <partnerLink name="MoveFileService" partnerRole="MoveFile_role"
+                 partnerLinkType="ns3:MoveFile_plt"/>
+  </partnerLinks>
+  <!-- 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      VARIABLES                                                        
+      List of messages and XML documents used within this BPEL process 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  -->
+  <variables>
+    <variable name="InputVariable" messageType="ns1:schedule_msg"/>
+    <variable name="index" type="xsd:int"/>
+    <variable name="MoveFileInput" messageType="ns3:Empty_msg"/>
+    <variable name="MoveFileOutput" messageType="ns3:MoveFile_msg"/>
+    <variable name="MoveFileHeader" messageType="ns4:OutboundHeader_msg"/>
+  </variables>
+  <!-- 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+     ORCHESTRATION LOGIC                                               
+     Set of activities coordinating the flow of messages across the    
+     services integrated within this business process                  
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  -->
+  <sequence name="main">
+    <receive name="ReadScheduleFile" partnerLink="ScheduleFileAdapter"
+             portType="ns1:ReadScheduleFile_ptt" operation="ReadScheduleFile"
+             variable="InputVariable" createInstance="yes"/>
+    <flow name="Flow_1">
+      <sequence name="Sequence_4">
+        <scope name="RecycleScheduleFile">
+          <sequence name="Sequence_3">
+            <wait name="WaitUntilStartTime"
+                  until="xp20:add-dayTimeDuration-to-dateTime(concat(xp20:current-date(), 'T', bpws:getVariableData('InputVariable','schedule','/sch:schedule/sch:startTime')), 'P1D')"/>
+            <assign name="setMoveFileHeader">
+              <copy>
+                <from variable="InputVariable" part="schedule"
+                      query="/sch:schedule/sch:schedulerConfigDir"/>
+                <to variable="MoveFileHeader" part="outboundHeader"
+                    query="/ns4:OutboundFileHeaderType/ns4:sourceDirectory"/>
+              </copy>
+              <copy>
+                <from variable="InputVariable" part="schedule"
+                      query="/sch:schedule/sch:scheduleFile"/>
+                <to variable="MoveFileHeader" part="outboundHeader"
+                    query="/ns4:OutboundFileHeaderType/ns4:sourceFileName"/>
+              </copy>
+              <copy>
+                <from variable="InputVariable" part="schedule"
+                      query="/sch:schedule/sch:schedulerExecuteDir"/>
+                <to variable="MoveFileHeader" part="outboundHeader"
+                    query="/ns4:OutboundFileHeaderType/ns4:targetDirectory"/>
+              </copy>
+              <copy>
+                <from variable="InputVariable" part="schedule"
+                      query="/sch:schedule/sch:scheduleFile"/>
+                <to variable="MoveFileHeader" part="outboundHeader"
+                    query="/ns4:OutboundFileHeaderType/ns4:targetFileName"/>
+              </copy>
+            </assign>
+            <invoke name="CopyScheduleFile" partnerLink="MoveFileService"
+                    portType="ns3:MoveFile_ptt" operation="MoveFile"
+                    inputVariable="MoveFileInput"
+                    outputVariable="MoveFileOutput"
+                    bpelx:inputHeaderVariable="MoveFileHeader"/>
+          </sequence>
+        </scope>
+      </sequence>
+      <sequence name="Sequence_4">
+        <bpelx:flowN name="ExecuteJobs"
+                     N="count(bpws:getVariableData('InputVariable','schedule','/sch:schedule/sch:job'))"
+                     indexVariable="index">
+          <sequence name="Sequence_1">
+            <scope name="ProcessJob">
+              <variables>
+                <variable name="JobInputVariable" messageType="job:executeJob"/>
+                <variable name="JobEndPointReference"
+                          element="ns2:EndpointReference"/>
+              </variables>
+              <sequence name="Sequence_2">
+                <assign name="SetJobInput">
+                  <copy>
+                    <from variable="InputVariable" part="schedule"
+                          query="/sch:schedule/sch:job[bpws:getVariableData('index')]"/>
+                    <to variable="JobInputVariable" part="payload"
+                        query="/job:executeJob/sch:job"/>
+                  </copy>
+                  <copy>
+                    <from expression="concat(xp20:current-date(), 'T', bpws:getVariableData('JobInputVariable','payload','/job:executeJob/sch:job/sch:startTime'))"/>
+                    <to variable="JobInputVariable" part="payload"
+                        query="/job:executeJob/sch:job/sch:startTime"/>
+                  </copy>
+                </assign>
+                <wait name="WaitUntilStartTime"
+                      until="bpws:getVariableData('JobInputVariable','payload','/job:executeJob/sch:job/sch:startTime')"/>
+                <assign name="setJobEndPointReference">
+                  <bpelx:annotation>
+                    <bpelx:pattern>transformation</bpelx:pattern>
+                  </bpelx:annotation>
+                  <copy>
+                    <from expression="ora:processXSLT('createEndPointReference.xsl',bpws:getVariableData('JobInputVariable','payload'))"/>
+                    <to variable="JobEndPointReference"/>
+                  </copy>
+                </assign>
+                <assign name="SetPartnerLink">
+                  <copy>
+                    <from variable="JobEndPointReference"/>
+                    <to partnerLink="JobService"/>
+                  </copy>
+                </assign>
+                <invoke name="ExecuteJob" partnerLink="JobService"
+                        portType="job:Job" operation="executeJob"
+                        inputVariable="JobInputVariable"/>
+              </sequence>
+            </scope>
+          </sequence>
+        </bpelx:flowN>
+      </sequence>
+    </flow>
+  </sequence>
+</process>

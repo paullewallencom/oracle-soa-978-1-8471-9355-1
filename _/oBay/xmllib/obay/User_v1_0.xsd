@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="http://schemas.packtpub.com/obay/usr" 
+            elementFormDefault="qualified" 
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+            xmlns:cmn="http://schemas.packtpub.com/obay/cmn" 
+            xmlns="http://schemas.packtpub.com/obay/usr">
+
+    <xsd:import namespace="http://schemas.packtpub.com/obay/cmn" schemaLocation="Common_v1_0.xsd"/>
+                 
+    <xsd:element name="credential" type="tCredential"/>
+    <xsd:element name="password" type="tPassword"/>
+    <xsd:element name="user" type="tUser"/>
+    <xsd:element name="userStatus" type="tUserStatus"/>
+    <xsd:element name="userId" type="tUserId"/>
+    
+    <xsd:complexType name="tCredential">
+        <xsd:sequence>
+            <xsd:element name="userId" type="tUserId"/>
+            <xsd:element name="password" type="tPassword"/>
+            <xsd:element name="realm" type="xsd:string"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="tUser"> 
+        <xsd:sequence>
+            <xsd:element name="userId" type="tUserId"/>
+            <xsd:element ref="cmn:name"/>  
+            <xsd:element ref="cmn:dob"/>
+            <xsd:element ref="cmn:address"/>
+            <xsd:element ref="cmn:emailAddress"/>
+            <xsd:element ref="cmn:creditCard"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:simpleType name="tUserId">
+        <xsd:restriction base="xsd:string">
+            <xsd:maxLength value="20"/>
+            <xsd:minLength value="6"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="tUserStatus">
+        <xsd:restriction base="xsd:string">
+            <xsd:maxLength value="20"/>
+            <xsd:minLength value="3"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="tPassword">
+        <xsd:restriction base="xsd:string">
+            <xsd:maxLength value="20"/>
+            <xsd:minLength value="8"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+     
+</xsd:schema>

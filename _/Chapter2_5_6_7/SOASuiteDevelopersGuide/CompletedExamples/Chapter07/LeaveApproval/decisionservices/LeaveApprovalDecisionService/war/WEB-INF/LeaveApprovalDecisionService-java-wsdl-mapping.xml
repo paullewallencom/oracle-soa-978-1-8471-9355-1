@@ -1,0 +1,324 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<java-wsdl-mapping xmlns="http://java.sun.com/xml/ns/j2ee"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee
+                   http://www.ibm.com/webservices/xsd/j2ee_jaxrpc_mapping_1_1.xsd"
+                   version="1.1">
+  <package-mapping>
+    <package-type>oracle.bpel.services.common</package-type>
+    <namespaceURI>http://xmlns.oracle.com/bpel</namespaceURI>
+  </package-mapping>
+  <package-mapping>
+    <package-type>oracle.bpel.services.rules</package-type>
+    <namespaceURI>http://xmlns.packtpub.com/LeaveApproval/LeaveApprovalDecisionService</namespaceURI>
+  </package-mapping>
+  <java-xml-type-mapping>
+    <java-type>javax.xml.soap.SOAPElement</java-type>
+    <root-type-qname xmlns:rtq="http://xmlns.packtpub.com/LeaveApproval/LeaveApprovalDecisionService">rtq:tWatchList</root-type-qname>
+    <qname-scope>complexType</qname-scope>
+  </java-xml-type-mapping>
+  <java-xml-type-mapping>
+    <java-type>javax.xml.soap.SOAPElement</java-type>
+    <root-type-qname xmlns:rtq="http://xmlns.packtpub.com/LeaveApproval/LeaveApprovalDecisionService">rtq:tAssertExecuteWatchStatelessPattern</root-type-qname>
+    <qname-scope>complexType</qname-scope>
+  </java-xml-type-mapping>
+  <java-xml-type-mapping>
+    <java-type>javax.xml.soap.SOAPElement</java-type>
+    <root-type-qname xmlns:rtq="http://www.w3.org/2001/XMLSchema">rtq:NCName</root-type-qname>
+    <qname-scope>simpleType</qname-scope>
+  </java-xml-type-mapping>
+  <java-xml-type-mapping>
+    <java-type>javax.xml.soap.SOAPElement</java-type>
+    <root-type-qname xmlns:rtq="http://xmlns.packtpub.com/LeaveApproval/LeaveApprovalDecisionService">rtq:tAssertExecuteWatchStatefulDecision</root-type-qname>
+    <qname-scope>complexType</qname-scope>
+  </java-xml-type-mapping>
+  <java-xml-type-mapping>
+    <java-type>javax.xml.soap.SOAPElement</java-type>
+    <root-type-qname xmlns:rtq="http://xmlns.packtpub.com/LeaveApproval/LeaveApprovalDecisionService">rtq:callFunctionStatefulDecision</root-type-qname>
+    <qname-scope>element</qname-scope>
+  </java-xml-type-mapping>
+  <java-xml-type-mapping>
+    <java-type>javax.xml.soap.SOAPElement</java-type>
+    <root-type-qname xmlns:rtq="http://xmlns.packtpub.com/LeaveApproval/LeaveApprovalDecisionService">rtq:callFunctionStatelessDecision</root-type-qname>
+    <qname-scope>element</qname-scope>
+  </java-xml-type-mapping>
+  <java-xml-type-mapping>
+    <java-type>javax.xml.soap.SOAPElement</java-type>
+    <root-type-qname xmlns:rtq="http://xmlns.packtpub.com/LeaveApproval/LeaveApprovalDecisionService">rtq:tAssertExecuteWatchStatefulPattern</root-type-qname>
+    <qname-scope>complexType</qname-scope>
+  </java-xml-type-mapping>
+  <java-xml-type-mapping>
+    <java-type>javax.xml.soap.SOAPElement</java-type>
+    <root-type-qname xmlns:rtq="http://xmlns.oracle.com/bpel">rtq:bpelProcess</root-type-qname>
+    <qname-scope>element</qname-scope>
+  </java-xml-type-mapping>
+  <java-xml-type-mapping>
+    <java-type>javax.xml.soap.SOAPElement</java-type>
+    <root-type-qname xmlns:rtq="http://websphere.ibm.com/webservices/">rtq:SOAPElement</root-type-qname>
+    <qname-scope>complexType</qname-scope>
+  </java-xml-type-mapping>
+  <java-xml-type-mapping>
+    <java-type>javax.xml.soap.SOAPElement</java-type>
+    <root-type-qname xmlns:rtq="http://xmlns.packtpub.com/LeaveApproval/LeaveApprovalDecisionService">rtq:tAssertExecuteWatchStatelessDecision</root-type-qname>
+    <qname-scope>complexType</qname-scope>
+  </java-xml-type-mapping>
+  <java-xml-type-mapping>
+    <java-type>javax.xml.soap.SOAPElement</java-type>
+    <root-type-qname xmlns:rtq="http://xmlns.packtpub.com/LeaveApproval/LeaveApprovalDecisionService">rtq:callFunctionStateless</root-type-qname>
+    <qname-scope>element</qname-scope>
+  </java-xml-type-mapping>
+  <java-xml-type-mapping>
+    <java-type>javax.xml.soap.SOAPElement</java-type>
+    <root-type-qname xmlns:rtq="http://xmlns.packtpub.com/LeaveApproval/LeaveApprovalDecisionService">rtq:tWatchDecision</root-type-qname>
+    <qname-scope>complexType</qname-scope>
+  </java-xml-type-mapping>
+  <java-xml-type-mapping>
+    <java-type>javax.xml.soap.SOAPElement</java-type>
+    <root-type-qname xmlns:rtq="http://xmlns.packtpub.com/LeaveApproval/LeaveApprovalDecisionService">rtq:assertExecuteWatchStatefulDecision</root-type-qname>
+    <qname-scope>element</qname-scope>
+  </java-xml-type-mapping>
+  <java-xml-type-mapping>
+    <java-type>javax.xml.soap.SOAPElement</java-type>
+    <root-type-qname xmlns:rtq="http://xmlns.packtpub.com/LeaveApproval/LeaveApprovalDecisionService">rtq:tProperty</root-type-qname>
+    <qname-scope>complexType</qname-scope>
+  </java-xml-type-mapping>
+  <java-xml-type-mapping>
+    <java-type>javax.xml.soap.SOAPElement[]</java-type>
+    <anonymous-type-qname>http://www.w3.org/2001/XMLSchema:NCName[0,unbounded]</anonymous-type-qname>
+    <qname-scope>complexType</qname-scope>
+  </java-xml-type-mapping>
+  <java-xml-type-mapping>
+    <java-type>javax.xml.soap.SOAPElement</java-type>
+    <root-type-qname xmlns:rtq="http://xmlns.packtpub.com/LeaveApproval/LeaveApprovalDecisionService">rtq:assertExecuteWatchStateful</root-type-qname>
+    <qname-scope>element</qname-scope>
+  </java-xml-type-mapping>
+  <java-xml-type-mapping>
+    <java-type>javax.xml.soap.SOAPElement</java-type>
+    <root-type-qname xmlns:rtq="http://xmlns.oracle.com/bpel">rtq:tBpelProcess</root-type-qname>
+    <qname-scope>complexType</qname-scope>
+  </java-xml-type-mapping>
+  <java-xml-type-mapping>
+    <java-type>javax.xml.soap.SOAPElement</java-type>
+    <root-type-qname xmlns:rtq="http://xmlns.packtpub.com/LeaveApproval/LeaveApprovalDecisionService">rtq:tDecisionServiceError</root-type-qname>
+    <qname-scope>complexType</qname-scope>
+  </java-xml-type-mapping>
+  <java-xml-type-mapping>
+    <java-type>javax.xml.soap.SOAPElement</java-type>
+    <root-type-qname xmlns:rtq="http://www.w3.org/2001/XMLSchema">rtq:long</root-type-qname>
+    <qname-scope>simpleType</qname-scope>
+  </java-xml-type-mapping>
+  <java-xml-type-mapping>
+    <java-type>javax.xml.soap.SOAPElement</java-type>
+    <root-type-qname xmlns:rtq="http://xmlns.packtpub.com/LeaveApproval/LeaveApprovalDecisionService">rtq:tPropertyList</root-type-qname>
+    <qname-scope>complexType</qname-scope>
+  </java-xml-type-mapping>
+  <java-xml-type-mapping>
+    <java-type>org.w3c.dom.Element</java-type>
+    <root-type-qname xmlns:rtq="http://xml.apache.org/xml-soap">rtq:Element</root-type-qname>
+    <qname-scope>complexType</qname-scope>
+  </java-xml-type-mapping>
+  <java-xml-type-mapping>
+    <java-type>javax.xml.soap.SOAPElement</java-type>
+    <root-type-qname xmlns:rtq="http://xmlns.packtpub.com/LeaveApproval/LeaveApprovalDecisionService">rtq:tCallFunctionStatefulPattern</root-type-qname>
+    <qname-scope>complexType</qname-scope>
+  </java-xml-type-mapping>
+  <java-xml-type-mapping>
+    <java-type>javax.xml.soap.SOAPElement</java-type>
+    <root-type-qname xmlns:rtq="http://xmlns.packtpub.com/LeaveApproval/LeaveApprovalDecisionService">rtq:tCallFunctionStatelessDecision</root-type-qname>
+    <qname-scope>complexType</qname-scope>
+  </java-xml-type-mapping>
+  <java-xml-type-mapping>
+    <java-type>javax.xml.soap.SOAPElement</java-type>
+    <root-type-qname xmlns:rtq="http://www.w3.org/2001/XMLSchema">rtq:anyType</root-type-qname>
+    <qname-scope>simpleType</qname-scope>
+  </java-xml-type-mapping>
+  <java-xml-type-mapping>
+    <java-type>javax.xml.soap.SOAPElement</java-type>
+    <root-type-qname xmlns:rtq="http://xmlns.packtpub.com/LeaveApproval/LeaveApprovalDecisionService">rtq:tDecisionContext</root-type-qname>
+    <qname-scope>complexType</qname-scope>
+  </java-xml-type-mapping>
+  <java-xml-type-mapping>
+    <java-type>javax.xml.soap.SOAPElement</java-type>
+    <root-type-qname xmlns:rtq="http://xmlns.packtpub.com/LeaveApproval/LeaveApprovalDecisionService">rtq:tCallFunctionStatelessPattern</root-type-qname>
+    <qname-scope>complexType</qname-scope>
+  </java-xml-type-mapping>
+  <java-xml-type-mapping>
+    <java-type>javax.xml.soap.SOAPElement</java-type>
+    <root-type-qname xmlns:rtq="http://xmlns.packtpub.com/LeaveApproval/LeaveApprovalDecisionService">rtq:tCallFunctionStatefulDecision</root-type-qname>
+    <qname-scope>complexType</qname-scope>
+  </java-xml-type-mapping>
+  <java-xml-type-mapping>
+    <java-type>javax.xml.soap.SOAPElement</java-type>
+    <root-type-qname xmlns:rtq="http://xmlns.packtpub.com/LeaveApproval/LeaveApprovalDecisionService">rtq:tDecideContext</root-type-qname>
+    <qname-scope>complexType</qname-scope>
+  </java-xml-type-mapping>
+  <java-xml-type-mapping>
+    <java-type>javax.xml.soap.SOAPElement</java-type>
+    <root-type-qname xmlns:rtq="http://xmlns.packtpub.com/LeaveApproval/LeaveApprovalDecisionService">rtq:tAssertExecutePattern</root-type-qname>
+    <qname-scope>complexType</qname-scope>
+  </java-xml-type-mapping>
+  <java-xml-type-mapping>
+    <java-type>javax.xml.soap.SOAPElement</java-type>
+    <root-type-qname xmlns:rtq="http://xmlns.packtpub.com/LeaveApproval/LeaveApprovalDecisionService">rtq:tWatchPattern</root-type-qname>
+    <qname-scope>complexType</qname-scope>
+  </java-xml-type-mapping>
+  <java-xml-type-mapping>
+    <java-type>javax.xml.soap.SOAPElement</java-type>
+    <root-type-qname xmlns:rtq="http://xmlns.packtpub.com/LeaveApproval/LeaveApprovalDecisionService">rtq:tAssertPattern</root-type-qname>
+    <qname-scope>complexType</qname-scope>
+  </java-xml-type-mapping>
+  <java-xml-type-mapping>
+    <java-type>javax.xml.soap.SOAPElement</java-type>
+    <root-type-qname xmlns:rtq="http://xmlns.packtpub.com/LeaveApproval/LeaveApprovalDecisionService">rtq:errorInfo</root-type-qname>
+    <qname-scope>element</qname-scope>
+  </java-xml-type-mapping>
+  <java-xml-type-mapping>
+    <java-type>javax.xml.soap.SOAPElement</java-type>
+    <root-type-qname xmlns:rtq="http://xmlns.packtpub.com/LeaveApproval/LeaveApprovalDecisionService">rtq:assertExecuteWatchStateless</root-type-qname>
+    <qname-scope>element</qname-scope>
+  </java-xml-type-mapping>
+  <java-xml-type-mapping>
+    <java-type>javax.xml.soap.SOAPElement</java-type>
+    <root-type-qname xmlns:rtq="http://www.w3.org/2001/XMLSchema">rtq:string</root-type-qname>
+    <qname-scope>simpleType</qname-scope>
+  </java-xml-type-mapping>
+  <java-xml-type-mapping>
+    <java-type>javax.xml.soap.SOAPElement</java-type>
+    <root-type-qname xmlns:rtq="http://xmlns.packtpub.com/LeaveApproval/LeaveApprovalDecisionService">rtq:watchDecision</root-type-qname>
+    <qname-scope>element</qname-scope>
+  </java-xml-type-mapping>
+  <java-xml-type-mapping>
+    <java-type>javax.xml.soap.SOAPElement</java-type>
+    <root-type-qname xmlns:rtq="http://xmlns.packtpub.com/LeaveApproval/LeaveApprovalDecisionService">rtq:watch</root-type-qname>
+    <qname-scope>element</qname-scope>
+  </java-xml-type-mapping>
+  <java-xml-type-mapping>
+    <java-type>javax.xml.soap.SOAPElement</java-type>
+    <root-type-qname xmlns:rtq="http://xmlns.packtpub.com/LeaveApproval/LeaveApprovalDecisionService">rtq:assertExecute</root-type-qname>
+    <qname-scope>element</qname-scope>
+  </java-xml-type-mapping>
+  <java-xml-type-mapping>
+    <java-type>javax.xml.soap.SOAPElement</java-type>
+    <root-type-qname xmlns:rtq="http://xmlns.packtpub.com/LeaveApproval/LeaveApprovalDecisionService">rtq:callFunctionStateful</root-type-qname>
+    <qname-scope>element</qname-scope>
+  </java-xml-type-mapping>
+  <java-xml-type-mapping>
+    <java-type>javax.xml.soap.SOAPElement</java-type>
+    <root-type-qname xmlns:rtq="http://xmlns.packtpub.com/LeaveApproval/LeaveApprovalDecisionService">rtq:assertExecuteWatchStatelessDecision</root-type-qname>
+    <qname-scope>element</qname-scope>
+  </java-xml-type-mapping>
+  <java-xml-type-mapping>
+    <java-type>javax.xml.soap.SOAPElement</java-type>
+    <root-type-qname xmlns:rtq="http://xmlns.packtpub.com/LeaveApproval/LeaveApprovalDecisionService">rtq:assert</root-type-qname>
+    <qname-scope>element</qname-scope>
+  </java-xml-type-mapping>
+  <java-xml-type-mapping>
+    <java-type>javax.xml.soap.SOAPElement[]</java-type>
+    <anonymous-type-qname>http://xmlns.packtpub.com/LeaveApproval/LeaveApprovalDecisionService:tProperty[0,unbounded]</anonymous-type-qname>
+    <qname-scope>complexType</qname-scope>
+  </java-xml-type-mapping>
+  <java-xml-type-mapping>
+    <java-type>javax.xml.soap.SOAPElement[]</java-type>
+    <anonymous-type-qname>http://xmlns.packtpub.com/LeaveApproval/LeaveApprovalDecisionService:tPropertyList&gt;property[0,unbounded]</anonymous-type-qname>
+    <qname-scope>complexType</qname-scope>
+  </java-xml-type-mapping>
+  <java-xml-type-mapping>
+    <java-type>javax.xml.soap.SOAPElement[]</java-type>
+    <anonymous-type-qname>http://xmlns.packtpub.com/LeaveApproval/LeaveApprovalDecisionService:tWatchList&gt;watch[0,unbounded]</anonymous-type-qname>
+    <qname-scope>complexType</qname-scope>
+  </java-xml-type-mapping>
+  <exception-mapping>
+    <exception-type>oracle.bpel.services.rules.DecisionServiceError</exception-type>
+    <wsdl-message xmlns:exMsg="http://xmlns.packtpub.com/LeaveApproval/LeaveApprovalDecisionService">exMsg:decisionServiceError</wsdl-message>
+  </exception-mapping>
+  <service-interface-mapping>
+    <service-interface>oracle.bpel.services.rules.DecisionService</service-interface>
+    <wsdl-service-name xmlns:serviceNS="http://xmlns.packtpub.com/LeaveApproval/LeaveApprovalDecisionService">serviceNS:LeaveApprovalDecisionService</wsdl-service-name>
+    <port-mapping>
+      <port-name>LeaveApprovalDecisionServicePort</port-name>
+        <java-port-name>LeaveApprovalDecisionServicePort</java-port-name>
+      </port-mapping>
+  </service-interface-mapping>
+  <service-endpoint-interface-mapping>
+    <service-endpoint-interface>oracle.bpel.services.rules.IDecisionService</service-endpoint-interface>
+    <wsdl-port-type xmlns:portTypeNS="http://xmlns.packtpub.com/LeaveApproval/LeaveApprovalDecisionService">portTypeNS:IDecisionService</wsdl-port-type>
+    <wsdl-binding xmlns:bindingNS="http://xmlns.packtpub.com/LeaveApproval/LeaveApprovalDecisionService">bindingNS:LeaveApprovalDecisionServiceSOAPBinding</wsdl-binding>
+    <service-endpoint-method-mapping>
+      <java-method-name>_assert</java-method-name>
+      <wsdl-operation>assert</wsdl-operation>
+      <method-param-parts-mapping>
+        <param-position>0</param-position>
+        <param-type>javax.xml.soap.SOAPElement</param-type>
+        <wsdl-message-mapping>
+          <wsdl-message xmlns:wsdlMsgNS="http://xmlns.packtpub.com/LeaveApproval/LeaveApprovalDecisionService">wsdlMsgNS:assertMessage</wsdl-message>
+          <wsdl-message-part-name>payload</wsdl-message-part-name>
+          <parameter-mode>IN</parameter-mode>
+        </wsdl-message-mapping>
+      </method-param-parts-mapping>
+    </service-endpoint-method-mapping>    <service-endpoint-method-mapping>
+      <java-method-name>assertExecute</java-method-name>
+      <wsdl-operation>assertExecute</wsdl-operation>
+      <method-param-parts-mapping>
+        <param-position>0</param-position>
+        <param-type>javax.xml.soap.SOAPElement</param-type>
+        <wsdl-message-mapping>
+          <wsdl-message xmlns:wsdlMsgNS="http://xmlns.packtpub.com/LeaveApproval/LeaveApprovalDecisionService">wsdlMsgNS:assertExecuteMessage</wsdl-message>
+          <wsdl-message-part-name>payload</wsdl-message-part-name>
+          <parameter-mode>IN</parameter-mode>
+        </wsdl-message-mapping>
+      </method-param-parts-mapping>
+    </service-endpoint-method-mapping>    <service-endpoint-method-mapping>
+      <java-method-name>assertExecuteWatchStateful</java-method-name>
+      <wsdl-operation>assertExecuteWatchStateful</wsdl-operation>
+      <method-param-parts-mapping>
+        <param-position>0</param-position>
+        <param-type>javax.xml.soap.SOAPElement</param-type>
+        <wsdl-message-mapping>
+          <wsdl-message xmlns:wsdlMsgNS="http://xmlns.packtpub.com/LeaveApproval/LeaveApprovalDecisionService">wsdlMsgNS:assertExecuteWatchStatefulMessage</wsdl-message>
+          <wsdl-message-part-name>payload</wsdl-message-part-name>
+          <parameter-mode>IN</parameter-mode>
+        </wsdl-message-mapping>
+      </method-param-parts-mapping>
+      <wsdl-return-value-mapping>
+        <method-return-value>javax.xml.soap.SOAPElement</method-return-value>
+        <wsdl-message xmlns:wsdlMsgNS="http://xmlns.packtpub.com/LeaveApproval/LeaveApprovalDecisionService">wsdlMsgNS:assertExecuteWatchStatefulDecisionMessage</wsdl-message>
+        <wsdl-message-part-name>payload</wsdl-message-part-name>
+      </wsdl-return-value-mapping>
+    </service-endpoint-method-mapping>    <service-endpoint-method-mapping>
+      <java-method-name>assertExecuteWatchStateless</java-method-name>
+      <wsdl-operation>assertExecuteWatchStateless</wsdl-operation>
+      <method-param-parts-mapping>
+        <param-position>0</param-position>
+        <param-type>javax.xml.soap.SOAPElement</param-type>
+        <wsdl-message-mapping>
+          <wsdl-message xmlns:wsdlMsgNS="http://xmlns.packtpub.com/LeaveApproval/LeaveApprovalDecisionService">wsdlMsgNS:assertExecuteWatchStatelessMessage</wsdl-message>
+          <wsdl-message-part-name>payload</wsdl-message-part-name>
+          <parameter-mode>IN</parameter-mode>
+        </wsdl-message-mapping>
+      </method-param-parts-mapping>
+      <wsdl-return-value-mapping>
+        <method-return-value>javax.xml.soap.SOAPElement</method-return-value>
+        <wsdl-message xmlns:wsdlMsgNS="http://xmlns.packtpub.com/LeaveApproval/LeaveApprovalDecisionService">wsdlMsgNS:assertExecuteWatchStatelessDecisionMessage</wsdl-message>
+        <wsdl-message-part-name>payload</wsdl-message-part-name>
+      </wsdl-return-value-mapping>
+    </service-endpoint-method-mapping>    <service-endpoint-method-mapping>
+      <java-method-name>watch</java-method-name>
+      <wsdl-operation>watch</wsdl-operation>
+      <method-param-parts-mapping>
+        <param-position>0</param-position>
+        <param-type>javax.xml.soap.SOAPElement</param-type>
+        <wsdl-message-mapping>
+          <wsdl-message xmlns:wsdlMsgNS="http://xmlns.packtpub.com/LeaveApproval/LeaveApprovalDecisionService">wsdlMsgNS:watchMessage</wsdl-message>
+          <wsdl-message-part-name>payload</wsdl-message-part-name>
+          <parameter-mode>IN</parameter-mode>
+        </wsdl-message-mapping>
+      </method-param-parts-mapping>
+      <wsdl-return-value-mapping>
+        <method-return-value>javax.xml.soap.SOAPElement</method-return-value>
+        <wsdl-message xmlns:wsdlMsgNS="http://xmlns.packtpub.com/LeaveApproval/LeaveApprovalDecisionService">wsdlMsgNS:watchDecisionMessage</wsdl-message>
+        <wsdl-message-part-name>payload</wsdl-message-part-name>
+      </wsdl-return-value-mapping>
+    </service-endpoint-method-mapping>
+  </service-endpoint-interface-mapping>
+</java-wsdl-mapping>
+

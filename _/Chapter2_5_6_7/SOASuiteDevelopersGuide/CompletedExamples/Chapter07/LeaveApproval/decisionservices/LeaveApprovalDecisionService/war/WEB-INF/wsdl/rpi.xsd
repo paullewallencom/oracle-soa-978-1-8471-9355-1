@@ -1,0 +1,528 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+-->
+<xsd:schema blockDefault="#all" 
+            attributeFormDefault="unqualified"
+            elementFormDefault="qualified"
+            targetNamespace="http://xmlns.packtpub.com/LeaveApproval/LeaveApprovalDecisionService"
+            xmlns="http://xmlns.packtpub.com/LeaveApproval/LeaveApprovalDecisionService"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns:tns="http://xmlns.packtpub.com/LeaveApproval/LeaveApprovalDecisionService">
+
+  <xsd:include schemaLocation="common.xsd"/>
+
+  <!--
+    Top level elements to follow here
+  -->
+  <xsd:element name="decisionServices" type="tns:tDecisionServiceList"/>
+
+  <xsd:element name="configuration" type="tns:tDecisionServiceConfiguration"/>
+
+  <!--
+    Deployment types to follow here (bpel.xml)
+  -->
+  <xsd:simpleType name="tRuleEngineProviderName">
+    <xsd:annotation>
+      <xsd:documentation>
+        Enumeration type of supported Rule Engines
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:NCName">
+      <xsd:enumeration value="Oracle"/>
+      <xsd:enumeration value="Ilog"/>
+      <xsd:enumeration value="Corticon"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="tDecisionServicePatternName">
+    <xsd:annotation>
+      <xsd:documentation>
+        Enumeration type of supported Rule Engine interaction patterns
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:NCName">
+      <xsd:enumeration value="Assert"/>
+      <xsd:enumeration value="AssertExecute"/>
+      <xsd:enumeration value="Watch"/>
+      <xsd:enumeration value="AssertExecuteWatchStateless"/>
+      <xsd:enumeration value="AssertExecuteWatchStateful"/>
+      <xsd:enumeration value="CallFunctionStateless"/>
+      <xsd:enumeration value="CallFunctionStateful"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="tRuleEngineRepositoryType">
+    <xsd:annotation>
+      <xsd:documentation>
+        Enumeration type of supported Rule Engine Repository Types
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:NCName">
+      <xsd:enumeration value="File"/>
+      <xsd:enumeration value="WebDAV"/>
+      <xsd:enumeration value="Service"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:complexType name="tDecisionServiceList">
+    <xsd:annotation>
+      <xsd:documentation>
+        Top level deployment descriptor type
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="ruleEngineProvider" type="tns:tRuleEngineProvider" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="decisionService" type="tns:tDecisionService" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+    <xsd:attributeGroup ref="tns:name-desc"/>
+  </xsd:complexType>
+
+  <xsd:complexType name="tDecisionService">
+    <xsd:annotation>
+      <xsd:documentation>
+        Decision Service deployment descriptor. 
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="catalog" type="xsd:NCName" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="catalogVersion" type="xsd:NCName" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="ruleset" type="xsd:NCName" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="rulesetVersion" type="xsd:NCName" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="pattern" type="tns:tPattern" minOccurs="1" maxOccurs="unbounded"/>
+      <xsd:element name="properties" type="tns:tPropertyList" minOccurs="0" maxOccurs="1"/>
+    </xsd:sequence>
+    <xsd:attribute name="name" type="xsd:NCName" use="required"/>
+    <xsd:attribute name="ruleEngineProviderReference" type="xsd:NCName" use="required"/>
+    <xsd:attribute name="targetNamespace" 
+		   type="xsd:string" 
+		   use="optional" 
+		   default="http://xmlns.packtpub.com/LeaveApproval/LeaveApprovalDecisionService"/>
+    <xsd:attribute name="decisionService" type="xsd:string" use="optional" default="default"/>
+  </xsd:complexType>
+
+  <xsd:complexType name="tRuleEngineProvider">
+    <xsd:annotation>
+      <xsd:documentation>
+        Base type for all rule engines
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="repository" type="tns:tRuleEngineRepository" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="properties" type="tns:tPropertyList" minOccurs="0" maxOccurs="1"/>
+    </xsd:sequence>
+    <xsd:attributeGroup ref="tns:name-desc"/>
+    <xsd:attribute name="provider" type="tns:tRuleEngineProviderName" use="required"/>
+  </xsd:complexType>
+
+  <xsd:complexType name="tRuleEngineRepository">
+    <xsd:sequence>
+      <xsd:element name="file" type="xsd:string"/>
+      <xsd:element name="webdav" type="tns:tWebDavCredential"/>
+      <xsd:element name="service" type="tns:tServiceCredential"/>
+      <xsd:element name="schemaFile" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="properties" type="tns:tPropertyList"/>
+    </xsd:sequence>
+    <xsd:attribute name="type" type="tns:tRuleEngineRepositoryType" use="required"/>
+  </xsd:complexType>
+
+  <xsd:complexType name="tWebDavCredential">
+    <xsd:sequence>
+      <xsd:element name="url" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="walletPath" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="username" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="password" type="tns:tPassword" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="proxy-host" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="proxy-port" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="proxy-user" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="proxy-password" type="tns:tPassword" minOccurs="0" maxOccurs="1"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="tServiceCredential">
+    <xsd:sequence>
+      <xsd:element name="url" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="username" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="password" type="tns:tPassword" minOccurs="0" maxOccurs="1"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="tPattern">
+    <xsd:annotation>
+      <xsd:documentation>
+        Patterns used in decisionservices.xml configuration file
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="arguments" type="tns:tArgumentList" minOccurs="1" maxOccurs="1"/>
+    </xsd:sequence>
+    <xsd:attribute name="name" type="tns:tDecisionServicePatternName" use="required"/>
+  </xsd:complexType>
+
+  <xsd:complexType name="tArgumentList">
+    <xsd:annotation>
+      <xsd:documentation>
+        Arguments used in decisionservices.xml configuration file
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="assert" type="tns:tAssert" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="watch" type="xsd:NCName" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="call" type="xsd:NCName" minOccurs="0" maxOccurs="1"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="tAssert">
+    <xsd:annotation>
+      <xsd:documentation>
+        Assert Type
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:simpleContent>
+      <xsd:extension base="xsd:NCName">
+        <xsd:attribute name="xpath" type="xsd:string" use="optional"/>
+      </xsd:extension>
+    </xsd:simpleContent>
+  </xsd:complexType>
+
+  <!--
+    RPI types to follow here
+  -->
+  <xsd:complexType name="tRuleCatalog">
+    <xsd:annotation>
+      <xsd:documentation>
+        Abstract RuleCatalog type
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="tns:tVersionableDataModelElement">
+        <xsd:sequence>
+          <xsd:element name="datamodel" type="tns:tDataModel" minOccurs="0" maxOccurs="1"/>
+          <xsd:element name="rulesets" type="tns:tRuleSetList" minOccurs="0" maxOccurs="1"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+    
+  <xsd:complexType name="tDataModel">
+    <xsd:annotation>
+      <xsd:documentation>
+        Abstract data model type
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="factTypes" type="tns:tFactTypeList" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="parameters" type="tns:tParameterList" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="functions" type="tns:tFunctionList" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="properties" type="tns:tPropertyList" minOccurs="0" maxOccurs="1"/>
+    </xsd:sequence>
+  </xsd:complexType>
+    
+  <xsd:complexType name="tRuleSet">
+    <xsd:annotation>
+      <xsd:documentation>
+        Abstract Ruleset type
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="tns:tVersionableDataModelElement">
+        <xsd:sequence>
+          <xsd:element name="rules" type="tns:tRuleList" minOccurs="0" maxOccurs="1"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:complexType name="tRuleSetList">
+    <xsd:annotation>
+      <xsd:documentation>
+        Abstract Ruleset type
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="ruleset" type="tns:tRuleSet" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="tRule">
+    <xsd:annotation>
+      <xsd:documentation>
+        Abstract Rule type
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="tns:tDataModelElement">
+        <xsd:sequence>
+          <xsd:element name="properties" type="tns:tPropertyList" minOccurs="0" maxOccurs="1"/>
+          <xsd:element name="if" type="tns:tAntecedentList" minOccurs="0" maxOccurs="1"/>
+          <xsd:element name="then" type="tns:tConsequentList" minOccurs="0" maxOccurs="1"/>
+        </xsd:sequence>
+        <xsd:attribute name="priority" type="xsd:int" use="optional" default="0"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:complexType name="tRuleList">
+    <xsd:annotation>
+      <xsd:documentation>
+        Abstract Rule type List
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="rule" type="tns:tRule" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="tAntecedentList">
+    <xsd:annotation>
+      <xsd:documentation>
+        Antecedent of a rule
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="pattern" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+  </xsd:complexType>
+    
+  <xsd:complexType name="tConsequentList">
+    <xsd:annotation>
+      <xsd:documentation>
+        Antecedent of a rule
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="pattern" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+  </xsd:complexType>
+    
+  <xsd:complexType name="tDataModelElement">
+    <xsd:annotation>
+      <xsd:documentation>
+        Abstract data model element
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:attributeGroup ref="tns:name-desc"/>
+  </xsd:complexType>
+
+  <xsd:complexType name="tAliasableDataModelElement">
+    <xsd:annotation>
+      <xsd:documentation>
+        Abstract data model element
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="tns:tDataModelElement">
+        <xsd:attribute name="alias" type="xsd:NCName" use="optional"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:complexType name="tVersionableDataModelElement">
+    <xsd:annotation>
+      <xsd:documentation>
+        Abstract data model element
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="tns:tDataModelElement">
+        <xsd:attribute name="version" type="xsd:NCName" use="optional"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:complexType name="tFactType">
+    <xsd:annotation>
+      <xsd:documentation>
+        Abstract Fact Type
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="tns:tAliasableDataModelElement">
+        <xsd:attribute name="category" type="tns:tFactTypeCategory" use="required"/>
+        <xsd:attribute name="factContext" type="xsd:NCName" use="required"/>
+        <xsd:attribute name="direction" type="tns:tParameterDirection" use="optional"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:complexType name="tFactTypeList">
+    <xsd:annotation>
+      <xsd:documentation>
+        Abstract Fact Type List
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="factType" type="tns:tFactType" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:simpleType name="tFactTypeCategory">
+    <xsd:annotation>
+      <xsd:documentation>
+        Enumeration type of supported fact types
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:NCName">
+      <xsd:enumeration value="Primitive"/>
+      <xsd:enumeration value="Java"/>
+      <xsd:enumeration value="Xml"/>
+      <xsd:enumeration value="Propriatary"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:complexType name="tJavaFactType">
+    <xsd:annotation>
+      <xsd:documentation>
+        Java fact type
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="tns:tFactType">
+        <xsd:sequence>
+          <xsd:element name="package" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+          <xsd:element name="extends" type="tns:tFactType" minOccurs="0" maxOccurs="1"/>
+          <xsd:element name="implements" type="tns:tFactType" minOccurs="0" maxOccurs="unbounded"/>
+        </xsd:sequence>
+        <xsd:attribute name="fullyQualifiedName" type="xsd:NCName" use="required"/>
+      </xsd:extension>
+    </xsd:complexContent>    
+  </xsd:complexType>
+
+  <xsd:complexType name="tXmlFactType">
+    <xsd:annotation>
+      <xsd:documentation>
+        Xml fact type
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="tns:tJavaFactType">
+        <xsd:sequence>
+          <xsd:element name="xmlName" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+          <xsd:element name="schemaLocation" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>    
+  </xsd:complexType>
+
+  <xsd:complexType name="tPrimitiveFactType">
+    <xsd:annotation>
+      <xsd:documentation>
+        Primitive fact type
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="tns:tFactType">
+        <xsd:attribute name="type" type="xsd:string" use="required"/>
+      </xsd:extension>
+    </xsd:complexContent>    
+  </xsd:complexType>
+
+  <xsd:simpleType name="tParameterDirection">
+    <xsd:annotation>
+      <xsd:documentation>
+        Direction of parameters 
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:NCName">
+      <xsd:enumeration value="in"/>
+      <xsd:enumeration value="out"/>
+      <xsd:enumeration value="inout"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:complexType name="tParameter">
+    <xsd:annotation>
+      <xsd:documentation>
+        Abstract Parameter
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="tns:tAliasableDataModelElement">
+        <xsd:sequence>
+          <xsd:element name="type" type="tns:tFactType"/>
+        </xsd:sequence>
+        <xsd:attribute name="direction" type="tns:tParameterDirection" use="required"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:complexType name="tParameterList">
+    <xsd:annotation>
+      <xsd:documentation>
+        Parameter List
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="parameter" type="tns:tParameter" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="tFunction">
+    <xsd:annotation>
+      <xsd:documentation>
+        Function
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="tns:tAliasableDataModelElement">
+        <xsd:sequence>
+          <xsd:element name="parameters" type="tns:tParameterList" minOccurs="0" maxOccurs="1"/>
+          <xsd:element name="return" type="tns:tParameter" minOccurs="0" maxOccurs="1"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:complexType name="tFunctionList">
+    <xsd:annotation>
+      <xsd:documentation>
+        Function List
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="function" type="tns:tFunction" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="tDecisionServiceConfiguration">
+    <xsd:annotation>
+      <xsd:documentation>
+        Decision Service Configuration
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="ruleEngine" 
+                   type="tns:tRuleEngineImplementation" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="factContext" 
+                   type="tns:tFactContextImplementation" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="properties" 
+                   type="tns:tPropertyList" minOccurs="0" maxOccurs="1"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="tFactContextImplementation">
+    <xsd:annotation>
+      <xsd:documentation>
+        Fact Context information
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="factContextClass" type="xsd:NCName" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="properties" type="tns:tPropertyList" minOccurs="0" maxOccurs="1"/>
+    </xsd:sequence>
+    <xsd:attributeGroup ref="tns:name-desc"/>
+  </xsd:complexType>
+
+  <xsd:complexType name="tRuleEngineImplementation">
+    <xsd:annotation>
+      <xsd:documentation>
+	Rule Engine Implementation
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="ruleEngineClass" type="xsd:NCName" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="properties" type="tns:tPropertyList" minOccurs="0" maxOccurs="1"/>
+    </xsd:sequence>
+    <xsd:attributeGroup ref="tns:name-desc"/>
+  </xsd:complexType>
+
+</xsd:schema>

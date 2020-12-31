@@ -1,0 +1,13 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<BPELSuitcase>
+   <BPELProcess id="CheckSuspectItem" src="CheckSuspectItem.bpel">
+      <partnerLinkBindings>
+         <partnerLinkBinding name="client">
+            <property name="wsdlLocation">CheckSuspectItem.wsdl</property>
+         </partnerLinkBinding>
+         <partnerLinkBinding name="TaskService">
+            <property name="wsdlLocation">TaskServiceWSIF.wsdl</property>
+         </partnerLinkBinding>
+      </partnerLinkBindings>
+   </BPELProcess>
+</BPELSuitcase>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<fulfillOrder xmlns="http://xmlns.packtpub.com/obay/bp/OrderFulfillment">
+   <orderDesc xmlns="http://schemas.packtpub.com/obay/ord">orderDesc1</orderDesc>
+   <itemId xmlns="http://schemas.packtpub.com/obay/ord">2</itemId>
+   <sellerId xmlns="http://schemas.packtpub.com/obay/ord">xxx</sellerId>
+   <buyerId xmlns="http://schemas.packtpub.com/obay/ord">566666</buyerId>
+   <quantity xmlns="http://schemas.packtpub.com/obay/ord">7</quantity>
+   <itemPrice xmlns="http://schemas.packtpub.com/obay/ord">8</itemPrice>
+</fulfillOrder>

@@ -1,0 +1,97 @@
+<definitions
+     name="AuctionProxy"
+     targetNamespace="http://xmlns.packtpub.com/obay/bs/AuctionProxy"
+     xmlns="http://schemas.xmlsoap.org/wsdl/"
+     xmlns:tns="http://xmlns.packtpub.com/obay/bs/AuctionProxy"
+     xmlns:bpws="http://schemas.xmlsoap.org/ws/2003/03/business-process/"
+     xmlns:plnk="http://schemas.xmlsoap.org/ws/2003/05/partner-link/"
+     xmlns:pns1="http://xmlns.packtpub.com/AuctionProxy/correlationset"
+     xmlns:auc="http://schemas.packtpub.com/obay/auc"
+    >
+    <import namespace="http://xmlns.packtpub.com/AuctionProxy/correlationset" location="AuctionProxy_Properties.wsdl"/>
+    <types>
+        <schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:auc="http://schemas.packtpub.com/obay/auc"
+             targetNamespace="http://xmlns.packtpub.com/obay/bs/AuctionProxy" xmlns:tns="http://xmlns.packtpub.com/obay/bs/AuctionProxy"
+             xmlns:plnk="http://schemas.xmlsoap.org/ws/2003/05/partner-link/">
+            <import namespace="http://schemas.packtpub.com/obay/auc" schemaLocation="http://localhost/orabpel/xmllib/obay/Auction_v1_0.xsd"/>
+            <import namespace="http://schemas.packtpub.com/obay/flt" schemaLocation="http://localhost/orabpel/xmllib/obay/Fault_v1_0.xsd"/>
+
+            <element name="initiateAuction" type="tns:tInitiateAuction"/>
+            <element name="returnAuctionResult" type="tns:tReturnAuctionResult"/>
+            <element name="submitBid" type="tns:tSubmitBid"/>
+            <element name="returnBidResult" type="tns:tReturnBidResult"/>
+
+            <complexType name="tInitiateAuction">
+                <sequence>
+                    <element ref="auc:auctionId"/>
+                    <element ref="auc:auctionType"/>
+                    <element ref="auc:startTime"/>
+                    <element ref="auc:endTime"/>
+                    <element ref="auc:startingPrice"/>
+                    <element ref="auc:reservePrice"/>
+                </sequence>
+            </complexType>
+            <complexType name="tReturnAuctionResult">
+                <sequence>
+                    <element ref="auc:auctionId"/>
+                    <element ref="auc:auctionStatus"/>
+                    <element ref="auc:winningBid"/>
+                </sequence>
+            </complexType>
+            <complexType name="tSubmitBid">
+                <sequence>
+                    <element ref="auc:auctionId"/>
+                    <element ref="auc:bidderId"/>
+                    <element ref="auc:maxAmount"/>
+                </sequence>
+            </complexType>
+            <complexType name="tReturnBidResult">
+                <sequence>
+                    <element ref="auc:bidId"/>
+                    <element ref="auc:bid"/>
+                    <element ref="auc:auction"/>
+                </sequence>
+            </complexType>
+        </schema>
+    </types>
+    <message name="returnAuctionResult">
+        <part name="payload" element="tns:returnAuctionResult"/>
+    </message>
+    <message name="initiateAuction">
+        <part name="payload" element="tns:initiateAuction"/>
+    </message>
+    <message name="submitBid">
+        <part name="payload" element="tns:submitBid"/>
+    </message>
+    <message name="returnBidResult">
+        <part name="payload" element="tns:returnBidResult"/>
+    </message>
+    <portType name="AuctionProxyCallback">
+        <operation name="returnAuctionResult">
+            <input message="tns:returnAuctionResult"/>
+        </operation>
+        <operation name="returnBidResult">
+            <input message="tns:returnBidResult"/>
+        </operation>
+    </portType>
+    <portType name="AuctionProxy">
+        <operation name="initiateAuction">
+            <input message="tns:initiateAuction"/>
+        </operation>
+        <operation name="submitBid">
+            <input message="tns:submitBid"/>
+        </operation>
+    </portType>
+    <plnk:partnerLinkType name="AuctionProxy">
+        <plnk:role name="AuctionProxyProvider">
+            <plnk:portType name="tns:AuctionProxy"/>
+        </plnk:role>
+        <plnk:role name="AuctionProxyRequester">
+            <plnk:portType name="tns:AuctionProxyCallback"/>
+        </plnk:role>
+    </plnk:partnerLinkType>
+    <bpws:propertyAlias propertyName="pns1:bidId" messageType="ns1:submitBid" part="payload" query="/ns1:submitBid/auc:bidId"
+         xmlns:ns1="http://xmlns.packtpub.com/obay/bs/Auction"/>
+    <bpws:propertyAlias propertyName="pns1:bidId" messageType="ns1:returnBidResult" part="payload" query="/ns1:returnBidResult/auc:bidId"
+         xmlns:ns1="http://xmlns.packtpub.com/obay/bs/Auction"/>
+</definitions>

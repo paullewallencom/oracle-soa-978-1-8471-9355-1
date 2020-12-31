@@ -1,0 +1,26 @@
+<definitions
+    
+     targetNamespace="http://www.xignite.com/services/"
+     xmlns="http://schemas.xmlsoap.org/wsdl/"
+     xmlns:tns="http://www.xignite.com/services/"
+     xmlns:bpws="http://schemas.xmlsoap.org/ws/2003/03/business-process/"
+     xmlns:plnk="http://schemas.xmlsoap.org/ws/2003/05/partner-link/"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    >
+    <import namespace="http://www.xignite.com/services/" location="XigniteQuotes.wsdl"/>
+    <plnk:partnerLinkType name="XigniteQuotesHttpGet_PL">
+        <plnk:role name="XigniteQuotesHttpGet_Role">
+            <plnk:portType name="tns:XigniteQuotesHttpGet"/>
+        </plnk:role>
+    </plnk:partnerLinkType>
+    <plnk:partnerLinkType name="XigniteQuotesHttpPost_PL">
+        <plnk:role name="XigniteQuotesHttpPost_Role">
+            <plnk:portType name="tns:XigniteQuotesHttpPost"/>
+        </plnk:role>
+    </plnk:partnerLinkType>
+    <plnk:partnerLinkType name="XigniteQuotesSoap_PL">
+        <plnk:role name="XigniteQuotesSoap_Role">
+            <plnk:portType name="tns:XigniteQuotesSoap"/>
+        </plnk:role>
+    </plnk:partnerLinkType>
+</definitions>

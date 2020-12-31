@@ -1,0 +1,31 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<BPELSuitcase>
+   <BPELProcess id="ListItem" src="ListItem.bpel">
+      <partnerLinkBindings>
+         <partnerLinkBinding name="client">
+            <property name="wsdlLocation">ListItem.wsdl</property>
+         </partnerLinkBinding>
+         <partnerLinkBinding name="Schematron">
+            <property name="wsdlLocation">validation.wsdl</property>
+         </partnerLinkBinding>
+         <partnerLinkBinding name="CheckSuspectItem">
+            <property name="wsdlLocation">http://localhost:80/orabpel/obay/CheckSuspectItem/CheckSuspectItem?wsdl</property>
+         </partnerLinkBinding>
+         <partnerLinkBinding name="Listing">
+            <property name="wsdlLocation">Listing.wsdl</property>
+         </partnerLinkBinding>
+         <partnerLinkBinding name="UserManagement">
+            <property name="wsdlLocation">UserManagement.wsdl</property>
+         </partnerLinkBinding>
+         <partnerLinkBinding name="AuctionItem">
+            <property name="wsdlLocation">http://localhost:80/orabpel/obay/AuctionItem/AuctionItem?wsdl</property>
+         </partnerLinkBinding>
+         <partnerLinkBinding name="Category">
+            <property name="wsdlLocation">Category.wsdl</property>
+         </partnerLinkBinding>
+      </partnerLinkBindings>
+      <preferences>
+         <property name="Oracle.RuleRepository.Auction.rul" encryption="plaintext">${domain_url}/ListItem/rules/oracle/Auction.rul</property>
+      </preferences>
+   </BPELProcess>
+</BPELSuitcase>

@@ -1,0 +1,16 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<BPELSuitcase>
+   <BPELProcess id="AccountBilling" src="AccountBilling.bpel">
+      <partnerLinkBindings>
+         <partnerLinkBinding name="Job">
+            <property name="wsdlLocation">Job.wsdl</property>
+         </partnerLinkBinding>
+         <partnerLinkBinding name="userManagement">
+            <property name="wsdlLocation">userManagement.wsdl</property>
+         </partnerLinkBinding>
+         <partnerLinkBinding name="BillUser">
+            <property name="wsdlLocation">http://localhost:80/orabpel/obay/BillUser/BillUser?wsdl</property>
+         </partnerLinkBinding>
+      </partnerLinkBindings>
+   </BPELProcess>
+</BPELSuitcase>

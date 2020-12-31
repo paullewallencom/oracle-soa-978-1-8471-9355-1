@@ -1,0 +1,165 @@
+<?xml version = "1.0" encoding = "UTF-8" ?>
+<!--
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  Oracle JDeveloper BPEL Designer 
+  
+  Created: Sat Feb 07 13:07:48 EST 2009
+  Author:  mswright
+  Purpose: Synchronous BPEL Process
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+-->
+<process name="GetSoldItems"
+         targetNamespace="http://xmlns.packtpub.com/obay/bs/GetSoldItems"
+         xmlns="http://schemas.xmlsoap.org/ws/2003/03/business-process/"
+         xmlns:xp20="http://www.oracle.com/XSL/Transform/java/oracle.tip.pc.services.functions.Xpath20"
+         xmlns:bpws="http://schemas.xmlsoap.org/ws/2003/03/business-process/"
+         xmlns:ns4="http://xmlns.oracle.com/bpel/workflow/task"
+         xmlns:ord="http://schemas.packtpub.com/obay/ord"
+         xmlns:ids="http://xmlns.oracle.com/bpel/services/IdentityService/xpath"
+         xmlns:ldap="http://schemas.oracle.com/xpath/extension/ldap"
+         xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+         xmlns:client="http://xmlns.packtpub.com/obay/bs/GetSoldItems"
+         xmlns:ora="http://schemas.oracle.com/xpath/extension"
+         xmlns:xref="http://www.oracle.com/XSL/Transform/java/oracle.tip.xref.xpath.XRefXPathFunctions"
+         xmlns:hwf="http://xmlns.oracle.com/bpel/workflow/xpath"
+         xmlns:ns1="http://xmlns.oracle.com/bpel/workflow/taskQueryService"
+         xmlns:ehdr="http://www.oracle.com/XSL/Transform/java/oracle.tip.esb.server.headers.ESBHeaderFunctions"
+         xmlns:ns3="http://xmlns.oracle.com/bpel/workflow/taskQuery"
+         xmlns:ns2="http://xmlns.oracle.com/bpel/workflow/common"
+         xmlns:bpelx="http://schemas.oracle.com/bpel/extension"
+         xmlns:orcl="http://www.oracle.com/XSL/Transform/java/oracle.tip.pc.services.functions.ExtFunc">
+  <!-- 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      PARTNERLINKS                                                      
+      List of services participating in this BPEL process               
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  -->
+  <partnerLinks>
+    <!-- 
+      The 'client' role represents the requester of this service. It is 
+      used for callback. The location and correlation information associated
+      with the client role are automatically set using WS-Addressing.
+    -->
+    <partnerLink name="client" partnerLinkType="client:GetSoldItems"
+                 myRole="GetSoldItemsProvider"/>
+    <partnerLink name="TaskQueryService" partnerRole="TaskQueryService_Role"
+                 partnerLinkType="ns1:TaskQueryService_PL"/>
+  </partnerLinks>
+  <!-- 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      VARIABLES                                                        
+      List of messages and XML documents used within this BPEL process 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  -->
+  <variables>
+    <!-- Reference to the message passed as input during initiation -->
+    <!-- Reference to the message that will be returned to the requester-->
+    <variable name="queryTasksInput" messageType="ns1:taskListRequestMessage"/>
+    <variable name="queryTasksResponse"
+              messageType="ns1:taskListResponseMessage"/>
+    <variable name="inputVariable" messageType="client:getSoldItems"/>
+    <variable name="outputVariable" messageType="client:getSoldItemsResponse"/>
+  </variables>
+  <!-- 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+     ORCHESTRATION LOGIC                                               
+     Set of activities coordinating the flow of messages across the    
+     services integrated within this business process                  
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  -->
+  <sequence name="main">
+    <!-- Receive input from requestor. (Note: This maps to operation defined in GetSoldItems.wsdl) -->
+    <receive name="receiveInput" partnerLink="client"
+             portType="client:GetSoldItems" operation="getSoldItems"
+             variable="inputVariable" createInstance="yes"/>
+    <!-- Generate reply to synchronous request -->
+    <assign name="setQueryTaskInput">
+      <copy>
+        <from variable="inputVariable" part="payload"
+              query="/client:getSoldItems/ns2:workflowContext"/>
+        <to variable="queryTasksInput" part="payload"
+            query="/ns1:taskListRequest/ns2:workflowContext"/>
+      </copy>
+      <copy>
+        <from>
+          <displayColumnList xmlns="http://xmlns.oracle.com/bpel/workflow/taskQuery">
+            <displayColumn>TaskNumber</displayColumn>
+            <displayColumn>Title</displayColumn>
+            <displayColumn>Creator</displayColumn>
+            <displayColumn>UpdatedDate</displayColumn>
+            <displayColumn>TextAttribute1</displayColumn>
+            <displayColumn>TextAttribute2</displayColumn>
+            <displayColumn>NumberAttribute1</displayColumn>
+            <displayColumn>NumberAttribute2</displayColumn>
+            <displayColumn>DateAttribute1</displayColumn>
+            <displayColumn>TextAttribute3</displayColumn>
+            <displayColumn>TextAttribute4</displayColumn>
+          </displayColumnList>
+        </from>
+        <to variable="queryTasksInput" part="payload"
+            query="/ns1:taskListRequest/ns3:taskPredicateQuery/ns3:displayColumnList"/>
+      </copy>
+      <copy>
+        <from>
+          <predicate xmlns="http://xmlns.oracle.com/bpel/workflow/taskQuery">
+            <assignmentFilter>Creator</assignmentFilter>
+            <clause joinOperator="AND">
+              <column>TaskDefinitionName</column>
+              <operator>EQ</operator>
+              <value>OrderFulfillment</value>
+            </clause>
+            <clause joinOperator="AND">
+              <column>TextAttribute4</column>
+              <operator>NEQ</operator>
+              <value>Complete</value>
+            </clause>
+          </predicate>
+        </from>
+        <to variable="queryTasksInput" part="payload"
+            query="/ns1:taskListRequest/ns3:taskPredicateQuery/ns3:predicate"/>
+      </copy>
+      <copy>
+        <from>
+          <ordering xmlns="http://xmlns.oracle.com/bpel/workflow/taskQuery">
+            <clause>
+              <column>DateAttribute1</column>
+              <sortOrder>ASCENDING</sortOrder>
+            </clause>
+          </ordering>
+        </from>
+        <to variable="queryTasksInput" part="payload"
+            query="/ns1:taskListRequest/ns3:taskPredicateQuery/ns3:ordering"/>
+      </copy>
+      <bpelx:remove>
+        <bpelx:target variable="queryTasksInput" part="payload"
+                      query="/ns1:taskListRequest/ns3:taskPredicateQuery/ns3:optionalInfoList"/>
+      </bpelx:remove>
+      <copy>
+        <from expression="0"/>
+        <to variable="queryTasksInput" part="payload"
+            query="/ns1:taskListRequest/ns3:taskPredicateQuery/@startRow"/>
+      </copy>
+      <copy>
+        <from expression="0"/>
+        <to variable="queryTasksInput" part="payload"
+            query="/ns1:taskListRequest/ns3:taskPredicateQuery/@endRow"/>
+      </copy>
+    </assign>
+    <invoke name="queryTasks" partnerLink="TaskQueryService"
+            portType="ns1:TaskQueryService" operation="queryTasks"
+            inputVariable="queryTasksInput"
+            outputVariable="queryTasksResponse"/>
+    <assign name="createGetSoldItemsResponse">
+      <bpelx:annotation>
+        <bpelx:pattern>transformation</bpelx:pattern>
+      </bpelx:annotation>
+      <copy>
+        <from expression="ora:processXSLT('createGetSoldItemsResponse.xsl',bpws:getVariableData('queryTasksResponse','payload'))"/>
+        <to variable="outputVariable" part="payload"/>
+      </copy>
+    </assign>
+    <reply name="replyOutput" partnerLink="client"
+           portType="client:GetSoldItems" operation="getSoldItems"
+           variable="outputVariable"/>
+  </sequence>
+</process>

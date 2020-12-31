@@ -1,0 +1,60 @@
+<definitions
+     name="SetPaymentMade"
+     targetNamespace="http://xmlns.packtpub.com/obay/bs/SetPaymentMade"
+     xmlns="http://schemas.xmlsoap.org/wsdl/"
+     xmlns:ord="http://schemas.packtpub.com/obay/ord"
+     xmlns:plnk="http://schemas.xmlsoap.org/ws/2003/05/partner-link/"
+     xmlns:wfc="http://xmlns.oracle.com/bpel/workflow/common"
+     xmlns:cmn="http://schemas.packtpub.com/obay/cmn"
+     xmlns:flt="http://schemas.packtpub.com/obay/flt"
+     xmlns:client="http://xmlns.packtpub.com/obay/bs/SetPaymentMade"
+    >
+    <types>
+        <schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://xmlns.packtpub.com/obay/bs/SetPaymentMade"
+             xmlns:ord="http://schemas.packtpub.com/obay/ord" xmlns:plnk="http://schemas.xmlsoap.org/ws/2003/05/partner-link/"
+             xmlns:cmn="http://schemas.packtpub.com/obay/cmn" xmlns:client="http://xmlns.packtpub.com/obay/bs/SetPaymentMade"
+             xmlns:wfc="http://xmlns.oracle.com/bpel/workflow/common">
+            <import namespace="http://xmlns.oracle.com/bpel/workflow/common" schemaLocation="WorkflowCommon.xsd"/>
+            <import namespace="http://schemas.packtpub.com/obay/ord" schemaLocation="http://localhost:80/orabpel/xmllib/obay/Order_v1_0.xsd"/>
+            <import namespace="http://schemas.packtpub.com/obay/flt" schemaLocation="http://mswright-au.au.oracle.com/orabpel/xmllib/obay/Fault_v1_0.xsd"/>
+            
+            <element name="setPaymentMade" type="client:tSetPaymentMade"/>
+            <element name="setPaymentMadeResponse" type="client:tSetPaymentMadeResponse"/>
+            <complexType name="tSetPaymentMade">
+                <sequence>
+                    <element ref="wfc:workflowContext"/>
+                    <element ref="ord:orderNo"/>
+                </sequence>
+            </complexType>
+            <complexType name="tSetPaymentMadeResponse">
+                <sequence>
+                    <element ref="ord:order"/>
+                </sequence>
+            </complexType>
+        </schema>
+    </types>
+    <message name="setPaymentMade">
+        <part name="payload" element="client:setPaymentMade"/>
+    </message>
+    <message name="setPaymentMadeResponse">
+        <part name="payload" element="client:setPaymentMadeResponse"/>
+    </message>
+    <message name="invalidActionFault">
+        <part name="payload" element="flt:fault"/>
+    </message>
+    <portType name="SetPaymentMade">
+        <operation name="setPaymentMade">
+            <input message="client:setPaymentMade"/>
+            <output message="client:setPaymentMadeResponse"/>
+
+            <!-- Returned if user details are invalid -->
+            <fault name="invalidAction"
+                   message="client:invalidActionFault"/>
+        </operation>
+    </portType>
+    <plnk:partnerLinkType name="SetPaymentMade">
+        <plnk:role name="SetPaymentMadeProvider">
+            <plnk:portType name="client:SetPaymentMade"/>
+        </plnk:role>
+    </plnk:partnerLinkType>
+</definitions>

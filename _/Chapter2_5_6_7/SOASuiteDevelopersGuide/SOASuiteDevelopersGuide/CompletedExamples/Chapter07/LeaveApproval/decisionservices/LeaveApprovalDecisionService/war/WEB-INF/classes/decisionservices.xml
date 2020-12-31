@@ -1,0 +1,46 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<decisionServices xmlns="http://xmlns.oracle.com/bpel/rules">
+    <ruleEngineProvider name="FileRepositoryRuleEngineConnection" provider="Oracle">
+        <repository type="File">
+            <file>repositoryresource:leaveApprovalRules</file>
+        </repository>
+        <properties>
+            <property name="watchRules">true</property>
+            <property name="watchActivations">true</property>
+            <property name="watchFacts">true</property>
+            <property name="watchCompilations">true</property>
+        </properties>
+    </ruleEngineProvider>
+    <decisionService name="LeaveApprovalDecisionService" targetNamespace="http://xmlns.packtpub.com/LeaveApproval/LeaveApprovalDecisionService" ruleEngineProviderReference="FileRepositoryRuleEngineConnection">
+        <catalog>LeaveApproval</catalog>
+        <catalogVersion>INITIAL</catalogVersion>
+        <ruleset>LeaveApprovalRules</ruleset>
+        <pattern name="Assert">
+            <arguments>
+                <assert>com.packtpub.schemas.leaverequest.LeaveRequest</assert>
+            </arguments>
+        </pattern>
+        <pattern name="AssertExecute">
+            <arguments>
+                <assert>com.packtpub.schemas.leaverequest.LeaveRequest</assert>
+            </arguments>
+        </pattern>
+        <pattern name="AssertExecuteWatchStateful">
+            <arguments>
+                <assert>com.packtpub.schemas.leaverequest.LeaveRequest</assert>
+                <watch>com.packtpub.schemas.leaverequest.LeaveRequest</watch>
+            </arguments>
+        </pattern>
+        <pattern name="AssertExecuteWatchStateless">
+            <arguments>
+                <assert>com.packtpub.schemas.leaverequest.LeaveRequest</assert>
+                <watch>com.packtpub.schemas.leaverequest.LeaveRequest</watch>
+            </arguments>
+        </pattern
+        ><pattern name="Watch">
+            <arguments>
+                <watch>com.packtpub.schemas.leaverequest.LeaveRequest</watch>
+            </arguments>
+        </pattern>
+    </decisionService>
+</decisionServices>

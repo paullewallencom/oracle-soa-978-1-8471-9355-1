@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<toplink:object-persistence version="Oracle TopLink - 10g Release 3 (10.1.3.4.0) (Build 080602)" xmlns:opm="http://xmlns.oracle.com/ias/xsds/opm" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:toplink="http://xmlns.oracle.com/ias/xsds/toplink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <opm:name>PayrollDatabaseService</opm:name>
+   <opm:class-mapping-descriptors>
+      <opm:class-mapping-descriptor xsi:type="toplink:relational-class-mapping-descriptor">
+         <opm:class>PayrollDatabaseService.Batch</opm:class>
+         <opm:alias>Batch</opm:alias>
+         <opm:primary-key>
+            <opm:field table="BATCH" name="ID" xsi:type="opm:column"/>
+         </opm:primary-key>
+         <opm:events xsi:type="toplink:event-policy"/>
+         <opm:querying xsi:type="toplink:query-policy">
+            <opm:queries>
+               <opm:query name="findAllBatch" xsi:type="toplink:read-all-query">
+                  <toplink:timeout>0</toplink:timeout>
+                  <toplink:reference-class>PayrollDatabaseService.Batch</toplink:reference-class>
+                  <toplink:cache-usage>primary-key</toplink:cache-usage>
+                  <toplink:lock-mode>none</toplink:lock-mode>
+                  <toplink:container xsi:type="toplink:list-container-policy">
+                     <toplink:collection-type>java.util.Vector</toplink:collection-type>
+                  </toplink:container>
+               </opm:query>
+            </opm:queries>
+            <toplink:does-exist-query xsi:type="toplink:does-exist-query">
+               <toplink:existence-check>check-database</toplink:existence-check>
+            </toplink:does-exist-query>
+         </opm:querying>
+         <opm:attribute-mappings>
+            <opm:attribute-mapping xsi:type="toplink:one-to-many-mapping">
+               <opm:attribute-name>payrollitemCollection</opm:attribute-name>
+               <opm:reference-class>PayrollDatabaseService.Payrollitem</opm:reference-class>
+               <opm:private-owned>true</opm:private-owned>
+               <opm:target-foreign-key>
+                  <opm:field-reference>
+                     <opm:source-field table="PAYROLLITEM" name="BATCHID" xsi:type="opm:column"/>
+                     <opm:target-field table="BATCH" name="ID" xsi:type="opm:column"/>
+                  </opm:field-reference>
+               </opm:target-foreign-key>
+               <toplink:batch-reading>true</toplink:batch-reading>
+               <toplink:container xsi:type="toplink:container-policy">
+                  <toplink:collection-type>oracle.toplink.indirection.IndirectList</toplink:collection-type>
+               </toplink:container>
+               <toplink:indirection xsi:type="toplink:transparent-collection-indirection-policy"/>
+               <toplink:selection-query xsi:type="toplink:read-all-query">
+                  <toplink:container xsi:type="toplink:container-policy">
+                     <toplink:collection-type>oracle.toplink.indirection.IndirectList</toplink:collection-type>
+                  </toplink:container>
+               </toplink:selection-query>
+            </opm:attribute-mapping>
+            <opm:attribute-mapping xsi:type="toplink:direct-mapping">
+               <opm:attribute-name>id</opm:attribute-name>
+               <opm:field table="BATCH" name="ID" xsi:type="opm:column"/>
+            </opm:attribute-mapping>
+            <opm:attribute-mapping xsi:type="toplink:direct-mapping">
+               <opm:attribute-name>batchdate</opm:attribute-name>
+               <opm:field table="BATCH" name="BATCHDATE" xsi:type="opm:column"/>
+            </opm:attribute-mapping>
+         </opm:attribute-mappings>
+         <toplink:descriptor-type>independent</toplink:descriptor-type>
+         <toplink:caching>
+            <toplink:cache-type>weak-reference</toplink:cache-type>
+            <toplink:always-refresh>true</toplink:always-refresh>
+         </toplink:caching>
+         <toplink:remote-caching>
+            <toplink:cache-type>weak-reference</toplink:cache-type>
+         </toplink:remote-caching>
+         <toplink:instantiation/>
+         <toplink:copying xsi:type="toplink:instantiation-copy-policy"/>
+         <toplink:change-policy xsi:type="toplink:deferred-detection-change-policy"/>
+         <toplink:tables>
+            <toplink:table name="BATCH"/>
+         </toplink:tables>
+      </opm:class-mapping-descriptor>
+      <opm:class-mapping-descriptor xsi:type="toplink:relational-class-mapping-descriptor">
+         <opm:class>PayrollDatabaseService.Employee</opm:class>
+         <opm:alias>Employee</opm:alias>
+         <opm:primary-key>
+            <opm:field table="EMPLOYEE" name="ID" xsi:type="opm:column"/>
+         </opm:primary-key>
+         <opm:events xsi:type="toplink:event-policy"/>
+         <opm:querying xsi:type="toplink:query-policy">
+            <opm:queries>
+               <opm:query name="findAllEmployee" xsi:type="toplink:read-all-query">
+                  <toplink:timeout>0</toplink:timeout>
+                  <toplink:reference-class>PayrollDatabaseService.Employee</toplink:reference-class>
+                  <toplink:cache-usage>primary-key</toplink:cache-usage>
+                  <toplink:lock-mode>none</toplink:lock-mode>
+                  <toplink:container xsi:type="toplink:list-container-policy">
+                     <toplink:collection-type>java.util.Vector</toplink:collection-type>
+                  </toplink:container>
+               </opm:query>
+            </opm:queries>
+            <toplink:does-exist-query xsi:type="toplink:does-exist-query">
+               <toplink:existence-check>check-database</toplink:existence-check>
+            </toplink:does-exist-query>
+         </opm:querying>
+         <opm:attribute-mappings>
+            <opm:attribute-mapping xsi:type="toplink:one-to-many-mapping">
+               <opm:attribute-name>payrollitemCollection</opm:attribute-name>
+               <opm:reference-class>PayrollDatabaseService.Payrollitem</opm:reference-class>
+               <opm:private-owned>true</opm:private-owned>
+               <opm:target-foreign-key>
+                  <opm:field-reference>
+                     <opm:source-field table="PAYROLLITEM" name="EMPLOYEEID" xsi:type="opm:column"/>
+                     <opm:target-field table="EMPLOYEE" name="ID" xsi:type="opm:column"/>
+                  </opm:field-reference>
+               </opm:target-foreign-key>
+               <toplink:batch-reading>true</toplink:batch-reading>
+               <toplink:container xsi:type="toplink:container-policy">
+                  <toplink:collection-type>oracle.toplink.indirection.IndirectList</toplink:collection-type>
+               </toplink:container>
+               <toplink:indirection xsi:type="toplink:transparent-collection-indirection-policy"/>
+               <toplink:selection-query xsi:type="toplink:read-all-query">
+                  <toplink:container xsi:type="toplink:container-policy">
+                     <toplink:collection-type>oracle.toplink.indirection.IndirectList</toplink:collection-type>
+                  </toplink:container>
+               </toplink:selection-query>
+            </opm:attribute-mapping>
+            <opm:attribute-mapping xsi:type="toplink:direct-mapping">
+               <opm:attribute-name>id</opm:attribute-name>
+               <opm:field table="EMPLOYEE" name="ID" xsi:type="opm:column"/>
+            </opm:attribute-mapping>
+            <opm:attribute-mapping xsi:type="toplink:direct-mapping">
+               <opm:attribute-name>firstname</opm:attribute-name>
+               <opm:field table="EMPLOYEE" name="FIRSTNAME" xsi:type="opm:column"/>
+            </opm:attribute-mapping>
+            <opm:attribute-mapping xsi:type="toplink:direct-mapping">
+               <opm:attribute-name>lastname</opm:attribute-name>
+               <opm:field table="EMPLOYEE" name="LASTNAME" xsi:type="opm:column"/>
+            </opm:attribute-mapping>
+         </opm:attribute-mappings>
+         <toplink:descriptor-type>independent</toplink:descriptor-type>
+         <toplink:caching>
+            <toplink:cache-type>weak-reference</toplink:cache-type>
+            <toplink:always-refresh>true</toplink:always-refresh>
+         </toplink:caching>
+         <toplink:remote-caching>
+            <toplink:cache-type>weak-reference</toplink:cache-type>
+         </toplink:remote-caching>
+         <toplink:instantiation/>
+         <toplink:copying xsi:type="toplink:instantiation-copy-policy"/>
+         <toplink:change-policy xsi:type="toplink:deferred-detection-change-policy"/>
+         <toplink:tables>
+            <toplink:table name="EMPLOYEE"/>
+         </toplink:tables>
+      </opm:class-mapping-descriptor>
+      <opm:class-mapping-descriptor xsi:type="toplink:relational-class-mapping-descriptor">
+         <opm:class>PayrollDatabaseService.Payrollitem</opm:class>
+         <opm:alias>Payrollitem</opm:alias>
+         <opm:primary-key>
+            <opm:field table="PAYROLLITEM" name="EMPLOYEEID" xsi:type="opm:column"/>
+            <opm:field table="PAYROLLITEM" name="BATCHID" xsi:type="opm:column"/>
+         </opm:primary-key>
+         <opm:events xsi:type="toplink:event-policy"/>
+         <opm:querying xsi:type="toplink:query-policy">
+            <opm:queries>
+               <opm:query name="PayrollDatabaseServiceSelect" xsi:type="toplink:read-all-query">
+                  <toplink:timeout>0</toplink:timeout>
+                  <toplink:reference-class>PayrollDatabaseService.Payrollitem</toplink:reference-class>
+                  <toplink:cache-usage>primary-key</toplink:cache-usage>
+                  <toplink:lock-mode>none</toplink:lock-mode>
+                  <toplink:container xsi:type="toplink:list-container-policy">
+                     <toplink:collection-type>java.util.Vector</toplink:collection-type>
+                  </toplink:container>
+               </opm:query>
+               <opm:query name="findAllPayrollitem" xsi:type="toplink:read-all-query">
+                  <toplink:timeout>0</toplink:timeout>
+                  <toplink:reference-class>PayrollDatabaseService.Payrollitem</toplink:reference-class>
+                  <toplink:cache-usage>primary-key</toplink:cache-usage>
+                  <toplink:lock-mode>none</toplink:lock-mode>
+                  <toplink:container xsi:type="toplink:list-container-policy">
+                     <toplink:collection-type>java.util.Vector</toplink:collection-type>
+                  </toplink:container>
+               </opm:query>
+            </opm:queries>
+            <toplink:does-exist-query xsi:type="toplink:does-exist-query">
+               <toplink:existence-check>check-database</toplink:existence-check>
+            </toplink:does-exist-query>
+         </opm:querying>
+         <opm:attribute-mappings>
+            <opm:attribute-mapping xsi:type="toplink:one-to-one-mapping">
+               <opm:attribute-name>batch</opm:attribute-name>
+               <opm:reference-class>PayrollDatabaseService.Batch</opm:reference-class>
+               <opm:foreign-key>
+                  <opm:field-reference>
+                     <opm:source-field table="PAYROLLITEM" name="BATCHID" xsi:type="opm:column"/>
+                     <opm:target-field table="BATCH" name="ID" xsi:type="opm:column"/>
+                  </opm:field-reference>
+               </opm:foreign-key>
+               <opm:foreign-key-fields>
+                  <opm:field table="PAYROLLITEM" name="BATCHID" xsi:type="opm:column"/>
+               </opm:foreign-key-fields>
+               <toplink:batch-reading>true</toplink:batch-reading>
+               <toplink:indirection xsi:type="toplink:value-holder-indirection-policy"/>
+               <toplink:selection-query xsi:type="toplink:read-object-query"/>
+            </opm:attribute-mapping>
+            <opm:attribute-mapping xsi:type="toplink:one-to-one-mapping">
+               <opm:attribute-name>employee</opm:attribute-name>
+               <opm:reference-class>PayrollDatabaseService.Employee</opm:reference-class>
+               <opm:foreign-key>
+                  <opm:field-reference>
+                     <opm:source-field table="PAYROLLITEM" name="EMPLOYEEID" xsi:type="opm:column"/>
+                     <opm:target-field table="EMPLOYEE" name="ID" xsi:type="opm:column"/>
+                  </opm:field-reference>
+               </opm:foreign-key>
+               <opm:foreign-key-fields>
+                  <opm:field table="PAYROLLITEM" name="EMPLOYEEID" xsi:type="opm:column"/>
+               </opm:foreign-key-fields>
+               <toplink:batch-reading>true</toplink:batch-reading>
+               <toplink:indirection xsi:type="toplink:value-holder-indirection-policy"/>
+               <toplink:selection-query xsi:type="toplink:read-object-query"/>
+            </opm:attribute-mapping>
+            <opm:attribute-mapping xsi:type="toplink:direct-mapping">
+               <opm:attribute-name>employeeid</opm:attribute-name>
+               <opm:read-only>true</opm:read-only>
+               <opm:field table="PAYROLLITEM" name="EMPLOYEEID" xsi:type="opm:column"/>
+            </opm:attribute-mapping>
+            <opm:attribute-mapping xsi:type="toplink:direct-mapping">
+               <opm:attribute-name>paymentdate</opm:attribute-name>
+               <opm:field table="PAYROLLITEM" name="PAYMENTDATE" xsi:type="opm:column"/>
+            </opm:attribute-mapping>
+            <opm:attribute-mapping xsi:type="toplink:direct-mapping">
+               <opm:attribute-name>paymentamount</opm:attribute-name>
+               <opm:field table="PAYROLLITEM" name="PAYMENTAMOUNT" xsi:type="opm:column"/>
+            </opm:attribute-mapping>
+            <opm:attribute-mapping xsi:type="toplink:direct-mapping">
+               <opm:attribute-name>batchid</opm:attribute-name>
+               <opm:read-only>true</opm:read-only>
+               <opm:field table="PAYROLLITEM" name="BATCHID" xsi:type="opm:column"/>
+            </opm:attribute-mapping>
+         </opm:attribute-mappings>
+         <toplink:descriptor-type>independent</toplink:descriptor-type>
+         <toplink:caching>
+            <toplink:cache-type>weak-reference</toplink:cache-type>
+            <toplink:always-refresh>true</toplink:always-refresh>
+         </toplink:caching>
+         <toplink:remote-caching>
+            <toplink:cache-type>weak-reference</toplink:cache-type>
+         </toplink:remote-caching>
+         <toplink:instantiation/>
+         <toplink:copying xsi:type="toplink:instantiation-copy-policy"/>
+         <toplink:change-policy xsi:type="toplink:deferred-detection-change-policy"/>
+         <toplink:tables>
+            <toplink:table name="PAYROLLITEM"/>
+         </toplink:tables>
+      </opm:class-mapping-descriptor>
+   </opm:class-mapping-descriptors>
+   <toplink:login xsi:type="toplink:database-login">
+      <toplink:platform-class>oracle.toplink.platform.database.oracle.OraclePlatform</toplink:platform-class>
+      <toplink:user-name>soabook</toplink:user-name>
+      <toplink:password>B73D4B26B2A50F7AE5E2D8E5B96EBFFA</toplink:password>
+      <toplink:driver-class>oracle.jdbc.OracleDriver</toplink:driver-class>
+      <toplink:connection-url>jdbc:oracle:thin:@w2k3:1521:XE</toplink:connection-url>
+   </toplink:login>
+</toplink:object-persistence>

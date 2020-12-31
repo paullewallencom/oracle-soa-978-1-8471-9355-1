@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions name="Visa"
+             targetNamespace="http://xmlns.packtpub.com/Visa"
+             xmlns="http://schemas.xmlsoap.org/wsdl/"
+             xmlns:client="http://xmlns.packtpub.com/Visa"
+             xmlns:plnk="http://schemas.xmlsoap.org/ws/2003/05/partner-link/">
+
+    <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    TYPE DEFINITION - List of services participating in this BPEL process
+    The default output of the BPEL designer uses strings as input and 
+    output to the BPEL Process. But you can define or import any XML 
+    Schema type and use them as part of the message types.
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->   
+    <types>
+        <schema attributeFormDefault="unqualified"
+                elementFormDefault="qualified"
+                targetNamespace="http://xmlns.packtpub.com/Visa" 
+                xmlns="http://www.w3.org/2001/XMLSchema">
+                
+            <element name="debitVisaCard"         type="client:tDebitVisaCard"/>
+            <element name="debitVisaCardResponse" type="client:tDebitVisaCardResponse"/>
+            <element name="verifyVisaCard"         type="client:tVerifyVisaCard"/>
+            <element name="verifyVisaCardResponse" type="client:tVerifyVisaCardResponse"/>
+            <element name="declinedVisaCardFault"  type="client:tDeclinedVisaCardFault"/>
+            <element name="invalidVisaCardFault"   type="client:tInvalidVisaCardFault"/>
+
+            <complexType name="tDebitVisaCard">
+                <sequence>
+                    <element name="Transaction">
+                        <complexType>
+                            <sequence>  
+                                <element name="clientId"   type="string"/>
+                                <element name="clientName" type="string"/>
+                                <element name="amount"     type="client:tAmount" />
+                                <element name="date"       type="date" />
+                                <element name="desc"       type="string" />
+                                <element name="visaCard">
+                                    <complexType>
+                                        <sequence>  
+                                            <element name="cardHolderName"    type="string"/>
+                                            <element name="cardNumber"        type="string"/> 
+                                            <element name="expiryMonth"       type="string"/>
+                                            <element name="expiryYear"        type="string"/>
+                                            <element name="securityNo"        type="string"/>        
+                                        </sequence>
+                                    </complexType>
+                                </element>
+                            </sequence>
+                        </complexType>
+                    </element>
+                </sequence>
+            </complexType>
+            
+            <complexType name="tDebitVisaCardResponse">
+                <sequence>
+                    <element name="visaCardNumber"         type="string"/>
+                    <element name="visaAuthCode"           type="string"/>
+                </sequence>
+            </complexType>
+
+            <complexType name="tVerifyVisaCard">
+                <sequence>
+                    <element name="clientId"   type="string"/>
+                    <element name="clientName" type="string"/>
+                    <element name="visaCard">
+                        <complexType>
+                            <sequence>  
+                                <element name="cardHolderName"    type="string"/>
+                                <element name="cardNumber"        type="string"/> 
+                                <element name="expiryMonth"       type="string"/>
+                                <element name="expiryYear"        type="string"/>
+                                <element name="securityNo"        type="string"/>        
+                            </sequence>
+                        </complexType>
+                    </element>
+                </sequence>
+            </complexType>
+            
+            <complexType name="tVerifyVisaCardResponse">
+                <sequence>
+                    <element name="visaCardNumber"         type="string"/>
+                    <element name="visaAuthCode"           type="string"/>
+                </sequence>
+            </complexType>
+            
+            <complexType name="tDeclinedVisaCardFault">
+                <sequence>
+                    <element name="reasonCode" type="string"/>
+                    <element name="reasonDesc" type="string"/>
+                </sequence>
+            </complexType>
+                        
+            <complexType name="tInvalidVisaCardFault">
+                <sequence>
+                    <element name="reasonCode" type="string"/>
+                    <element name="reasonDesc" type="string"/>
+                </sequence>
+            </complexType>
+            
+            <simpleType name = "tAmount">
+                <restriction base="decimal">
+                    <totalDigits value="10"/>
+                    <fractionDigits value= "2"/>
+                </restriction>
+            </simpleType>
+
+        </schema>
+    </types>
+
+    <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    MESSAGE TYPE DEFINITION - Definition of the message types used as 
+    part of the port type defintions
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->      
+    <message name="debitVisaCard">
+            <part name="payload" element="client:debitVisaCard" />
+    </message>
+    <message name="debitVisaCardResponse">
+            <part name="payload" element="client:debitVisaCardResponse" />
+    </message>
+    <message name="verifyVisaCard">
+            <part name="payload" element="client:verifyVisaCard" />
+    </message>
+    <message name="verifyVisaCardResponse">
+            <part name="payload" element="client:verifyVisaCardResponse" />
+    </message>
+    <message name="declinedVisaCardFault">
+            <part name="payload" element="client:declinedVisaCardFault" />
+    </message>
+    <message name="invalidVisaCardFault">
+            <part name="payload" element="client:invalidVisaCardFault" />
+    </message>
+    
+    <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    PORT TYPE DEFINITION - A port type groups a set of operations into
+    a logical service unit.
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+
+    <!-- portType implemented by the VisaCard BPEL process -->
+    <portType name="VisaCard">
+        <operation name="debitVisaCard">
+            <input  message="client:debitVisaCard" />
+            <output message="client:debitVisaCardResponse"/>
+            <fault  name="declinedVisaCard" message="client:declinedVisaCardFault"/>
+            <fault  name="invalidVisaCard" message="client:invalidVisaCardFault"/>
+        </operation>
+        <operation name="verifyVisaCard">
+            <input  message="client:verifyVisaCard" />
+            <output message="client:verifyVisaCardResponse"/>
+            <fault  name="declinedVisaCard" message="client:declinedVisaCardFault"/>
+            <fault  name="invalidVisaCard" message="client:invalidVisaCardFault"/>
+        </operation>
+    </portType>
+
+    <plnk:partnerLinkType name="VisaCard_PL">
+        <plnk:role name="VisaCard_Role">
+            <plnk:portType name="client:VisaCard"/>
+        </plnk:role>
+    </plnk:partnerLinkType>
+</definitions>

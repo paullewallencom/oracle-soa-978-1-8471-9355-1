@@ -1,0 +1,130 @@
+<?xml version = "1.0" encoding = "UTF-8" ?>
+<!--
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  Oracle JDeveloper BPEL Designer 
+  
+  Created: Sat Oct 25 18:43:32 EST 2008
+  Author:  mswright
+  Purpose: Synchronous BPEL Process
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+-->
+<process name="StockQuote"
+         targetNamespace="http://xmlns.packtpub.com/StockQuote"
+         xmlns="http://schemas.xmlsoap.org/ws/2003/03/business-process/"
+         xmlns:bpws="http://schemas.xmlsoap.org/ws/2003/03/business-process/"
+         xmlns:xp20="http://www.oracle.com/XSL/Transform/java/oracle.tip.pc.services.functions.Xpath20"
+         xmlns:ids="http://xmlns.oracle.com/bpel/services/IdentityService/xpath"
+         xmlns:ldap="http://schemas.oracle.com/xpath/extension/ldap"
+         xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+         xmlns:client="http://xmlns.packtpub.com/StockQuote"
+         xmlns:ora="http://schemas.oracle.com/xpath/extension"
+         xmlns:xref="http://www.oracle.com/XSL/Transform/java/oracle.tip.xref.xpath.XRefXPathFunctions"
+         xmlns:hwf="http://xmlns.oracle.com/bpel/workflow/xpath"
+         xmlns:ns1="http://www.xignite.com/services/"
+         xmlns:ehdr="http://www.oracle.com/XSL/Transform/java/oracle.tip.esb.server.headers.ESBHeaderFunctions"
+         xmlns:ns3="http://www.webserviceX.NET/"
+         xmlns:ns2="http://xmlns.packtpub.com/xml/StockService"
+         xmlns:bpelx="http://schemas.oracle.com/bpel/extension"
+         xmlns:orcl="http://www.oracle.com/XSL/Transform/java/oracle.tip.pc.services.functions.ExtFunc">
+  <!-- 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      PARTNERLINKS                                                      
+      List of services participating in this BPEL process               
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  -->
+  <partnerLinks>
+    <!-- 
+      The 'client' role represents the requester of this service. It is 
+      used for callback. The location and correlation information associated
+      with the client role are automatically set using WS-Addressing.
+    -->
+    <partnerLink name="client" partnerLinkType="client:StockQuote"
+                 myRole="StockQuoteProvider"/>
+    <partnerLink name="XigniteQuotes" partnerRole="XigniteQuotesSoap_Role"
+                 partnerLinkType="ns1:XigniteQuotesSoap_PL"/>
+    <partnerLink name="webserviceX.NET" partnerRole="CurrencyConvertorSoap_Role"
+                 partnerLinkType="ns3:CurrencyConvertorSoap_PL"/>
+  </partnerLinks>
+  <!-- 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      VARIABLES                                                        
+      List of messages and XML documents used within this BPEL process 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  -->
+  <variables>
+    <!-- Reference to the message passed as input during initiation -->
+    <!-- Reference to the message that will be returned to the requester-->
+    <variable name="inputVariable"
+              messageType="client:StockQuoteRequestMessage"/>
+    <variable name="outputVariable"
+              messageType="client:StockQuoteResponseMessage"/>
+    <variable name="QuoteInput" messageType="ns1:GetSingleQuoteSoapIn"/>
+    <variable name="QuoteOutput" messageType="ns1:GetSingleQuoteSoapOut"/>
+    <variable name="ExchangeRateInput" messageType="ns3:ConversionRateSoapIn"/>
+    <variable name="ExchangeRateOutput"
+              messageType="ns3:ConversionRateSoapOut"/>
+  </variables>
+  <!-- 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+     ORCHESTRATION LOGIC                                               
+     Set of activities coordinating the flow of messages across the    
+     services integrated within this business process                  
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  -->
+  <sequence name="main">
+    <!-- Receive input from requestor. (Note: This maps to operation defined in StockQuote.wsdl) -->
+    <receive name="receiveInput" partnerLink="client"
+             portType="client:StockQuote" operation="process"
+             variable="inputVariable" createInstance="yes"/>
+    <!-- Generate reply to synchronous request -->
+    <assign name="SetQuoteInput">
+      <copy>
+        <from variable="inputVariable" part="payload"
+              query="/ns2:getQuote/ns2:stockSymbol"/>
+        <to variable="QuoteInput" part="parameters"
+            query="/ns1:GetSingleQuote/ns1:Symbol"/>
+      </copy>
+    </assign>
+    <invoke name="GetSingleQuote" partnerLink="XigniteQuotes"
+            portType="ns1:XigniteQuotesSoap" operation="GetSingleQuote"
+            inputVariable="QuoteInput" outputVariable="QuoteOutput"/>
+    <assign name="setExchangeRateInput">
+      <copy>
+        <from expression="'USD'"/>
+        <to variable="ExchangeRateInput" part="parameters"
+            query="/ns3:ConversionRate/ns3:FromCurrency"/>
+      </copy>
+      <copy>
+        <from variable="inputVariable" part="payload"
+              query="/ns2:getQuote/ns2:currency"/>
+        <to variable="ExchangeRateInput" part="parameters"
+            query="/ns3:ConversionRate/ns3:ToCurrency"/>
+      </copy>
+    </assign>
+    <invoke name="getExchangeRate" partnerLink="webserviceX.NET"
+            portType="ns3:CurrencyConvertorSoap" operation="ConversionRate"
+            inputVariable="ExchangeRateInput"
+            outputVariable="ExchangeRateOutput"/>
+    <assign name="setOutput">
+      <copy>
+        <from expression="bpws:getVariableData('QuoteOutput','parameters','/ns1:GetSingleQuoteResponse/ns1:GetSingleQuoteResult/ns1:Last') * bpws:getVariableData('ExchangeRateOutput','parameters','/ns3:ConversionRateResponse/ns3:ConversionRateResult')"/>
+        <to variable="outputVariable" part="payload"
+            query="/ns2:getQuoteResponse/ns2:amount"/>
+      </copy>
+      <copy>
+        <from variable="inputVariable" part="payload"
+              query="/ns2:getQuote/ns2:currency"/>
+        <to variable="outputVariable" part="payload"
+            query="/ns2:getQuoteResponse/ns2:currency"/>
+      </copy>
+      <copy>
+        <from variable="inputVariable" part="payload"
+              query="/ns2:getQuote/ns2:stockSymbol"/>
+        <to variable="outputVariable" part="payload"
+            query="/ns2:getQuoteResponse/ns2:stockSymbol"/>
+      </copy>
+    </assign>
+    <reply name="replyOutput" partnerLink="client" portType="client:StockQuote"
+           operation="process" variable="outputVariable"/>
+  </sequence>
+</process>

@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions
+     name="LeaveApprovalDecisionService"
+     targetNamespace="http://xmlns.packtpub.com/LeaveApproval/LeaveApprovalDecisionService"
+     xmlns="http://schemas.xmlsoap.org/wsdl/"
+     xmlns:tns="http://xmlns.packtpub.com/LeaveApproval/LeaveApprovalDecisionService"
+     xmlns:java="http://schemas.xmlsoap.org/wsdl/java/"
+     xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/"
+     xmlns:plt="http://schemas.xmlsoap.org/ws/2003/05/partner-link/"
+     xmlns:rules="http://xmlns.oracle.com/bpel/rules"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+     xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+     xmlns:format="http://schemas.xmlsoap.org/wsdl/formatbinding/"
+    >
+    <types>
+        <schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://xmlns.packtpub.com/LeaveApproval/LeaveApprovalDecisionService"
+             attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:tns="http://xmlns.packtpub.com/LeaveApproval/LeaveApprovalDecisionService"
+             xmlns:bpelpm="http://xmlns.oracle.com/bpel">
+            <include schemaLocation="DecisionServiceMessages.xsd"/>
+        </schema>
+    </types>
+    <message name="assertMessage">
+        <part name="payload" element="tns:assert"/>
+    </message>
+    <message name="assertExecuteMessage">
+        <part name="payload" element="tns:assertExecute"/>
+    </message>
+    <message name="assertExecuteWatchStatefulMessage">
+        <part name="payload" element="tns:assertExecuteWatchStateful"/>
+    </message>
+    <message name="assertExecuteWatchStatefulDecisionMessage">
+        <part name="payload" element="tns:assertExecuteWatchStatefulDecision"/>
+    </message>
+    <message name="assertExecuteWatchStatelessMessage">
+        <part name="payload" element="tns:assertExecuteWatchStateless"/>
+    </message>
+    <message name="assertExecuteWatchStatelessDecisionMessage">
+        <part name="payload" element="tns:assertExecuteWatchStatelessDecision"/>
+    </message>
+    <message name="watchMessage">
+        <part name="payload" element="tns:watch"/>
+    </message>
+    <message name="watchDecisionMessage">
+        <part name="payload" element="tns:watchDecision"/>
+    </message>
+    <message name="decisionServiceError">
+        <part name="payload" element="tns:errorInfo"/>
+    </message>
+    <portType name="IDecisionService">
+        <operation name="assert">
+            <input name="assertInput" message="tns:assertMessage"/>
+        </operation>
+        <operation name="assertExecute">
+            <input name="assertExecuteInput" message="tns:assertExecuteMessage"/>
+        </operation>
+        <operation name="assertExecuteWatchStateful">
+            <input name="assertExecuteWatchStatefulInput" message="tns:assertExecuteWatchStatefulMessage"/>
+            <output name="assertExecuteWatchStatefulOutput" message="tns:assertExecuteWatchStatefulDecisionMessage"/>
+            <fault name="operationErroredFault" message="tns:decisionServiceError"/>
+        </operation>
+        <operation name="assertExecuteWatchStateless">
+            <input name="assertExecuteWatchStatelessInput" message="tns:assertExecuteWatchStatelessMessage"/>
+            <output name="assertExecuteWatchStatelessOutput" message="tns:assertExecuteWatchStatelessDecisionMessage"/>
+            <fault name="operationErroredFault" message="tns:decisionServiceError"/>
+        </operation>
+        <operation name="watch">
+            <input name="watchInput" message="tns:watchMessage"/>
+            <output name="watchOutput" message="tns:watchDecisionMessage"/>
+            <fault name="operationErroredFault" message="tns:decisionServiceError"/>
+        </operation>
+    </portType>
+    <binding name="LeaveApprovalDecisionServiceSOAPBinding" type="tns:IDecisionService">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <operation name="assert">
+            <soap:operation soapAction=""/>
+            <input name="assertInput">
+                <soap:body use="literal" parts="payload"/>
+            </input>
+        </operation>
+        <operation name="assertExecute">
+            <soap:operation soapAction=""/>
+            <input name="assertExecuteInput">
+                <soap:body use="literal" parts="payload"/>
+            </input>
+        </operation>
+        <operation name="assertExecuteWatchStateful">
+            <soap:operation soapAction=""/>
+            <input name="assertExecuteWatchStatefulInput">
+                <soap:body use="literal" parts="payload"/>
+            </input>
+            <output name="assertExecuteWatchStatefulOutput">
+                <soap:body use="literal" parts="payload"/>
+            </output>
+            <fault name="operationErroredFault">
+                <soap:fault name="operationErroredFault" use="literal" encodingStyle=""/>
+            </fault>
+        </operation>
+        <operation name="assertExecuteWatchStateless">
+            <soap:operation soapAction=""/>
+            <input name="assertExecuteWatchStatelessInput">
+                <soap:body use="literal" parts="payload"/>
+            </input>
+            <output name="assertExecuteWatchStatelessOutput">
+                <soap:body use="literal" parts="payload"/>
+            </output>
+            <fault name="operationErroredFault">
+                <soap:fault name="operationErroredFault" use="literal" encodingStyle=""/>
+            </fault>
+        </operation>
+        <operation name="watch">
+            <soap:operation soapAction=""/>
+            <input name="watchInput">
+                <soap:body use="literal" parts="payload"/>
+            </input>
+            <output name="watchOutput">
+                <soap:body use="literal" parts="payload"/>
+            </output>
+            <fault name="operationErroredFault">
+                <soap:fault name="operationErroredFault" use="literal" encodingStyle=""/>
+            </fault>
+        </operation>
+    </binding>
+    <service name="IDecisionService">
+        <port name="LeaveApprovalDecisionServicePort" binding="tns:LeaveApprovalDecisionServiceSOAPBinding">
+            <soap:address location="http://${hostname}:${port}/rules/${domain_id}/${process_id}/${process_revision}"/>
+        </port>
+    </service>
+</definitions>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions 
+    name="DBAdapter"
+    targetNamespace="http://xmlns.oracle.com/pcbpel/adapter/db/"
+    xmlns:tns="http://xmlns.oracle.com/pcbpel/adapter/db/"
+    xmlns="http://schemas.xmlsoap.org/wsdl/">
+
+    <types>
+        <schema attributeFormDefault="qualified" elementFormDefault="qualified"
+                targetNamespace="http://xmlns.oracle.com/pcbpel/adapter/db/"
+                xmlns="http://www.w3.org/2001/XMLSchema">
+            <element name="OutboundDBHeaderType">
+                <complexType>
+                    <sequence>
+                        <element name="dataSourceName" type="string"/>
+                        <element name="userName" type="string"/>
+                        <element name="password" type="string"/>
+                        <element name="usesExternalTransactionController" type="boolean"/>
+                        <element name="proxyUserName" type="string"/>
+                        <element name="proxyPassword" type="string"/>
+                        <element name="proxyDistinguishedName" type="string"/>
+                        <element name="proxyCertificate" type="base64Binary"/>
+                        <element name="proxyRoles" type="string"/>
+                        <element name="proxyIsThickDriver" type="boolean"/>
+                    </sequence>
+                </complexType>
+            </element>
+        </schema>
+    </types>
+
+    <!-- Header Message -->
+    <message name="OutboundHeader_msg">
+      <part element="tns:OutboundDBHeaderType" name="outboundHeader"/>
+   </message>
+
+</definitions>

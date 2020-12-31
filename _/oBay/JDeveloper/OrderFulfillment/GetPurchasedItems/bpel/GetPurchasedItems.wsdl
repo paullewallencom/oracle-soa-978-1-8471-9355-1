@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions name="GetPurchasedItems"
+             targetNamespace="http://xmlns.packtpub.com/obay/bs/GetPurchasedItems"
+             xmlns="http://schemas.xmlsoap.org/wsdl/"
+             xmlns:client="http://xmlns.packtpub.com/obay/bs/GetPurchasedItems"
+             xmlns:ord="http://schemas.packtpub.com/obay/ord"
+             xmlns:plnk="http://schemas.xmlsoap.org/ws/2003/05/partner-link/"
+             xmlns:cmn="http://schemas.packtpub.com/obay/cmn"
+             xmlns:wfc="http://xmlns.oracle.com/bpel/workflow/common">
+
+    <types>
+        <schema elementFormDefault="qualified"
+                xmlns="http://www.w3.org/2001/XMLSchema" 
+                targetNamespace="http://xmlns.packtpub.com/obay/bs/GetPurchasedItems"
+                xmlns:ord="http://schemas.packtpub.com/obay/ord" 
+                xmlns:wfc="http://xmlns.oracle.com/bpel/workflow/common"
+                xmlns:plnk="http://schemas.xmlsoap.org/ws/2003/05/partner-link/"
+                xmlns:cmn="http://schemas.packtpub.com/obay/cmn" 
+                xmlns:client="http://xmlns.packtpub.com/obay/bs/GetPurchasedItems">
+           
+            <import namespace="http://xmlns.oracle.com/bpel/workflow/common" schemaLocation="WorkflowCommon.xsd"/> 
+            <import namespace="http://schemas.packtpub.com/obay/ord" schemaLocation="http://localhost:80/orabpel/xmllib/obay/Order_v1_0.xsd"/>
+            
+            <element name="getPurchasedItems"         type="client:tGetPurchasedItems"/>
+            <element name="getPurchasedItemsResponse" type="client:tGetPurchasedItemsResponse"/>
+            <complexType name="tGetPurchasedItems">
+                <sequence>
+                    <element ref="wfc:workflowContext"/>
+                    <element ref="ord:buyerId"/>
+                </sequence>
+            </complexType>
+            <complexType name="tGetPurchasedItemsResponse">
+                <sequence>
+                    <element name="purchasedItemsList" type="client:tPurchasedItemsList"/>
+                </sequence>
+            </complexType>
+
+            <complexType name="tPurchasedItemsList">
+                <sequence>
+			<element ref="ord:orderSummary" minOccurs="0" maxOccurs="unbounded" />
+		</sequence>
+            </complexType>
+          
+        </schema>
+    </types>
+    <message name="getPurchasedItems">
+        <part name="payload" element="client:getPurchasedItems"/>
+    </message>
+    <message name="getPurchasedItemsResponse">
+        <part name="payload" element="client:getPurchasedItemsResponse"/>
+    </message>
+    <portType name="GetPurchasedItems">
+        <operation name="getPurchasedItems">
+            <input message="client:getPurchasedItems"/>
+            <output message="client:getPurchasedItemsResponse"/>
+        </operation>
+    </portType>    
+	<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	PARTNER LINK TYPE DEFINITION
+	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ --> 
+	<plnk:partnerLinkType name="GetPurchasedItems">
+		<plnk:role name="GetPurchasedItemsProvider">
+			<plnk:portType name="client:GetPurchasedItems"/>
+		</plnk:role>
+	</plnk:partnerLinkType>
+</definitions>

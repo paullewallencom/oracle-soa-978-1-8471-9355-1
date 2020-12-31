@@ -1,0 +1,16 @@
+<definitions
+     name="userAdmin"
+     targetNamespace="http://xmlns.packtpub.com/obay/userAdmin"
+     xmlns="http://schemas.xmlsoap.org/wsdl/"
+     xmlns:bpws="http://schemas.xmlsoap.org/ws/2003/03/business-process/"
+     xmlns:plnk="http://schemas.xmlsoap.org/ws/2003/05/partner-link/"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+     xmlns:s1="http://xmlns.packtpub.com/obay/userAdmin"
+    >
+    <import namespace="http://xmlns.packtpub.com/obay/userAdmin" location="http://MSWRIGHT-AU:7001/oBay/ivs/UserAdministration?wsdl"/>
+    <plnk:partnerLinkType name="userAdmin_PL">
+        <plnk:role name="userAdmin_Role">
+            <plnk:portType name="s1:userAdmin"/>
+        </plnk:role>
+    </plnk:partnerLinkType>
+</definitions>

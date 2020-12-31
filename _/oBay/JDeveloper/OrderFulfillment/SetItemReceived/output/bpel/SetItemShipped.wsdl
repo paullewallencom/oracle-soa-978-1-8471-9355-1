@@ -1,0 +1,60 @@
+<definitions
+     name="SetItemShipped"
+     targetNamespace="http://xmlns.packtpub.com/obay/bs/SetItemShipped"
+     xmlns="http://schemas.xmlsoap.org/wsdl/"
+     xmlns:ord="http://schemas.packtpub.com/obay/ord"
+     xmlns:plnk="http://schemas.xmlsoap.org/ws/2003/05/partner-link/"
+     xmlns:wfc="http://xmlns.oracle.com/bpel/workflow/common"
+     xmlns:cmn="http://schemas.packtpub.com/obay/cmn"
+     xmlns:flt="http://schemas.packtpub.com/obay/flt"
+     xmlns:client="http://xmlns.packtpub.com/obay/bs/SetItemShipped"
+    >
+    <types>
+        <schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://xmlns.packtpub.com/obay/bs/SetItemShipped"
+             xmlns:ord="http://schemas.packtpub.com/obay/ord" xmlns:plnk="http://schemas.xmlsoap.org/ws/2003/05/partner-link/"
+             xmlns:cmn="http://schemas.packtpub.com/obay/cmn" xmlns:client="http://xmlns.packtpub.com/obay/bs/SetItemShipped"
+             xmlns:wfc="http://xmlns.oracle.com/bpel/workflow/common">
+            <import namespace="http://xmlns.oracle.com/bpel/workflow/common" schemaLocation="WorkflowCommon.xsd"/>
+            <import namespace="http://schemas.packtpub.com/obay/ord" schemaLocation="http://localhost/orabpel/xmllib/obay/Order_v1_0.xsd"/>
+            <import namespace="http://schemas.packtpub.com/obay/flt" schemaLocation="http://localhost/orabpel/xmllib/obay/Fault_v1_0.xsd"/>
+            
+            <element name="setItemShipped" type="client:tSetItemShipped"/>
+            <element name="setItemShippedResponse" type="client:tSetItemShippedResponse"/>
+            <complexType name="tSetItemShipped">
+                <sequence>
+                    <element ref="wfc:workflowContext"/>
+                    <element ref="ord:orderNo"/>
+                </sequence>
+            </complexType>
+            <complexType name="tSetItemShippedResponse">
+                <sequence>
+                    <element ref="ord:order"/>
+                </sequence>
+            </complexType>
+        </schema>
+    </types>
+    <message name="setItemShipped">
+        <part name="payload" element="client:setItemShipped"/>
+    </message>
+    <message name="setItemShippedResponse">
+        <part name="payload" element="client:setItemShippedResponse"/>
+    </message>
+    <message name="invalidActionFault">
+        <part name="payload" element="flt:fault"/>
+    </message>
+    <portType name="SetItemShipped">
+        <operation name="setItemShipped">
+            <input message="client:setItemShipped"/>
+            <output message="client:setItemShippedResponse"/>
+
+            <!-- Returned if user details are invalid -->
+            <fault name="invalidAction"
+                   message="client:invalidActionFault"/>
+        </operation>
+    </portType>
+    <plnk:partnerLinkType name="SetItemShipped">
+        <plnk:role name="SetItemShippedProvider">
+            <plnk:portType name="client:SetItemShipped"/>
+        </plnk:role>
+    </plnk:partnerLinkType>
+</definitions>

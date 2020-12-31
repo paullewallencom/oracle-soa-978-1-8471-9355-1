@@ -1,0 +1,97 @@
+<definitions
+     name="UserRegistration"
+     targetNamespace="http://xmlns.packtpub.com/obay/UserRegistration"
+     xmlns="http://schemas.xmlsoap.org/wsdl/"
+     xmlns:bpws="http://schemas.xmlsoap.org/ws/2003/03/business-process/"
+     xmlns:plnk="http://schemas.xmlsoap.org/ws/2003/05/partner-link/"
+     xmlns:pns1="http://xmlns.packtpub.com/obay/UserRegistration/correlationset"
+     xmlns:cmn="http://schemas.packtpub.com/obay/cmn"
+     xmlns:usr="http://schemas.packtpub.com/obay/usr"
+     xmlns:flt="http://schemas.packtpub.com/obay/flt"
+     xmlns:acc="http://schemas.packtpub.com/obay/acc"
+     xmlns:client="http://xmlns.packtpub.com/obay/UserRegistration"
+    >
+    <import namespace="http://xmlns.packtpub.com/obay/UserRegistration/correlationset" location="UserRegistration_Properties.wsdl"/>
+    <types>
+        <schema xmlns="http://www.w3.org/2001/XMLSchema" 
+                targetNamespace="http://xmlns.packtpub.com/obay/UserRegistration">
+            <import namespace="http://schemas.packtpub.com/obay/usr" schemaLocation="http://localhost/orabpel/xmllib/obay/User_v1_0.xsd"/>
+            <import namespace="http://schemas.packtpub.com/obay/cmn" schemaLocation="http://localhost/orabpel/xmllib/obay/Common_v1_0.xsd"/>
+            <import namespace="http://schemas.packtpub.com/obay/flt" schemaLocation="http://localhost/orabpel/xmllib/obay/Fault_v1_0.xsd"/>
+            <import namespace="http://schemas.packtpub.com/obay/acc" schemaLocation="http://localhost/orabpel/xmllib/obay/Account_v1_0.xsd"/>
+            
+            <element name="submitUserRegistration"         type="client:tSubmitUserRegistration"/>
+            <element name="submitUserRegistrationResponse" type="client:tSubmitUserRegistrationResponse"/>
+            <element name="confirmEmailAddress"            type="client:tConfirmEmailAddress"/>
+            <element name="confirmEmailAddressResponse"    type="client:tConfirmEmailAddressResponse"/>
+            
+            <complexType name="tSubmitUserRegistration">
+                <sequence>
+                    <element ref="usr:user"/>
+                    <element ref="usr:password"/>
+                </sequence>
+            </complexType>
+            
+            <complexType name="tSubmitUserRegistrationResponse">
+                <sequence>
+                    <element ref="usr:userId"/>
+                </sequence>
+            </complexType>
+            
+            <complexType name="tConfirmEmailAddress">
+                <sequence>
+                    <element ref="cmn:emailAddress"/>
+                    <element ref="cmn:emailAddressToken"/>
+                </sequence>
+            </complexType>
+            
+            <complexType name="tConfirmEmailAddressResponse">
+                <sequence>
+                    <element ref="usr:userId"/>
+                </sequence>
+            </complexType>
+
+        </schema>
+    </types>
+    
+    <message name="submitUserRegistration">
+        <part name="payload" element="client:submitUserRegistration"/>
+    </message>
+    <message name="submitUserRegistrationResponse">
+        <part name="payload" element="client:submitUserRegistrationResponse"/>
+    </message>
+    <message name="invalidUserDetailsFault">
+        <part name="payload" element="flt:fault"/>
+    </message>
+    <message name="confirmEmailAddress">
+        <part name="payload" element="client:confirmEmailAddress"/>
+    </message>
+    <message name="confirmEmailAddressResponse">
+        <part name="payload" element="client:confirmEmailAddressResponse"/>
+    </message>
+    
+    <portType name="UserRegistration">
+        <operation name="submitUserRegistration">
+            <input message="client:submitUserRegistration"/>
+            <output message="client:submitUserRegistrationResponse"/>
+            
+            <!-- Returned if user details are invalid -->
+            <fault name="invalidUserDetails"
+                   message="client:invalidUserDetailsFault"/>
+
+        </operation>
+        <operation name="confirmEmailAddress">
+            <input message="client:confirmEmailAddress"/>
+            <output message="client:confirmEmailAddressResponse"/>
+        </operation>
+    </portType>
+    <plnk:partnerLinkType name="UserRegistration">
+        <plnk:role name="UserRegistrationProvider">
+            <plnk:portType name="client:UserRegistration"/>
+        </plnk:role>
+    </plnk:partnerLinkType>
+    <bpws:propertyAlias propertyName="pns1:EmailToken" messageType="ns1:ValidateEmailAddress" part="payload"
+         query="/ns1:validateEmailAddress/cmn:emailAddressToken" xmlns:ns1="http://xmlns.packtpub.com/obay/ValidateEmailAddress"/>
+    <bpws:propertyAlias propertyName="pns1:EmailToken" messageType="client:confirmEmailAddress" part="payload"
+         query="/client:confirmEmailAddress/cmn:emailAddressToken"/>
+</definitions>

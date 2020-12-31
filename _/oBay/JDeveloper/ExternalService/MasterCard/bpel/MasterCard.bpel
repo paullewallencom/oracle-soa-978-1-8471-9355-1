@@ -1,0 +1,156 @@
+<?xml version = "1.0" encoding = "UTF-8" ?>
+<!--
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  Oracle JDeveloper BPEL Designer 
+  
+  Created: Wed Apr 30 20:46:58 EST 2008
+  Author:  mswright
+  Purpose: Empty BPEL Process
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+-->
+<process name="MasterCard" targetNamespace="http://xmlns.oracle.com/MasterCard"
+         xmlns="http://schemas.xmlsoap.org/ws/2003/03/business-process/"
+         xmlns:bpws="http://schemas.xmlsoap.org/ws/2003/03/business-process/"
+         xmlns:xp20="http://www.oracle.com/XSL/Transform/java/oracle.tip.pc.services.functions.Xpath20"
+         xmlns:ids="http://xmlns.oracle.com/bpel/services/IdentityService/xpath"
+         xmlns:ldap="http://schemas.oracle.com/xpath/extension/ldap"
+         xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+         xmlns:client="http://xmlns.oracle.com/MasterCard"
+         xmlns:ora="http://schemas.oracle.com/xpath/extension"
+         xmlns:xref="http://www.oracle.com/XSL/Transform/java/oracle.tip.xref.xpath.XRefXPathFunctions"
+         xmlns:hwf="http://xmlns.oracle.com/bpel/workflow/xpath"
+         xmlns:ns1="http://xmlns.packtpub.com/obay/MasterCard"
+         xmlns:ehdr="http://www.oracle.com/XSL/Transform/java/oracle.tip.esb.server.headers.ESBHeaderFunctions"
+         xmlns:ns2="http://xmlns.packtpub.com/MasterCard"
+         xmlns:bpelx="http://schemas.oracle.com/bpel/extension"
+         xmlns:orcl="http://www.oracle.com/XSL/Transform/java/oracle.tip.pc.services.functions.ExtFunc">
+  <!-- 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      PARTNERLINKS                                                      
+      List of services participating in this BPEL process               
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  -->
+  <partnerLinks>
+    <partnerLink myRole="MasterCard_Role" name="MasterCard"
+                 partnerLinkType="ns2:MasterCard_PL"/>
+  </partnerLinks>
+  <!-- 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      VARIABLES                                                        
+      List of messages and XML documents used within this BPEL process 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  -->
+  <variables>
+    <variable name="verifyMasterCardInput" messageType="ns2:verifyMasterCard"/>
+    <variable name="debitMasterCardInput" messageType="ns2:debitMasterCard"/>
+    <variable name="verifyMasterCardResponse"
+              messageType="ns2:verifyMasterCardResponse"/>
+    <variable name="declinedFault"
+              messageType="ns2:declinedFault"/>
+    <variable name="debitMasterCardResponse"
+              messageType="ns2:debitMasterCardResponse"/>
+    <variable name="invalidFault"
+              messageType="ns2:invalidFault"/>
+  </variables>
+  <!-- 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+     ORCHESTRATION LOGIC                                               
+     Set of activities coordinating the flow of messages across the    
+     services integrated within this business process                  
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  -->
+  <sequence name="main">
+    <pick name="Pick" createInstance="yes">
+      <onMessage portType="ns2:MasterCard" operation="verifyMasterCard"
+                 variable="verifyMasterCardInput" partnerLink="MasterCard">
+        <switch name="Switch_1">
+          <case condition="contains(bpws:getVariableData('verifyMasterCardInput','payload','/ns2:verifyMasterCard/ns2:masterCard/ns2:cardNumber'), '9')">
+            <sequence name="Sequence_1">
+              <assign name="setVerifyMasterCardResponse">
+                <copy>
+                  <from variable="verifyMasterCardInput" part="payload"
+                        query="/ns2:verifyMasterCard/ns2:masterCard/ns2:cardNumber"/>
+                  <to variable="verifyMasterCardResponse" part="payload"
+                      query="/ns2:verifyMasterCardResponse/ns2:masterCardNumber"/>
+                </copy>
+                <copy>
+                  <from expression="ora:generateGUID()"/>
+                  <to variable="verifyMasterCardResponse" part="payload"
+                      query="/ns2:verifyMasterCardResponse/ns2:masterCardAuthCode"/>
+                </copy>
+              </assign>
+              <reply name="verifyMasterCardResponse" partnerLink="MasterCard"
+                     portType="ns2:MasterCard" operation="verifyMasterCard"
+                     variable="verifyMasterCardResponse"/>
+            </sequence>
+          </case>
+          <otherwise>
+            <sequence name="Sequence_2">
+              <assign name="setDeclinedFault">
+                <copy>
+                  <from expression="'STOLEN'"/>
+                  <to variable="declinedFault" part="payload"
+                      query="/ns2:declined/ns2:code"/>
+                </copy>
+                <copy>
+                  <from expression="'Card reported stolen.'"/>
+                  <to variable="declinedFault" part="payload"
+                      query="/ns2:declined/ns2:desc"/>
+                </copy>
+              </assign>
+              <reply name="invalidFault" partnerLink="MasterCard"
+                     portType="ns2:MasterCard" operation="debitMasterCard"
+                     variable="declinedFault"
+                     faultName="ns2:declined"/>
+            </sequence>
+          </otherwise>
+        </switch>
+      </onMessage>
+      <onMessage portType="ns2:MasterCard" operation="debitMasterCard"
+                 variable="debitMasterCardInput" partnerLink="MasterCard">
+        <switch name="Switch_2">
+          <case condition="contains(bpws:getVariableData('debitMasterCardInput','payload','/ns2:debitMasterCard/ns2:Transaction/ns2:masterCard/ns2:cardNumber'), '1')">
+            <sequence name="Sequence_3">
+              <assign name="setDebitMasterCardResponse">
+                <copy>
+                  <from variable="debitMasterCardInput" part="payload"
+                        query="/ns2:debitMasterCard/ns2:Transaction/ns2:masterCard/ns2:cardNumber"/>
+                  <to variable="debitMasterCardResponse" part="payload"
+                      query="/ns2:debitMasterCardResponse/ns2:masterCardNumber"/>
+                </copy>
+                <copy>
+                  <from expression="ora:generateGUID()"/>
+                  <to variable="debitMasterCardResponse" part="payload"
+                      query="/ns2:debitMasterCardResponse/ns2:masterCardAuthCode"/>
+                </copy>
+              </assign>
+              <reply name="debitMasterCardResponse" partnerLink="MasterCard"
+                     portType="ns2:MasterCard" operation="debitMasterCard"
+                     variable="debitMasterCardResponse"/>
+            </sequence>
+          </case>
+          <otherwise>
+            <sequence name="Sequence_4">
+              <assign name="setDeclinedFault">
+                <copy>
+                  <from expression="'INSUFFICIENT_FUNDS'"/>
+                  <to variable="declinedFault" part="payload"
+                      query="/ns2:declined/ns2:code"/>
+                </copy>
+                <copy>
+                  <from expression="'Insufficient Funds'"/>
+                  <to variable="declinedFault" part="payload"
+                      query="/ns2:declined/ns2:desc"/>
+                </copy>
+              </assign>
+              <reply name="declinedFault" partnerLink="MasterCard"
+                     portType="ns2:MasterCard" operation="debitMasterCard"
+                     variable="declinedFault"
+                     faultName="ns2:declined"/>
+            </sequence>
+          </otherwise>
+        </switch>
+      </onMessage>
+    </pick>
+  </sequence>
+</process>

@@ -1,0 +1,10 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<BPELSuitcase>
+   <BPELProcess id="MasterCard" src="MasterCard.bpel">
+      <partnerLinkBindings>
+         <partnerLinkBinding name="MasterCard">
+            <property name="wsdlLocation">MasterCard.wsdl</property>
+         </partnerLinkBinding>
+      </partnerLinkBindings>
+   </BPELProcess>
+</BPELSuitcase>

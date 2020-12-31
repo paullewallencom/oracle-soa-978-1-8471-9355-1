@@ -1,0 +1,61 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<decisionServices xmlns="http://xmlns.oracle.com/bpel/rules">
+  <ruleEngineProvider provider="Oracle" name="Auction.rul">
+    <repository type="File">
+      <file>/D:/oBay09/Auction/Auction/bpel/rules/oracle/Auction.rul</file>
+    </repository>
+    <properties>
+      <property name="watchRules">true</property>
+      <property name="watchActivations">true</property>
+      <property name="watchFacts">true</property>
+    </properties>
+  </ruleEngineProvider>
+  <ruleEngineProvider provider="Oracle" name="Auction.ru1">
+    <repository type="File">
+      <file>D:\oBay09\Auction\Auction\bpel\rules\oracle\Auction.rul</file>
+    </repository>
+    <properties>
+      <property name="watchRules">true</property>
+      <property name="watchActivations">true</property>
+      <property name="watchFacts">true</property>
+    </properties>
+  </ruleEngineProvider>
+  <decisionService name="AuctionDecisionService"
+                   targetNamespace="http://xmlns.packtpub.com/obay/bs/Auction/AuctionDecisionService"
+                   ruleEngineProviderReference="Auction.ru1">
+    <catalog>Auction</catalog>
+    <catalogVersion>INITIAL</catalogVersion>
+    <ruleset>Auction</ruleset>
+    <pattern name="Assert">
+      <arguments>
+        <assert xpath="//*">com.packtpub.schemas.obay.auc.AuctionItem</assert>
+        <assert xpath="//*">com.packtpub.schemas.obay.auc.Bids</assert>
+      </arguments>
+    </pattern>
+    <pattern name="AssertExecute">
+      <arguments>
+        <assert xpath="//*">com.packtpub.schemas.obay.auc.AuctionItem</assert>
+        <assert xpath="//*">com.packtpub.schemas.obay.auc.Bids</assert>
+      </arguments>
+    </pattern>
+    <pattern name="AssertExecuteWatchStateful">
+      <arguments>
+        <assert xpath="//*">com.packtpub.schemas.obay.auc.AuctionItem</assert>
+        <assert xpath="//*">com.packtpub.schemas.obay.auc.Bids</assert>
+        <watch>com.packtpub.schemas.obay.auc.AuctionItem</watch>
+      </arguments>
+    </pattern>
+    <pattern name="AssertExecuteWatchStateless">
+      <arguments>
+        <assert xpath="//*">com.packtpub.schemas.obay.auc.AuctionItem</assert>
+        <assert xpath="//*">com.packtpub.schemas.obay.auc.Bids</assert>
+        <watch>com.packtpub.schemas.obay.auc.AuctionItem</watch>
+      </arguments>
+    </pattern>
+    <pattern name="Watch">
+      <arguments>
+        <watch>com.packtpub.schemas.obay.auc.AuctionItem</watch>
+      </arguments>
+    </pattern>
+  </decisionService>
+</decisionServices>

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions name="GetOrderDetails"
+             targetNamespace="http://xmlns.packtpub.com/obay/bs/GetOrderDetails"
+             xmlns="http://schemas.xmlsoap.org/wsdl/"
+             xmlns:client="http://xmlns.packtpub.com/obay/bs/GetOrderDetails"
+             xmlns:ord="http://schemas.packtpub.com/obay/ord"
+             xmlns:plnk="http://schemas.xmlsoap.org/ws/2003/05/partner-link/"
+             xmlns:cmn="http://schemas.packtpub.com/obay/cmn"
+             xmlns:flt="http://schemas.packtpub.com/obay/flt"
+             xmlns:wfc="http://xmlns.oracle.com/bpel/workflow/common">
+
+    <types>
+        <schema elementFormDefault="qualified"
+                xmlns="http://www.w3.org/2001/XMLSchema" 
+                targetNamespace="http://xmlns.packtpub.com/obay/bs/GetOrderDetails"
+                xmlns:ord="http://schemas.packtpub.com/obay/ord" 
+                xmlns:plnk="http://schemas.xmlsoap.org/ws/2003/05/partner-link/"
+                xmlns:cmn="http://schemas.packtpub.com/obay/cmn"
+                xmlns:flt="http://schemas.packtpub.com/obay/flt"
+                xmlns:client="http://xmlns.packtpub.com/obay/bs/GetOrderDetails"
+                xmlns:wfc="http://xmlns.oracle.com/bpel/workflow/common">
+            
+            <import namespace="http://xmlns.oracle.com/bpel/workflow/common" schemaLocation="WorkflowCommon.xsd"/>
+            <import namespace="http://schemas.packtpub.com/obay/ord" schemaLocation="http://localhost:80/orabpel/xmllib/obay/Order_v1_0.xsd"/>
+            <import namespace="http://schemas.packtpub.com/obay/flt" schemaLocation="http://localhost:80/orabpel/xmllib/obay/Fault_v1_0.xsd"/>
+            
+            <element name="getOrderDetails"         type="client:tGetOrderDetails"/>
+            <element name="getOrderDetailsResponse" type="client:tGetOrderDetailsResponse"/>
+            <complexType name="tGetOrderDetails">
+                <sequence>
+                    <element ref="wfc:workflowContext"/>
+                    <element ref="ord:orderNo"/>
+                </sequence>
+            </complexType>
+            <complexType name="tGetOrderDetailsResponse">
+                <sequence>
+                    <element ref="ord:order"/>
+                </sequence>
+            </complexType>
+        </schema>
+    </types>
+    <message name="getOrderDetails">
+        <part name="payload" element="client:getOrderDetails"/>
+    </message>
+    <message name="getOrderDetailsResponse">
+        <part name="payload" element="client:getOrderDetailsResponse"/>
+    </message>
+    <message name="invalidActionFault">
+        <part name="payload" element="flt:fault"/>
+    </message>
+    <portType name="GetOrderDetails">
+        <operation name="getOrderDetails">
+            <input message="client:getOrderDetails"/>
+            <output message="client:getOrderDetailsResponse"/>
+            <!-- Returned if user details are invalid -->
+            <fault name="invalidAction"
+                   message="client:invalidActionFault"/>
+        </operation>
+    </portType>    
+	<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	PARTNER LINK TYPE DEFINITION
+	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ --> 
+	<plnk:partnerLinkType name="GetOrderDetails">
+		<plnk:role name="GetOrderDetailsProvider">
+			<plnk:portType name="client:GetOrderDetails"/>
+		</plnk:role>
+	</plnk:partnerLinkType>
+</definitions>

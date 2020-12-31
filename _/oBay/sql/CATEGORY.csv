@@ -1,0 +1,51 @@
+TOP,TOP,""
+ELECTRON,"Electronics",TOP
+AUDIO,Audio,ELECTRON
+AMP,"Amplifiers",AUDIO
+CAS,"Cassette Players",AUDIO
+CDPLY,"CD Players",AUDIO
+HEAFPHNE,"Headphones",AUDIO
+HIFI,"Hi Fi Systems",AUDIO
+KARAOKE,Karaoke,AUDIO
+MINIDISK,MiniDisc,AUDIO
+RADIO,Radios,AUDIO
+RECEIVER,"Receivers",AUDIO
+SPEAKER,Speakers,AUDIO
+GADGETS,Gadgets,ELECTRON
+ALRMCLCK,"Alarm Clocks",GADGETS
+CALC,"Calculators",GADGETS
+LSRPNT,"Laser Pointers",GADGETS
+MTLDETEC,"Metal Detectors",GADGETS
+LIGHTING,"Party Lighting, Effects",GADGETS
+PPADAPT,"Power Plug Adaptors",GADGETS
+SOLAR,"Solar Panels",GADGETS
+THERM,"Thermometers",GADGETS
+TORCH,"Torches",GADGETS
+MOVIEPLY,"Movie Players",ELECTRON
+BLU,"Blu-ray Players",MOVIEPLY
+DVR,"Digital Video Recorders",MOVIEPLY
+DVD,"DVD Players",MOVIEPLY
+HD-DVD,"HD-DVD Players",MOVIEPLY
+VCR,VCRs,MOVIEPLY
+MP3,"MP3 Players",ELECTRON
+APPLE,"Apple iPod",MP3
+CREATIVE,"Creative MP3",MP3
+IRIVER,"iRiver MP3",MP3
+MSFTZUNE,"Microsoft Zune",MP3
+SAMSUNG,"Samsung MP3",MP3
+SANDISK,"SanDisk Sansa", MP3
+SONY,"Sony MP3", MP3
+OTHBRND,"Other Brands MP3",MP3
+TV,"Televisions",ELECTRON
+LCD,"LCD TV",TV
+PLASMA,"Plasma TV",TV
+RPTV,"Rear Projection",TV
+STDTV,"Standard TV",TV
+STDWSTV,"Standard Widescreen",TV
+CAR,Car,TOP
+A4,"Audi A4",AUDI
+AUDI,Audi,CAR
+A3,"Audi A3",AUDI
+BMW,BMW,CAR
+3SERIES,"BMW 3 Series",BMW
+5SERIES,"BMW 5 Series",BMW

@@ -1,0 +1,19 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<ord:order xmlns:ord="http://schemas.packtpub.com/obay/ord">
+   <ord:orderNo>0</ord:orderNo>
+   <ord:orderDesc>orderDesc1</ord:orderDesc>
+   <ord:itemId>2</ord:itemId>
+   <ord:sellerId>xxssssx</ord:sellerId>
+   <ord:buyerId>566666</ord:buyerId>
+   <ord:orderDetail>
+      <ord:orderDate>2009-03-03</ord:orderDate>
+      <ord:orderStatus>Pre-Shipment</ord:orderStatus>
+      <ord:quantity>7</ord:quantity>
+      <ord:itemPrice>8</ord:itemPrice>
+      <ord:subTotal>56</ord:subTotal>
+      <ord:shippingPrice>0</ord:shippingPrice>
+      <ord:totalPrice>56</ord:totalPrice>
+      <ord:lastUpdateDate>2009-03-03</ord:lastUpdateDate>
+      <ord:nextAction>Enter Shipping Details</ord:nextAction>
+   </ord:orderDetail>
+</ord:order>
